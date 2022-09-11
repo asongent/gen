@@ -13,8 +13,8 @@ spec:
       valueFiles:
       - values.yaml
     path: service-mesh/istio
-    kustomize:
-      version: v4.5.7
+    # kustomize:
+    #   version: v4.5.7
     repoURL: https://github.com/asongent/gen.git
     targetRevision: HEAD
   syncPolicy:
@@ -37,8 +37,8 @@ spec:
       valueFiles:
       - values.yaml
     path: service-mesh/istiod
-    kustomize:
-      version: v4.5.7
+    # kustomize:
+    #   version: v4.5.7
     repoURL: https://github.com/asongent/gen.git
     targetRevision: HEAD
   syncPolicy:
@@ -62,8 +62,8 @@ spec:
       valueFiles:
       - values.yaml
     path: service-mesh/istio-base
-    kustomize:
-      version: v4.5.7
+    # kustomize:
+    #   version: v4.5.7
     repoURL: https://github.com/asongent/gen.git
     targetRevision: HEAD
   syncPolicy:
