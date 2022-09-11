@@ -4,19 +4,19 @@ metadata:
   name: grafana
   namespace: argocd
 spec:
-  destination:
-    namespace: monitoring
-    server: https://kubernetes.default.svc
   project: default
   source:
-    helm:
-      valueFiles:
-      - values.yaml
+    repoURL: https://github.com/asongent/gen.git
+    targetRevision: HEAD
     path: monitoring/grafana
     kustomize:
       version: v4.5.7
-    repoURL: https://github.com/asongent/gen.git
-    targetRevision: HEAD
+    helm:
+      valueFiles:
+      - values.yaml
+  destination:
+    namespace: monitoring
+    server: https://kubernetes.default.svc
   syncPolicy:
     automated:
       prune: true
