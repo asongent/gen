@@ -9,8 +9,6 @@ spec:
     repoURL: https://github.com/asongent/gen.git
     targetRevision: HEAD
     path: monitoring/grafana
-    kustomize:
-      version: v4.5.7
     helm:
       valueFiles:
       - values.yaml
