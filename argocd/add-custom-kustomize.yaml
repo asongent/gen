@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: argocd-repo-server
+  labels:
+    app.kubernetes.io/component: repo-server
+    app.kubernetes.io/name: argocd-repo-server
+    app.kubernetes.io/part-of: argocd
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      'app.kubernetes.io/name': argocd-repo-server
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: argocd-repo-server  
+    spec:
+      # 1. Define an emptyDir volume which will hold the custom binaries
+      volumes:
+        - name: custom-tools
+          emptyDir: {}
+      # 2. Use an init container to download/copy custom binaries into the emptyDir
+      initContainers:
+        - name: download-tools
+          image: alpine:3.8
+          command: [sh, -c]
+          args:
+            - wget -qO- https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv4.5.7/kustomize_v4.5.7_linux_amd64.tar.gz | tar -xvzf - &&
+              mv kustomize /custom-tools/kustomize_4_5_7
+          volumeMounts:
+            - mountPath: /custom-tools
+              name: custom-tools
+      # 3. Volume mount the custom-tools directory to the repo-server
+      containers:
+        - name: argocd-repo-server
+          volumeMounts:
+            - mountPath: /custom-tools
+              name: custom-tools

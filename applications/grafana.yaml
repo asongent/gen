@@ -1,0 +1,51 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: grafana
+  namespace: argocd
+spec:
+  destination:
+    namespace: monitoring
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    helm:
+      valueFiles:
+      - values.yaml
+    path: monitoring/grafana
+    kustomize:
+      version: v4.5.7
+    repoURL: https://github.com/asongent/gen.git
+    targetRevision: HEAD
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+
+--- 
+##This is Optional. You can pull directly remotely if you don't want
+# ##to pull prometheus helm chat and save it locally
+# --- 
+# apiVersion: argoproj.io/v1alpha1
+# kind: Application
+# metadata:
+#   name: grafana
+#   namespace: argocd
+# spec:
+#   destination:
+#     server: https://kubernetes.default.svc
+#     namespace: monitoring
+#   project: default
+#   source:
+#     chart: grafana
+#     helm:
+#       values: |
+#         pushgateway:
+#           enabled: false
+#     repoURL: https://grafana.github.io/helm-charts  
+#     targetRevision:  6.37.2
+#   syncPolicy:
+#     automated:
+#       prune: true
+#       selfHeal: true
