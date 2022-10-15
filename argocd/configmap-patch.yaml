@@ -25,3 +25,8 @@ data:
       ignoreDifferences: |
         jsonPointers:
         - /spec/scope
+  repositories: |
+    - url: git@github.com:asongent/machine-learning.git
+      sshPrivateKeySecret:
+        name: private-repo 
+        key: sshprivateKey
