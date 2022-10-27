@@ -21,7 +21,30 @@ spec:
         host: grafana.monitoring.svc.cluster.local
         port:
           number: 80
-
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  labels:
+  name: prometheus
+  namespace: monitoring
+spec:
+  gateways:
+  - istio-system/general-gateway
+  hosts:
+  - 'prom.fredgentech.net'
+  http:
+  - retries:
+      attempts: 3
+      perTryTimeout: 2s
+    match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: prometheus-server.monitoring.svc.cluster.local
+        port:
+          number: 80
 # ####This configuration below works when - --insecure flag is added to commands section of argocd-server deployment
 --- 
 apiVersion: networking.istio.io/v1beta1

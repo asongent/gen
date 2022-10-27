@@ -46,7 +46,7 @@ spec:
           securityContext:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          image: {{ include "metrics-server.image" . }}
+          image: k8s.gcr.io/metrics-server/metrics-server:v0.6.1 # {{ include "metrics-server.image" . }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           args:
             - {{ printf "--secure-port=%d" (int .Values.containerPort) }}

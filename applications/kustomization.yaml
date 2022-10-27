@@ -5,3 +5,4 @@ resources:
   - istio.yaml
   - prome.yaml
   - gateway-vs-resources.yaml
+  - metrics-server.yaml
