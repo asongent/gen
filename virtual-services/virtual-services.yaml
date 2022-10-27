@@ -85,7 +85,7 @@ spec:
         prefix: /
     route:
     - destination:
-        host: keycloak.user-management.svc.cluster.local
+        host: keycloak-http.user-management.svc.cluster.local
         port:
           number: 80
 
