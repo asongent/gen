@@ -9,10 +9,10 @@ spec:
     server: https://kubernetes.default.svc
   project: default
   source:
-    helm:
-      valueFiles:
-      - values.yaml
-    path: service-mesh/ingress-gateway
+    # helm:
+    #   valueFiles:
+    #   - values.yaml
+    path: metrics-server
     kustomize:
       version: v4.5.7
     repoURL:  git@github.com:asongent/gen.git
