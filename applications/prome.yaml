@@ -13,7 +13,7 @@ spec:
       valueFiles:
       - values.yaml
     path: monitoring/prometheus
-    repoURL: https://github.com/asongent/gen.git
+    repoURL:  git@github.com:asongent/gen.git
     targetRevision: HEAD
   syncPolicy:
     automated:
