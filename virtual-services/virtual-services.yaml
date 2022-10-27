@@ -63,7 +63,31 @@ spec:
           host: argocd-server
           port:
             number: 80
-
+--- 
+##This config is for user management 
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  labels:
+  name: keycloak-server
+  namespace: user-management
+spec:
+  gateways:
+  - istio-system/general-gateway
+  hosts:
+  - 'users.fredgentech.net'
+  http:
+  - retries:
+      attempts: 3
+      perTryTimeout: 2s
+    match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: keycloak.user-management.svc.cluster.local
+        port:
+          number: 80
 
 
 
