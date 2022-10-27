@@ -4,7 +4,7 @@ namespace: argocd
 
 resources:
 - namespace.yaml
-- github-repo-secret.yaml
+# - github-repo-secret.yaml
 - github.com/argoproj/argo-cd/manifests/ha/cluster-install?ref=029be590bfd5003d65ddabb4d4cb8a31bff29c18 ##tag=stable.
 # - github.com/argoproj/argo-cd/manifests/ha/cluster-install?ref=33eaf11e3abd8c761c726e815cbb4b6af7dcb030 #tag v2.0.1
                                                               
