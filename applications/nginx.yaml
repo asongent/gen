@@ -15,7 +15,7 @@ spec:
     path: service-mesh/nginx
     kustomize:
       version: v4.5.7
-    repoURL:  git@github.com:asongent/gen.git
+    repoURL:  https://github.com/asongent/gen.git
     targetRevision: HEAD
   syncPolicy:
     automated:

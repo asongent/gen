@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL:  git@github.com:asongent/gen.git
+    repoURL:  https://github.com/asongent/gen.git
     targetRevision: HEAD
     path: virtual-services
     kustomize:

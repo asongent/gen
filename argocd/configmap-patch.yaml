@@ -25,8 +25,8 @@ data:
       ignoreDifferences: |
         jsonPointers:
         - /spec/scope
-  repositories: |
-    - url:  git@github.com:asongent/gen.git
-      sshPrivateKeySecret:
-        name: private-repo 
-        key: sshprivateKey
+  # repositories: |
+  #   - url:  https://github.com/asongent/gen.git
+  #     sshPrivateKeySecret:
+  #       name: private-repo 
+  #       key: sshprivateKey

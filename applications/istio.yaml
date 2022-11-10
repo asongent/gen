@@ -15,7 +15,7 @@ spec:
     path: service-mesh/ingress-gateway
     # kustomize:
     #   version: v4.5.7
-    repoURL:  git@github.com:asongent/gen.git
+    repoURL:  https://github.com/asongent/gen.git
     targetRevision: HEAD
   syncPolicy:
     automated:
@@ -39,7 +39,7 @@ spec:
     path: service-mesh/istiod
     # kustomize:
     #   version: v4.5.7
-    repoURL:  git@github.com:asongent/gen.git
+    repoURL:  https://github.com/asongent/gen.git
     targetRevision: HEAD
   syncPolicy:
     automated:
@@ -64,7 +64,7 @@ spec:
     path: service-mesh/istio-base
     # kustomize:
     #   version: v4.5.7
-    repoURL:  git@github.com:asongent/gen.git
+    repoURL:  https://github.com/asongent/gen.git
     targetRevision: HEAD
   syncPolicy:
     automated:
