@@ -54,7 +54,7 @@ spec:
       #   - --redis
 --- 
 
-apiVersion: networking.istio.io/v1beta1
+apiVersion: networking.istio.io/v1alpha3 #networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
   name: argocd
@@ -67,33 +67,30 @@ spec:
   http:
     - route:
       - destination:
-          host: argocd-server.argocd.svc.cluster.local
+          host: argocd-server
           port:
             number: 80
 
 #####
-## ARGO VS SECOND OPTION
+## ARGO VS SECOND OPTION. This WORKS WELL. (:
 
 --- 
-apiVersion: networking.istio.io/v1alpha3
-kind: VirtualService
-metadata:
-  name: argocd-server
-  namespace: argocd
-spec:
-  gateways:
-  - istio-system/general-gateway
-  hosts:
-  - 'gitops.fredgentech.net'
-  http:
-  # - match:
-  #   - uri:
-  #       prefix: /argocd/
-    route:
-    - destination:
-        host: argocd-server
-        port:
-          number: 80
+# apiVersion: networking.istio.io/v1alpha3
+# kind: VirtualService
+# metadata:
+#   name: argocd-server
+#   namespace: argocd
+# spec:
+#   gateways:
+#   - istio-system/general-gateway
+#   hosts:
+#   - 'gitops.fredgentech.net'
+#   http:
+#       - route:
+#         - destination:
+#             host: argocd-server
+#             port:
+#               number: 80
 
 # --- 
 # ##This config is for user management 
