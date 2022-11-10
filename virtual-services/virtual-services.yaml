@@ -86,9 +86,9 @@ spec:
   hosts:
   - 'gitops.fredgentech.net'
   http:
-  - match:
-    - uri:
-        prefix: /argocd/
+  # - match:
+  #   - uri:
+  #       prefix: /argocd/
     route:
     - destination:
         host: argocd-server
