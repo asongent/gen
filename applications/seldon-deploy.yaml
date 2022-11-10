@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: seldon-core
+  name: seldon-deploy
   namespace: argocd
 spec:
   destination:
@@ -12,7 +12,7 @@ spec:
     helm:
       valueFiles:
       - values.yaml
-    path: seldon/seldon-core-operator
+    path: seldon/seldon-deploy
     repoURL:  https://github.com/asongent/gen.git
     targetRevision: HEAD
   syncPolicy:

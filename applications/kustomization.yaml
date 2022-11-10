@@ -7,4 +7,5 @@ resources:
   - gateway-vs-resources.yaml
   - metrics-server.yaml
   - seldon-core.yaml
+  - seldon-deploy.yaml
   # - keycloak.yaml
