@@ -46,6 +46,12 @@ spec:
         port:
           number: 80
 # ####This configuration below works when - --insecure flag is added to commands section of argocd-server deployment
+      # - command:
+      #   - argocd-server
+      #   - --insecure #add this line
+      #   - --staticassets
+      #   - /shared/app
+      #   - --redis
 --- 
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
@@ -60,7 +66,7 @@ spec:
   http:
     - route:
       - destination:
-          host: argocd-server
+          host: argocd-server.argocd.svc.cluster.local
           port:
             number: 80
 # --- 
