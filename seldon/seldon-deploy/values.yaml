@@ -2,7 +2,7 @@
 replicaCount: 1
 
 image:
-  image: seldonio/seldon-deploy-server:0.0.0
+  image: seldonio/seldon-deploy-server:1.6.0 #0.0.0
   pullPolicy: Always
 
 #uncomment below to use imagePullSecrets e.g. to avoid docker rate-limiting
@@ -143,7 +143,7 @@ serviceAccountName: seldon-deploy
 
 ingressGateway:
   seldonIngressService: "istio"
-  kfServingIngressService: "istioay"
+  kfServingIngressService: "istio"
   ingressNamespace: "istio-system"
 
 virtualService:
