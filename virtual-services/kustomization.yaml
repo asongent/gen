@@ -3,8 +3,5 @@ kind: Kustomization
 resources:
   - gateway.yaml
   - virtual-services.yaml
-# patches:
-# - hpa-patch.yaml
-patchesStrategicMerge:
--  hpa-patch.yaml
+
   
