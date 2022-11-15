@@ -1,0 +1,28 @@
+apiVersion: autoscaling/v1 #autoscaling/v2beta2
+kind: HorizontalPodAutoscaler
+metadata:
+  annotations: {}
+  labels:
+    app: istio
+    app.kubernetes.io/instance: istio
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: istio
+    app.kubernetes.io/version: 1.15.0
+    helm.sh/chart: gateway-1.15.0
+    istio: istio
+  name: istio
+  namespace: istio-system
+spec:
+  maxReplicas: 5
+  metrics:
+    - resource:
+        name: cpu
+        target:
+          averageUtilization: 80
+          type: Utilization
+      type: Resource
+  minReplicas: 1
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: istio
