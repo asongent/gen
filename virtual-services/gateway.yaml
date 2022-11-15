@@ -45,9 +45,27 @@ spec:
   selector:
      istio: istio # use istio default controller
   servers:
-  - port:
-      number: 80
+  - hosts:
+    - 'seldon-model.fredgentech.net'
+    port:
       name: http
+      number: 80
       protocol: HTTP
-    hosts:
-    - "*"
+    # Upgrade HTTP to HTTPS
+    tls:
+      httpsRedirect: true
+  - hosts:
+    - 'seldon-model.fredgentech.net'
+    port:
+      name: https
+      number: 443
+      protocol: HTTPS
+    tls:
+      mode: SIMPLE
+      credentialName: gateway-certs 
+
+
+
+
+    
+ 
