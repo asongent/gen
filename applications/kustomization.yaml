@@ -6,6 +6,6 @@ resources:
   - prome.yaml
   - gateway-vs-resources.yaml
   - metrics-server.yaml
-  - seldon-core.yaml
-  - seldon-deploy.yaml
+  # - seldon-core.yaml
+  # - seldon-deploy.yaml
   # - keycloak.yaml
