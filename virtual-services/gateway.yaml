@@ -30,3 +30,24 @@ spec:
     tls:
       mode: SIMPLE
       credentialName: gateway-certs 
+
+
+--- 
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: seldon-gateway
+  namespace: istio-system
+  labels:
+    app: istio
+    istio: istio
+spec:
+  selector:
+     istio: istio # use istio default controller
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*"

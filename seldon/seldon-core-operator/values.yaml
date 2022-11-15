@@ -14,7 +14,7 @@ ambassador:
 # When activating Istio, respecive virtual services will be created
 # You must make sure you create the seldon-gateway as well
 istio:
-  enabled: false
+  enabled: true
   gateway: istio-system/seldon-gateway
   tlsMode: ""
 # If you have KEDA installed you can use it for autoscaling
@@ -104,7 +104,7 @@ storageInitializer:
   memoryLimit: 1Gi
   memoryRequest: 100Mi
 usageMetrics:
-  enabled: false
+  enabled: true
 # In scenarios like EKS with non-standard CNI plugin like calico, the control plane cannot reach the webhook
 # hence it is needed to set hostNetwork: true
 hostNetwork: false
