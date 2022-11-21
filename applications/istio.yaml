@@ -1,57 +1,7 @@
-# apiVersion: argoproj.io/v1alpha1
-# kind: Application
-# metadata:
-#   name: istio-base
-#   namespace: argocd
-# spec:
-#   destination:
-#     namespace: istio-system
-#     server: https://kubernetes.default.svc
-#   project: default
-#   source:
-#     helm:
-#       valueFiles:
-#       - values.yaml
-#     path: service-mesh/istio-base
-#     repoURL:  https://github.com/asongent/gen.git
-#     targetRevision: HEAD
-#   syncPolicy:
-#     automated:
-#       prune: true
-#       selfHeal: true
-
-# --- 
-
-
-
-# apiVersion: argoproj.io/v1alpha1
-# kind: Application
-# metadata:
-#   name: ingressgateway
-#   namespace: argocd
-# spec:
-#   destination:
-#     namespace: istio-system
-#     server: https://kubernetes.default.svc
-#   project: default
-#   source:
-#     helm:
-#       valueFiles:
-#       - values.yaml
-#     path: service-mesh/ingressgateway
-#     # kustomize:
-#     #   version: v4.5.7
-#     repoURL:  https://github.com/asongent/gen.git
-#     targetRevision: HEAD
-#   syncPolicy:
-#     automated:
-#       prune: true
-#       selfHeal: true
-# --- 
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: istiod
+  name: istio-base
   namespace: argocd
 spec:
   destination:
@@ -62,7 +12,33 @@ spec:
     helm:
       valueFiles:
       - values.yaml
-    path: service-mesh/istiod
+    path: service-mesh/istio-base
+    repoURL:  https://github.com/asongent/gen.git
+    targetRevision: HEAD
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+--- 
+
+
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ingressgateway
+  namespace: argocd
+spec:
+  destination:
+    namespace: istio-system
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    helm:
+      valueFiles:
+      - values.yaml
+    path: service-mesh/ingressgateway
     # kustomize:
     #   version: v4.5.7
     repoURL:  https://github.com/asongent/gen.git
@@ -71,5 +47,29 @@ spec:
     automated:
       prune: true
       selfHeal: true
+# --- 
+# apiVersion: argoproj.io/v1alpha1
+# kind: Application
+# metadata:
+#   name: istiod
+#   namespace: argocd
+# spec:
+#   destination:
+#     namespace: istio-system
+#     server: https://kubernetes.default.svc
+#   project: default
+#   source:
+#     helm:
+#       valueFiles:
+#       - values.yaml
+#     path: service-mesh/istiod
+#     # kustomize:
+#     #   version: v4.5.7
+#     repoURL:  https://github.com/asongent/gen.git
+#     targetRevision: HEAD
+#   syncPolicy:
+#     automated:
+#       prune: true
+#       selfHeal: true
       
-# ---      
+# # ---      
