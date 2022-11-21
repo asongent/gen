@@ -9,8 +9,8 @@ spec:
     repoURL:  https://github.com/asongent/gen.git
     targetRevision: HEAD
     path: knative
-    kustomize:
-      version: v4.5.7
+    # kustomize:
+    #   version: v4.5.7
   destination: 
     namespace: knative-serving
     server: https://kubernetes.default.svc
