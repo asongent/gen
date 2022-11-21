@@ -19,5 +19,10 @@
 .project
 .idea/
 *.tmproj
-
+# helm/charts
 OWNERS
+hack/
+ci/
+kube-prometheus-*.tgz
+
+unittests/

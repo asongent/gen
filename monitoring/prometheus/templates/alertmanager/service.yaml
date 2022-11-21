@@ -1,18 +1,20 @@
-{{- if .Values.alertmanager.enabled -}}
+{{- if .Values.alertmanager.enabled }}
 apiVersion: v1
 kind: Service
 metadata:
+  name: {{ template "kube-prometheus-stack.fullname" . }}-alertmanager
+  namespace: {{ template "kube-prometheus-stack.namespace" . }}
+  labels:
+    app: {{ template "kube-prometheus-stack.name" . }}-alertmanager
+    self-monitor: {{ .Values.alertmanager.serviceMonitor.selfMonitor | quote }}
+{{ include "kube-prometheus-stack.labels" . | indent 4 }}
+{{- if .Values.alertmanager.service.labels }}
+{{ toYaml .Values.alertmanager.service.labels | indent 4 }}
+{{- end }}
 {{- if .Values.alertmanager.service.annotations }}
   annotations:
 {{ toYaml .Values.alertmanager.service.annotations | indent 4 }}
 {{- end }}
-  labels:
-    {{- include "prometheus.alertmanager.labels" . | nindent 4 }}
-{{- if .Values.alertmanager.service.labels }}
-{{ toYaml .Values.alertmanager.service.labels | indent 4 }}
-{{- end }}
-  name: {{ template "prometheus.alertmanager.fullname" . }}
-{{ include "prometheus.namespace" . | indent 2 }}
 spec:
 {{- if .Values.alertmanager.service.clusterIP }}
   clusterIP: {{ .Values.alertmanager.service.clusterIP }}
@@ -30,24 +32,22 @@ spec:
     - {{ $cidr }}
   {{- end }}
 {{- end }}
+{{- if ne .Values.alertmanager.service.type "ClusterIP" }}
+  externalTrafficPolicy: {{ .Values.alertmanager.service.externalTrafficPolicy }}
+{{- end }}
   ports:
-    - name: http
-      port: {{ .Values.alertmanager.service.servicePort }}
-      protocol: TCP
-      targetPort: 9093
-    {{- if .Values.alertmanager.service.nodePort }}
-      nodePort: {{ .Values.alertmanager.service.nodePort }}
-    {{- end }}
-{{- if .Values.alertmanager.service.enableMeshPeer }}
-    - name: meshpeer
-      port: 6783
-      protocol: TCP
-      targetPort: 6783
+  - name: {{ .Values.alertmanager.alertmanagerSpec.portName }}
+  {{- if eq .Values.alertmanager.service.type "NodePort" }}
+    nodePort: {{ .Values.alertmanager.service.nodePort }}
+  {{- end }}
+    port: {{ .Values.alertmanager.service.port }}
+    targetPort: {{ .Values.alertmanager.service.targetPort }}
+    protocol: TCP
+{{- if .Values.alertmanager.service.additionalPorts }}
+{{ toYaml .Values.alertmanager.service.additionalPorts | indent 2 }}
 {{- end }}
   selector:
-    {{- include "prometheus.alertmanager.matchLabels" . | nindent 4 }}
-{{- if .Values.alertmanager.service.sessionAffinity }}
-  sessionAffinity: {{ .Values.alertmanager.service.sessionAffinity }}
-{{- end }}
+    app.kubernetes.io/name: alertmanager
+    alertmanager: {{ template "kube-prometheus-stack.alertmanager.crname" . }}
   type: "{{ .Values.alertmanager.service.type }}"
 {{- end }}

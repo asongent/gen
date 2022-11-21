@@ -1,28 +1,52 @@
+annotations:
+  artifacthub.io/links: |
+    - name: Chart Source
+      url: https://github.com/prometheus-community/helm-charts
+    - name: Upstream Project
+      url: https://github.com/prometheus-operator/kube-prometheus
+  artifacthub.io/operator: "true"
 apiVersion: v2
-appVersion: 2.36.2
+appVersion: 0.60.1
 dependencies:
 - condition: kubeStateMetrics.enabled
   name: kube-state-metrics
   repository: https://prometheus-community.github.io/helm-charts
-  version: 4.13.*
-description: Prometheus is a monitoring system and time series database.
-home: https://prometheus.io/
+  version: 4.22.*
+- condition: nodeExporter.enabled
+  name: prometheus-node-exporter
+  repository: https://prometheus-community.github.io/helm-charts
+  version: 4.4.*
+- condition: grafana.enabled
+  name: grafana
+  repository: https://grafana.github.io/helm-charts
+  version: 6.43.*
+description: kube-prometheus-stack collects Kubernetes manifests, Grafana dashboards,
+  and Prometheus rules combined with documentation and scripts to provide easy to
+  operate end-to-end Kubernetes cluster monitoring with Prometheus using the Prometheus
+  Operator.
+home: https://github.com/prometheus-operator/kube-prometheus
 icon: https://raw.githubusercontent.com/prometheus/prometheus.github.io/master/assets/prometheus_logo-cb55bb5c346.png
+keywords:
+- operator
+- prometheus
+- kube-prometheus
+kubeVersion: '>=1.16.0-0'
 maintainers:
+- email: andrew@quadcorps.co.uk
+  name: andrewgkew
 - email: gianrubio@gmail.com
   name: gianrubio
-- email: zanhsieh@gmail.com
-  name: zanhsieh
+- email: github.gkarthiks@gmail.com
+  name: gkarthiks
+- email: kube-prometheus-stack@sisti.pt
+  name: GMartinez-Sisti
+- email: scott@r6by.com
+  name: scottrigby
 - email: miroslav.hadzhiev@gmail.com
   name: Xtigyro
-- email: naseem@transit.app
-  name: naseemkullah
-name: prometheus
+name: kube-prometheus-stack
 sources:
-- https://github.com/prometheus/alertmanager
-- https://github.com/prometheus/prometheus
-- https://github.com/prometheus/pushgateway
-- https://github.com/prometheus/node_exporter
-- https://github.com/kubernetes/kube-state-metrics
+- https://github.com/prometheus-community/helm-charts
+- https://github.com/prometheus-operator/kube-prometheus
 type: application
-version: 15.12.0
+version: 41.9.1

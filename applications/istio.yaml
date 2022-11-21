@@ -27,7 +27,7 @@ spec:
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: istio
+  name: ingressgateway
   namespace: argocd
 spec:
   destination:
@@ -38,7 +38,7 @@ spec:
     helm:
       valueFiles:
       - values.yaml
-    path: service-mesh/ingress-gateway
+    path: service-mesh/ingressgateway
     # kustomize:
     #   version: v4.5.7
     repoURL:  https://github.com/asongent/gen.git
