@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: knative-eventing
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL:  https://github.com/asongent/gen.git
+    targetRevision: HEAD
+    path: knative-eventing
+    kustomize:
+      version: v4.5.7
+  destination: 
+    namespace: knative-serving
+    server: https://kubernetes.default.svc
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+
