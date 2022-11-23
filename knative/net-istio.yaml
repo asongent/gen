@@ -52,6 +52,8 @@ metadata:
   name: knative-ingress-gateway
   namespace: knative-serving
   labels:
+    istio: ingressgateway
+    app: ingressgateway
     app.kubernetes.io/component: net-istio
     app.kubernetes.io/name: knative-serving
     app.kubernetes.io/version: "1.8.0"
@@ -59,13 +61,27 @@ metadata:
 spec:
   selector:
     istio: ingressgateway
-  servers:
-    - port:
+    app: ingressgateway
+  servers: 
+    - hosts:
+        - "*"
+      port:
         number: 80
         name: http
         protocol: HTTP
-      hosts:
-        - "*"
+      # Upgrade HTTP to HTTPS
+      tls:
+        httpsRedirect: true
+    - hosts:
+      - '*'
+      port:
+        name: https
+        number: 443
+        protocol: HTTPS
+      tls:
+        mode: SIMPLE
+        credentialName: gateway-certs 
+      
 
 ---
 # Copyright 2019 The Knative Authors
