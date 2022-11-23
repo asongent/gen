@@ -13,4 +13,4 @@ resources:
 - gateway.yaml
 
 patchesStrategicMerge:
-- patches/remove-pdb.yaml
+- patch/remove-pdb.yaml
