@@ -5,7 +5,8 @@ metadata:
   name: config-istio
   namespace: knative-serving
 data:
-  gateway.kubeflow.kubeflow-gateway: istio-ingressgateway.istio-system.svc.cluster.local
+  gateway.istio-system.cluster-local-gateway: cluster-local-gateway.istio-system.svc.cluster.local
+  #gateway.kubeflow.kubeflow-gateway: istio-ingressgateway.istio-system.svc.cluster.local
 
 ---
 
