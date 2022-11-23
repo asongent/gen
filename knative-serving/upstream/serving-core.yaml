@@ -1028,13 +1028,11 @@ data:
 
 --- 
 apiVersion: v1
-data:
-  example.com: ""
 kind: ConfigMap
 metadata:
   name: config-domain
   namespace: knative-serving
-  
+
   # labels:
   #   serving.knative.dev/release: "v0.22.1"
   # annotations:
