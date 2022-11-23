@@ -23,12 +23,28 @@ spec:
   selector:
     istio: ingressgateway
   servers:
-    - port:
+    - hosts:
+        - "*"
+      port:
         number: 8081
         name: http
         protocol: HTTP
-      hosts:
-        - "*"
+      # Upgrade HTTP to HTTPS
+      tls:
+        httpsRedirect: true
+    - hosts:
+      - '*'
+      port:
+        name: https
+        number: 443
+        protocol: HTTPS
+      tls:
+        mode: SIMPLE
+        credentialName: gateway-certs 
+      
+
+
+
 ---
 apiVersion: v1
 kind: Service
