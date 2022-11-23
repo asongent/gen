@@ -9,6 +9,7 @@ resources:
   - knative-eventing.yaml
   - knative-serving.yaml
   - knative-models.yaml
+  - cluster-local-gateway.yaml
   # - seldon-core.yaml
   # - seldon-deploy.yaml
   # - keycloak.yaml

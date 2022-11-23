@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cluster-local-gateway
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL:  https://github.com/asongent/gen.git
+    targetRevision: HEAD
+    path: service-mesh/cluster-local-gateway
+    kustomize:
+      version: v4.5.7
+  destination: 
+    namespace: istio-system
+    server: https://kubernetes.default.svc
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
