@@ -16,3 +16,13 @@ metadata:
   namespace: knative-serving
 data:
   progressDeadline: 600s
+
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config-domain
+  namespace: knative-serving
+data:
+  knative.fredgentech.net: ""
