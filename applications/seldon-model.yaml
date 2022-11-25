@@ -1,14 +1,14 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: knative-models
+  name: seldon-models
   namespace: argocd
 spec:
   project: default
   source:
     repoURL:  https://github.com/asongent/gen.git
     targetRevision: HEAD
-    path: models/knative-model
+    path: models/seldon-model
   destination:
     namespace: models
     server: https://kubernetes.default.svc
