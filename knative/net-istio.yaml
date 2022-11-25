@@ -160,7 +160,8 @@ metadata:
   name: config-istio
   namespace: knative-serving
 data:
-  gateway.knative-serving.knative-ingress-gateway: ingressgateway.istio-system.svc.cluster.local
+  gateway.istio-system.general-gateway: ingressgateway.istio-system.svc.cluster.local
+  # gateway.knative-serving.knative-ingress-gateway: ingressgateway.istio-system.svc.cluster.local
  
 # ---
 # # Copyright 2018 The Knative Authors
