@@ -2,7 +2,6 @@ apiVersion: machinelearning.seldon.io/v1
 kind: SeldonDeployment
 metadata:
   name: iris-model
-  namespace: seldon
 spec:
   name: iris
   predictors:
