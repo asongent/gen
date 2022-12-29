@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: grafana
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL:  https://github.com/asongent/gen.git
+    targetRevision: HEAD
+    path: artifactory-oss
+    helm:
+      valueFiles:
+      - values.yaml
+  destination:
+    namespace: artifact
+    server: https://kubernetes.default.svc
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
