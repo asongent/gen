@@ -164,3 +164,27 @@ spec:
 #           host: release-name-minio-svc
 #           port:
 #             number: 9000
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  labels:
+  name: jaeger
+  namespace: tracing
+spec:
+  gateways:
+  - istio-system/general-gateway
+  hosts:
+  - 'jaegar.fredgentech.net'
+  http:
+  - retries:
+      attempts: 3
+      perTryTimeout: 2s
+    match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: jaeger-query.tracing.svc.cluster.local
+        port:
+          number: 80
