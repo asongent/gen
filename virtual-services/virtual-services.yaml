@@ -104,7 +104,7 @@ spec:
   gateways:
   - istio-system/general-gateway
   hosts:
-  - 'users.fredgentech.net'
+  - 'keycloak.fredgentech.net'
   http:
   - retries:
       attempts: 3
