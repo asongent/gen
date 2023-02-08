@@ -978,9 +978,9 @@ postgresql:
     existingSecret: ""
   architecture: standalone
 externalDatabase:
-  host: "keycloak.cxhfaqsey0ug.us-west-2.rds.amazonaws.com"
+  host:  keycloak.cxhfaqsey0ug.us-west-2.rds.amazonaws.com
   port: 5432
-  user: postgres
+  user:  postgres
   database: keycloak
   password: ""
   existingSecret: ""
