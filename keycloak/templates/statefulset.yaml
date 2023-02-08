@@ -115,8 +115,8 @@ spec:
             - name: KEYCLOAK_DATABASE_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name:  keycloak-externaldb #{{ include "keycloak.databaseSecretName" . }}
-                  key:   password #{{ include "keycloak.databaseSecretKey" . }}
+                  name:  {{ include "keycloak.databaseSecretName" . }}
+                  key:   {{ include "keycloak.databaseSecretKey" . }}
             {{- if and .Values.tls.enabled (or .Values.tls.keystorePassword .Values.tls.passwordsSecret) }}
             - name: KEYCLOAK_HTTPS_KEY_STORE_PASSWORD
               valueFrom:

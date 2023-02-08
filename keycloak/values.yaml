@@ -982,7 +982,7 @@ externalDatabase:
   port: 5432
   user:  postgres
   database: keycloak
-  password: ""
+  password: "aHVpZmRvaXR5bG9ha3BkaGdkZmRhc3MyMzQK"
   existingSecret: ""
   existingSecretPasswordKey: ""
 
