@@ -229,8 +229,28 @@ args: []
 ## extraEnvVars:
 ##   - name: FOO
 ##     value: "bar"
-##
-extraEnvVars: []
+
+extraEnvVars: |
+ 
+ - name: KC_HTTPS_CERTIFICATE_FILE
+    value: /opt/keycloak/conf/tls.crt
+  - name: KC_HTTPS_CERTIFICATE_KEY_FILE
+    value: /opt/keycloak/conf/tls.key
+  - name: KC_HTTP_ENABLED
+    value: "true"
+  - name: KC_HTTP_RELATIVE_PATH
+    value: /auth
+  - name: KC_HTTPS_CLIENT_AUTH
+    value: request
+  - name: KC_PROXY
+    value: passthroug
+  - name: KC_HOSTNAME
+    value: keycloak.fredgentech.net
+  - name: KC_HOSTNAME_STRICT
+    value: "true"
+  - name: KC_HOSTNAME_STRICT_HTTPS
+    value: "true"
+
 ## @param extraEnvVarsCM Name of existing ConfigMap containing extra env vars
 ##
 extraEnvVarsCM: ""
@@ -406,19 +426,21 @@ schedulerName: ""
 ## ref: https://kubernetes.io/docs/concepts/workloads/pods/pod/#termination-of-pods
 ##
 terminationGracePeriodSeconds: ""
-## @param updateStrategy.type Keycloak statefulset strategy type
-## @param updateStrategy.rollingUpdate Keycloak statefulset rolling update configuration parameters
-## ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
-##
+
 updateStrategy:
   type: RollingUpdate
   rollingUpdate: {}
-## @param extraVolumes Optionally specify extra list of additional volumes for Keycloak pods
-##
-extraVolumes: []
-## @param extraVolumeMounts Optionally specify extra list of additional volumeMounts for Keycloak container(s)
-##
-extraVolumeMounts: []
+extraVolumes: |
+    - name: kc-cert-file
+      secret:
+        secretName: keycloak-cert
+extraVolumeMounts: |
+  - name: kc-cert-file
+    mountPath: /opt/keycloak/conf/tls.key
+    readOnly: true
+  - name: kc-cert-file
+    mountPath: /opt/keycloak/conf/tls.crt
+    readOnly: true
 ## @param initContainers Add additional init containers to the Keycloak pods
 ## Example:
 ## initContainers:
