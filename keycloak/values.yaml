@@ -262,7 +262,7 @@ extraVolumes: |
         secretName: keycloak-cert
     - name: kc-ui-login
       secret: 
-      SecretName: login
+        secretName: login
     
 
 extraVolumeMounts: |
