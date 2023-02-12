@@ -146,11 +146,16 @@ extraEnv: |
     value: "true"
   - name: KC_HOSTNAME_STRICT_HTTPS
     value: "true"
-  - name: ADMIN_LOGIN
+  - name: ADMIN_USER
     valueFrom:
-      secretRef: 
+      secretKeyRef: 
+        key: admin-user 
         name: login
-
+  - name: ADMIN_PASSWORD
+    valueFrom:
+      secretKeyRef: 
+        key: password 
+        name: login
 
 
 # Additional environment variables for Keycloak mapped from Secret or ConfigMap
