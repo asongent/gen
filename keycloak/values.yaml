@@ -122,7 +122,7 @@ extraEnv: |
   - name: DB_PORT
     value: "5432"
   - name: DB_DATABASE
-    value: keycloak-db
+    value: keycloak
   - name: DB_USER_FILE
     value: /secrets/db-creds/user
   - name: DB_PASSWORD_FILE
@@ -149,7 +149,7 @@ extraEnv: |
     value: "true"
   - name: KC_HOSTNAME_STRICT_HTTPS
     value: "true"
-    
+
   - name: KEYCLOAK_USER
     valueFrom:
       secretKeyRef: 
