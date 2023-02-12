@@ -105,7 +105,7 @@ command: []
 args: []
 
 # Additional environment variables for Keycloak
-extraEnv: ""
+#extraEnv: ""
   # - name: KEYCLOAK_LOGLEVEL
   #   value: DEBUG
   # - name: WILDFLY_LOGLEVEL
@@ -114,6 +114,19 @@ extraEnv: ""
   #   value: "2"
   # - name: CACHE_OWNERS_AUTH_SESSIONS_COUNT
   #   value: "2"
+extraEnv: |
+  - name: DB_VENDOR
+    value: postgres
+  - name: DB_ADDR
+    value: keycloak.cxhfaqsey0ug.us-west-2.rds.amazonaws.com
+  - name: DB_PORT
+    value: "5432"
+  - name: DB_DATABASE
+    value: keycloak-db
+  - name: DB_USER_FILE
+    value: /secrets/db-creds/user
+  - name: DB_PASSWORD_FILE
+    value: /secrets/db-creds/password
 
 # Additional environment variables for Keycloak mapped from Secret or ConfigMap
 extraEnvFrom: ""
@@ -208,10 +221,15 @@ startupScripts:
   # echo 'Hello from my custom startup script!'
 
 # Add additional volumes, e. g. for custom themes
-extraVolumes: ""
+extraVolumes: |
+    - name: db-creds
+      secret:
+        secretName: keycloak-db-creds
 
-# Add additional volumes mounts, e. g. for custom themes
-extraVolumeMounts: ""
+extraVolumeMounts: |
+    - name: db-creds
+      mountPath: /secrets/db-creds
+      readOnly: true
 
 # Add additional ports, e. g. for admin console or exposing JGroups ports
 extraPorts: []
@@ -513,29 +531,11 @@ test:
   # See https://helm.sh/docs/topics/charts_hooks/#hook-deletion-policies
   deletionPolicy: before-hook-creation
 
-  ### updated-config
+### updated-config
 
 
-extraEnv: |
-  - name: DB_VENDOR
-    value: postgres
-  - name: DB_ADDR
-    value: keycloak.cxhfaqsey0ug.us-west-2.rds.amazonaws.com
-  - name: DB_PORT
-    value: "5432"
-  - name: DB_DATABASE
-    value: keycloak-db
-  - name: DB_USER_FILE
-    value: /secrets/db-creds/user
-  - name: DB_PASSWORD_FILE
-    value: /secrets/db-creds/password
 
-  extraVolumeMounts: |
-    - name: db-creds
-      mountPath: /secrets/db-creds
-      readOnly: true
 
-  extraVolumes: |
-    - name: db-creds
-      secret:
-        secretName: keycloak-db-creds
+
+  
+
