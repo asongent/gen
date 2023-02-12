@@ -118,6 +118,32 @@ spec:
         port:
           number: 80
 
+---
+### This is for new kc
+##This config is for user management 
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  labels:
+  name: keycloak-server
+  namespace: keycloak
+spec:
+  gateways:
+  - istio-system/general-gateway
+  hosts:
+  - 'keycloak-new.fredgentech.net'
+  http:
+  - retries:
+      attempts: 3
+      perTryTimeout: 2s
+    match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: keycloak-new-http
+        port:
+          number: 80
 
 
 ## Gitlab config
