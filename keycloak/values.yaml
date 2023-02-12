@@ -146,9 +146,10 @@ extraEnv: |
     value: "true"
   - name: KC_HOSTNAME_STRICT_HTTPS
     value: "true"
-  envFrom:
-  - secretRef: 
-      name: login
+  - name: ADMIN_LOGIN
+    valueFrom:
+      secretRef: 
+        name: login
 
 
 
