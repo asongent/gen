@@ -125,7 +125,7 @@ apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
   labels:
-  name: keycloak-server
+  name: keycloak-server-new
   namespace: keycloak
 spec:
   gateways:
