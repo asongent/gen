@@ -136,13 +136,13 @@ extraEnv: |
     value: "true"
 
   - name: KC_HTTP_RELATIVE_PATH
-    value: /auth
+    value: /
   - name: KC_HTTPS_CLIENT_AUTH
     value: request
 
   
   - name: KC_PROXY
-    value: passthroug
+    value: passthrough
   - name: KC_HOSTNAME
     value: keycloak.fredgentech.net
   - name: KC_HOSTNAME_STRICT
