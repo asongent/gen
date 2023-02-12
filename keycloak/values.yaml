@@ -151,9 +151,9 @@ extraEnv: |
     value: "true"
 
   - name: KEYCLOAK_USER
-    value: value: /secrets/admin/user
+    value:  /secrets/admin/user
   - name: KEYCLOAK_PASSWORD
-    value: value: /secrets/admin/passord
+    value: /secrets/admin/passord
   
 # - name: KEYCLOAK_USER_FILE
 #   value: /opt/admin/user
