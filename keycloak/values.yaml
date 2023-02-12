@@ -128,6 +128,27 @@ extraEnv: |
   - name: DB_PASSWORD_FILE
     value: /secrets/db-creds/password
 
+  - name: KC_HTTPS_CERTIFICATE_FILE
+    value: /opt/keycloak/conf/tls.crt
+  - name: KC_HTTPS_CERTIFICATE_KEY_FILE
+    value: /opt/keycloak/conf/tls.key
+  - name: KC_HTTP_ENABLED
+    value: "true"
+  - name: KC_HTTP_RELATIVE_PATH
+    value: /
+  - name: KC_HTTPS_CLIENT_AUTH
+    value: request
+  - name: KC_PROXY
+    value: passthroug
+  - name: KC_HOSTNAME
+    value: keycloak-new.fredgentech.net
+  - name: KC_HOSTNAME_STRICT
+    value: "true"
+  - name: KC_HOSTNAME_STRICT_HTTPS
+    value: "true"
+
+
+
 # Additional environment variables for Keycloak mapped from Secret or ConfigMap
 extraEnvFrom: ""
 
@@ -178,7 +199,7 @@ podAnnotations: {}
 # Liveness probe configuration
 livenessProbe: |
   httpGet:
-    path: /auth/
+    path: /
     port: http
   initialDelaySeconds: 0
   timeoutSeconds: 5
@@ -186,7 +207,7 @@ livenessProbe: |
 # Readiness probe configuration
 readinessProbe: |
   httpGet:
-    path: /auth/realms/master
+    path: /realms/master
     port: http
   initialDelaySeconds: 30
   timeoutSeconds: 1
@@ -194,7 +215,7 @@ readinessProbe: |
 # Startup probe configuration
 startupProbe: |
   httpGet:
-    path: /auth/
+    path: /
     port: http
   initialDelaySeconds: 30
   timeoutSeconds: 1
@@ -225,10 +246,20 @@ extraVolumes: |
     - name: db-creds
       secret:
         secretName: keycloak-db-creds
+    - name: kc-cert-file
+      secret:
+        secretName: keycloak-cert
+    
 
 extraVolumeMounts: |
     - name: db-creds
       mountPath: /secrets/db-creds
+      readOnly: true
+    - name: kc-cert-file
+      mountPath: /opt/keycloak/conf/tls.key
+      readOnly: true
+    - name: kc-cert-file
+      mountPath: /opt/keycloak/conf/tls.crt
       readOnly: true
 
 # Add additional ports, e. g. for admin console or exposing JGroups ports
@@ -337,7 +368,7 @@ ingress:
         host: '{{ .Release.Name }}.keycloak.example.com'
         # Paths for the host
         paths:
-          - path: /auth/admin/
+          - path: /admin/
             pathType: Prefix
     # Console TLS configuration
     tls: []
