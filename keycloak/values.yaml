@@ -270,10 +270,10 @@ extraVolumeMounts: |
       mountPath: /secrets/db-creds
       readOnly: true
     - name: kc-cert-file
-      mountPath: /opt/keycloak/conf/tls.key
+      mountPath: /opt/keycloak/conf/
       readOnly: true
     - name: kc-cert-file
-      mountPath: /opt/keycloak/conf/tls.crt
+      mountPath: /opt/keycloak/conf/
       readOnly: true
     - name: kc-ui-login
       mountPath: /secrets/admin
