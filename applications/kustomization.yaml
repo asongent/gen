@@ -10,6 +10,7 @@ resources:
   - knative-serving.yaml
   - knative-models.yaml
   - cluster-local-gateway.yaml
+  - keycloak-new.yaml
   # - seldon-core.yaml
   # - seldon-deploy.yaml
   # - keycloak.yaml

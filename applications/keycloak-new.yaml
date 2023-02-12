@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: keycloak-new
+  namespace: argocd
+spec:
+  destination:
+    namespace: keycloak
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    helm:
+      valueFiles:
+      - values.yaml
+    path: keycloak
+    # kustomize:
+    #   version: v4.5.7
+    repoURL:  https://github.com/asongent/gen.git
+    targetRevision: HEAD
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
