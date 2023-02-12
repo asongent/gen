@@ -8,6 +8,8 @@ data:
   kustomize.version.v4.5.7: /custom-tools/kustomize_4_5_7
   resource.compareoptions: |
     ignoreAggregatedRoles: true
+  ui.bannercontent: "Welcome To New Generation Technology!"
+  timeout.reconciliation: 10s
   resource.customizations: |
     admissionregistration.k8s.io/MutatingWebhookConfiguration:
       ignoreDifferences: |

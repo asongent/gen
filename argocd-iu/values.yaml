@@ -1,0 +1,81 @@
+replicaCount: 1
+image:
+  repository: quay.io/argoprojlabs/argocd-image-updater
+  pullPolicy: Always
+  tag: ""
+
+
+config:
+  applicationsAPIKind: ""
+  argocd:
+    grpcWeb: true
+    serverAddress: ""
+    insecure: false
+    plaintext: false
+    token: ""
+
+  disableKubeEvents: false
+  gitCommitUser: ""
+  gitCommitMail: ""
+  gitCommitTemplate: ""
+  logLevel: "info"
+
+#Regist access config
+  registries: 
+    - name: 'jfrog'
+      api_url: https://repo.mgnt.io
+      ping: no
+      credentials: pullsecret:riot-enrichment/auth-secret    
+      prefix: cyber.docker-dev.repo.mgnt.io
+      defaultns: library
+   
+
+  sshConfig:
+    {}
+  enabled: false
+
+  scripts: {}
+    # auth1.sh: |
+    #   #!/bin/sh
+    #   echo "auth script 1 here"
+    # auth2.sh: |
+    #   #!/bin/sh
+    #   echo "auth script 2 here"
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+
+podAnnotations: {}
+
+podSecurityContext: {}
+securityContext: {}
+
+rbac:
+  enabled: true
+
+resources: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+
+affinity: {}
+
+metrics:
+  enabled: false
+  service:
+    annotations: {}
+    labels: {}
+    servicePort: 8081
+  serviceMonitor:
+    enabled: false
+    interval: 30s
+    relabelings: []
+    metricRelabelings: []
+    selector: {}
+    namespace: ""
+    additionalLabels: {}
