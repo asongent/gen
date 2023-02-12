@@ -133,22 +133,21 @@ extraEnv: |
   - name: KC_HTTPS_CERTIFICATE_KEY_FILE
     value: /opt/keycloak/conf/tls.key
   - name: KC_HTTP_ENABLED
-    value: "true"
+    value: "false"
 
   - name: KC_HTTP_RELATIVE_PATH
     value: /auth
-  - name: KC_HTTPS_CLIENT_AUTH
-    value: request
+
 
   
   - name: KC_PROXY
-    value: passthrough
+    value: edge
   - name: KC_HOSTNAME
     value: keycloak.fredgentech.net
   - name: KC_HOSTNAME_STRICT
-    value: "true"
+    value: "false"
   - name: KC_HOSTNAME_STRICT_HTTPS
-    value: "true"
+    value: "false"
 
   - name: KEYCLOAK_USER_FILE
     value:  /secrets/admin/user
