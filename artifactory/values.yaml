@@ -1,0 +1,52 @@
+
+artifactory:
+  artifactory:
+    image:
+      registry: releases-docker.jfrog.io
+      repository: jfrog/artifactory-jcr
+    resources: 
+      requests:
+        memory: "1G1"
+        cpu: "500"
+      limits:
+        memory: "4Gi"
+        cpu: "1"
+    javaOpts: 
+      xms: "1g"
+      xmx: "3g"
+      other: ""
+    persistence: 
+      mountPath: "/var/opt/jfrog/artifactory"
+      enabled: true
+      accesMode: ReadWriteOnce
+  installer:
+    platform: jcr-helm
+  installerInfo: '{"productId": "Helm_artifactory-jcr/{{ .Chart.Version }}", "features": [ { "featureId": "Platform/{{ default "kubernetes" .Values.installer.platform }}"}]}'
+  nginx:
+    enabled: false
+    tlsSecretName: ""
+    service:
+      type: LoadBalancer
+  ingress:
+    enabled: false
+    tls:
+  postgresql:
+    enabled: false
+  databaseUpgradeReady: "yes"
+  jfconnect:
+    enabled: false
+postgresql:
+  enabled: true
+database: 
+  type: postgres
+  driver: org.postgres.Driver
+  url: 'jdbc:postgresql:shared-db.cxhfaqsey0ug.us-west-2.rds.amazonaws.com:5432/artifactory'
+  user: 'postgres'
+  password: 'Password1232' 
+router:
+  image:
+    tag: 7.56.0
+logger:
+  image:
+    tag: 8.7.1049
+initContainerImage: releases-docker.jfrog.io/ubi8/ubi-minimal:8.7.1049

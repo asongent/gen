@@ -8,12 +8,12 @@ spec:
   source:
     repoURL:  https://github.com/asongent/gen.git
     targetRevision: HEAD
-    path: artifactory-oss
+    path: artifactory
     helm:
       valueFiles:
-      - values.yaml
+      - values.yaml 
   destination:
-    namespace: artifact
+    namespace: artifactory
     server: https://kubernetes.default.svc
   syncPolicy:
     automated:

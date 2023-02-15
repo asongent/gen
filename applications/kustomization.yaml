@@ -1,16 +1,17 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  # - grafana.yaml
+  - grafana.yaml
   - istio.yaml
-  # - prome.yaml
+  - prome.yaml
   - gateway-vs-resources.yaml
   - metrics-server.yaml
-  - knative-eventing.yaml
-  - knative-serving.yaml
+  # - knative-eventing.yaml
+  # - knative-serving.yaml
   - knative-models.yaml
-  - cluster-local-gateway.yaml
-  - keycloak-new.yaml
+  # - cluster-local-gateway.yaml
+  - keycloak.yaml
+  - jfrog.yaml
   # - seldon-core.yaml
   # - seldon-deploy.yaml
   # - keycloak.yaml

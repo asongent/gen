@@ -45,6 +45,8 @@ spec:
         host: prometheus-kube-prometheus-prometheus.monitoring.svc.cluster.local
         port:
           number: 9090
+
+
 # ####This configuration below works when - --insecure flag is added to commands section of argocd-server deployment
       # - command:
       #   - argocd-server
@@ -71,26 +73,31 @@ spec:
           port:
             number: 80
 
-#####
-## ARGO VS SECOND OPTION. This WORKS WELL. (:
 
 --- 
-# apiVersion: networking.istio.io/v1alpha3
-# kind: VirtualService
-# metadata:
-#   name: argocd-server
-#   namespace: argocd
-# spec:
-#   gateways:
-#   - istio-system/general-gateway
-#   hosts:
-#   - 'gitops.fredgentech.net'
-#   http:
-#       - route:
-#         - destination:
-#             host: argocd-server
-#             port:
-#               number: 80
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  labels:
+  name: jaeger
+  namespace: tracing
+spec:
+  gateways:
+  - istio-system/general-gateway
+  hosts:
+  - 'jaegar.fredgentech.net'
+  http:
+  - retries:
+      attempts: 3
+      perTryTimeout: 2s
+    match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: jaeger-query.tracing.svc.cluster.local
+        port:
+          number: 80
 
 --- 
 ##This config is for user management 
@@ -98,7 +105,7 @@ apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
   labels:
-  name: keycloak-server
+  name: keycloak-vs
   namespace: user-management
 spec:
   gateways:
@@ -119,19 +126,17 @@ spec:
           number: 80
 
 ---
-### This is for new kc
-##This config is for user management 
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
   labels:
-  name: keycloak-server-new
-  namespace: keycloak
+  name: artifactory
+  namespace: user-management
 spec:
   gateways:
   - istio-system/general-gateway
   hosts:
-  - 'keycloak-new.fredgentech.net'
+  - 'artifactory.fredgentech.net'
   http:
   - retries:
       attempts: 3
@@ -141,9 +146,9 @@ spec:
         prefix: /
     route:
     - destination:
-        host: keycloak-new-http
+        host: artifactory
         port:
-          number: 80
+          number: 8082
 
 
 ## Gitlab config
@@ -191,26 +196,3 @@ spec:
 #           port:
 #             number: 9000
 ---
-apiVersion: networking.istio.io/v1alpha3
-kind: VirtualService
-metadata:
-  labels:
-  name: jaeger
-  namespace: tracing
-spec:
-  gateways:
-  - istio-system/general-gateway
-  hosts:
-  - 'jaegar.fredgentech.net'
-  http:
-  - retries:
-      attempts: 3
-      perTryTimeout: 2s
-    match:
-    - uri:
-        prefix: /
-    route:
-    - destination:
-        host: jaeger-query.tracing.svc.cluster.local
-        port:
-          number: 80
