@@ -6,8 +6,8 @@ artifactory:
       repository: jfrog/artifactory-jcr
     resources: 
       requests:
-        memory: "1G1"
-        cpu: "500"
+        memory: "1Gi"
+        cpu: "500m"
       limits:
         memory: "4Gi"
         cpu: "1"
@@ -19,6 +19,7 @@ artifactory:
       mountPath: "/var/opt/jfrog/artifactory"
       enabled: true
       accesMode: ReadWriteOnce
+      size: 50Gi
   installer:
     platform: jcr-helm
   installerInfo: '{"productId": "Helm_artifactory-jcr/{{ .Chart.Version }}", "features": [ { "featureId": "Platform/{{ default "kubernetes" .Values.installer.platform }}"}]}'
