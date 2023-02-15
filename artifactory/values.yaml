@@ -1,4 +1,3 @@
-
 artifactory:
   artifactory:
     image:
@@ -37,7 +36,7 @@ artifactory:
   jfconnect:
     enabled: false
 postgresql:
-  enabled: true
+  enabled: false
 database: 
   type: postgres
   driver: org.postgres.Driver
