@@ -991,12 +991,12 @@ postgresql:
 ## @param externalDatabase.existingSecretPasswordKey Name of an existing secret key containing the database credentials
 ##
 externalDatabase:
-  # host: ""
-  # port: ""
-  # user: ""
-  # database: ""
-  # password: ""
-  existingSecret: "keycloak-db"
+  host: "shared-db.cxhfaqsey0ug.us-west-2.rds.amazonaws.com"
+  port: "5432"
+  user: "postgres"
+  database: "keycloak"
+  password: "Password123"
+  existingSecret: ""
   existingSecretPasswordKey: ""
 
 ## @section Keycloak Cache parameters
