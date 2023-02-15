@@ -146,7 +146,7 @@ spec:
         prefix: /
     route:
     - destination:
-        host: artifactory
+        host: jfrog-artifactory
         port:
           number: 8082
 
