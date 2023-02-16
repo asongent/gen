@@ -30,19 +30,19 @@ artifactory:
   ingress:
     enabled: false
     tls:
-  postgresql:
-    enabled: false
   databaseUpgradeReady: "yes"
   jfconnect:
     enabled: false
+  postgresql:
+    enabled: false
+  database: 
+    type: postgres
+    driver: org.postgres.Driver
+    url: 'jdbc:postgresql:shared-db.cxhfaqsey0ug.us-west-2.rds.amazonaws.com:5432/artifactory'
+    user: 'postgres'
+    password: 'Password123' 
 postgresql:
-  enabled: false
-database: 
-  type: postgres
-  driver: org.postgres.Driver
-  url: 'jdbc:postgresql:shared-db.cxhfaqsey0ug.us-west-2.rds.amazonaws.com:5432/artifactory'
-  user: 'postgres'
-  password: 'Password1232' 
+    enabled: false
 router:
   image:
     tag: 7.56.0
