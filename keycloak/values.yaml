@@ -184,7 +184,7 @@ proxy: passthrough
 ## ref: https://www.keycloak.org/migration/migrating-to-quarkus#_default_context_path_changed
 ##
 ##httpRelativePath: ""
-httpRelativePath: "/auth/realms/master"
+httpRelativePath: "/auth"
 ## Keycloak Service Discovery settings
 ## ref: https://github.com/bitnami/containers/tree/main/bitnami/keycloak#cluster-configuration
 ##
@@ -308,7 +308,7 @@ livenessProbe:
 ##
 readinessProbe:
   httpGet:
-    path: /auth/realms/master
+    path: /auth
     port: http
   enabled: true
   initialDelaySeconds: 30
