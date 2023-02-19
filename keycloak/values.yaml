@@ -993,7 +993,7 @@ postgresql:
 externalDatabase:
   host: "shared-db.cxhfaqsey0ug.us-west-2.rds.amazonaws.com"
   port: "5432"
-  user: "postgres"
+  user: "administrator"
   database: "keycloak"
   password: "Password123"
   existingSecret: ""

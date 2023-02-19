@@ -39,8 +39,9 @@ artifactory:
   database: 
     type: postgresql
     driver: org.postgresql.Driver
-    url: 'jdbc:postgresql://192.168.109.128:5432/artifactory'
-    user: 'admin'
+    # url: 'jdbc:postgresql://192.168.109.128:5432/artifactory' #local DB
+    url: 'jdbc:postgresql://shared-db.cxhfaqsey0ug.us-west-2.rds.amazonaws.com/artifactory'
+    user: 'administrator'
     password: 'Password123' 
 postgresql:
     enabled: false
