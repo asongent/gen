@@ -289,6 +289,9 @@ resources:
 ## @param livenessProbe.successThreshold Success threshold for livenessProbe
 ##
 livenessProbe:
+  httpGet:
+    path: /auth
+    port: http
   enabled: true
   initialDelaySeconds: 300
   periodSeconds: 1
@@ -303,6 +306,9 @@ livenessProbe:
 ## @param readinessProbe.successThreshold Success threshold for readinessProbe
 ##
 readinessProbe:
+  httpGet:
+    path: /auth/realms/master
+    port: http
   enabled: true
   initialDelaySeconds: 30
   periodSeconds: 10
@@ -318,6 +324,9 @@ readinessProbe:
 ## @param startupProbe.successThreshold Success threshold for startupProbe
 ##
 startupProbe:
+  httpGet:
+    path: /auth
+    port: http
   enabled: false
   initialDelaySeconds: 30
   periodSeconds: 5
@@ -742,7 +751,7 @@ metrics:
     ##
     endpoints:
       - path: /metrics
-      - path: /auth/realms/master/metrics
+      - path: /realms/master/metrics
     ## @param metrics.serviceMonitor.path Metrics service HTTP path. Deprecated: Use @param metrics.serviceMonitor.endpoints instead
     ##
     path: ""
