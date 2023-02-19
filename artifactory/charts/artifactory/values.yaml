@@ -753,7 +753,7 @@ artifactory:
     #     command: ["/bin/sh","-c","echo Hello from the preStop handler"]
 
     ingress:
-      enabled: true
+      enabled: false
       name:
       hosts: []
       className: ""
