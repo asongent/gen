@@ -199,7 +199,7 @@ spec:
           {{- else if .Values.readinessProbe.enabled }}
           readinessProbe: {{- omit .Values.readinessProbe "enabled" | toYaml | nindent 12 }}
             httpGet:
-              path: {{ .Values.httpRelativePath }}realms/master
+              path: {{ .Values.httpRelativePath }}/realms/master
               port: http
           {{- end }}
           {{- end }}
