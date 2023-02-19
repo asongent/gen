@@ -742,7 +742,7 @@ metrics:
     ##
     endpoints:
       - path: /metrics
-      - path: /realms/master/metrics
+      - path: /auth/realms/master/metrics
     ## @param metrics.serviceMonitor.path Metrics service HTTP path. Deprecated: Use @param metrics.serviceMonitor.endpoints instead
     ##
     path: ""
