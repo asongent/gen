@@ -1,7 +1,7 @@
 apiVersion: v1
 data:
-  password: WkZkYWNGbHVUbWhaYlhSMllrZFJNMDlFYTNwTmVrMUxDZz09
-  user: bHVjeWV0YW5kaXA=
+  password: UGFzc3dvcmQxMjMK
+  user: YWRtaW4K
 kind: Secret
 metadata:
   name: keycloak-database

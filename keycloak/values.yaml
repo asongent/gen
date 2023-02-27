@@ -110,18 +110,6 @@ extraEnv: |-
     value: admin
   - name: KEYCLOAK_PASSWORD
     value: password
-  - name: DB_VENDOR
-    value: postgres
-  - name: DB_ADDR
-    value: "sharedrds.cxhfaqsey0ug.us-west-2.rds.amazonaws.com"
-  - name: DB_PORT
-    value: "5432"
-  - name: DB_DATABASE
-    value: keycloak
-  - name: DB_USER_FILE
-    value: /secrets/db-creds/user
-  - name: DB_PASSWORD_FILE
-    value: /secrets/db-creds/password
   - name: KC_HTTPS_CERTIFICATE_FILE
     value: /opt/keycloak/conf/tls.crt
   - name: KC_HTTPS_CERTIFICATE_KEY_FILE
@@ -138,6 +126,23 @@ extraEnv: |-
     value: "true"
   - name: KC_HTTP_RELATIVE_PATH
     value: /auth
+  - name: DB_VENDOR
+    value: postgres
+  - name: DB_ADDR
+    value: "192.168.109.128"
+  - name: DB_PORT
+    value: "5432"
+  - name: DB_DATABASE
+    value: keycloakdb
+  - name: DB_USER_FILE
+    value: /secrets/db-creds/user
+  - name: DB_PASSWORD_FILE
+    value: /secrets/db-creds/password
+  - name: KC_HTTP_RELATIVE_PATH
+    value: /auth
+
+
+
 
 # extraEnv: ""
 #   - name: KEYCLOAK_LOGLEVEL
