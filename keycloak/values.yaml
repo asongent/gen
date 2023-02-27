@@ -124,8 +124,6 @@ extraEnv: |-
     value: "true"
   - name: KC_HTTP_ENABLED
     value: "true"
-  - name: KC_HTTP_RELATIVE_PATH
-    value: /auth
   - name: DB_VENDOR
     value: postgres
   - name: DB_ADDR
