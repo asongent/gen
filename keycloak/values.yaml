@@ -197,25 +197,45 @@ podLabels: {}
 podAnnotations: {}
 
 # Liveness probe configuration
+# livenessProbe: |
+#   httpGet:
+#     path: /auth/
+#     port: http
+#   initialDelaySeconds: 0
+#   timeoutSeconds: 5
+
 livenessProbe: |
   httpGet:
-    path: /auth/
+    path: /auth/realms/master
     port: http
-  initialDelaySeconds: 0
-  timeoutSeconds: 5
+    scheme: HTTP
+  failureThreshold: 15
+  timeoutSeconds: 2
+  periodSeconds: 15
+
+
+
 
 # Readiness probe configuration
+# readinessProbe: |
+#   httpGet:
+#     path: /auth/realms/master
+#     port: http
+#   initialDelaySeconds: 30
+#   timeoutSeconds: 1
+
 readinessProbe: |
   httpGet:
     path: /auth/realms/master
     port: http
-  initialDelaySeconds: 30
+    scheme: HTTP
+  failureThreshold: 30
   timeoutSeconds: 1
 
 # Startup probe configuration
 startupProbe: |
   httpGet:
-    path: /auth/
+    path: /auth/realms/master
     port: http
   initialDelaySeconds: 30
   timeoutSeconds: 1
