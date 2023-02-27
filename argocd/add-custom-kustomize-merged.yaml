@@ -44,7 +44,7 @@ spec:
             - mountPath: /custom-tools
               name: custom-tools
       # 3. Volume mount the custom-tools directory to the repo-server
-      containers:
+      containers:  
         - name: argocd-repo-server
           volumeMounts:
             - mountPath: /custom-tools
@@ -60,3 +60,4 @@ spec:
           env:
             - name: XDG_CONFIG_HOME
               value: /.config
+      

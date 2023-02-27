@@ -1,31 +1,28 @@
-annotations:
-  category: DeveloperTools
-  licenses: Apache-2.0
 apiVersion: v2
-appVersion: 20.0.3
+appVersion: 17.0.1-legacy
 dependencies:
 - condition: postgresql.enabled
   name: postgresql
   repository: https://charts.bitnami.com/bitnami
-  version: 12.x.x
-- name: common
-  repository: https://charts.bitnami.com/bitnami
-  tags:
-  - bitnami-common
-  version: 2.x.x
-description: Keycloak is a high performance Java-based identity and access management
-  solution. It lets developers add an authentication layer to their applications with
-  minimum effort.
-home: https://www.keycloak.org
-icon: https://bitnami.com/assets/stacks/keycloak/img/keycloak-stack-220x234.png
+  version: 10.16.2
+description: Open Source Identity and Access Management For Modern Applications and Services
+home: https://www.keycloak.org/
+icon: https://www.keycloak.org/resources/images/keycloak_icon_512px.svg
 keywords:
-- keycloak
-- access-management
+- sso
+- idm
+- openid connect
+- saml
+- kerberos
+- ldap
 maintainers:
-- name: Bitnami
-  url: https://github.com/bitnami/charts
+- email: unguiculus@gmail.com
+  name: unguiculus
+- email: thomas.darimont+github@gmail.com
+  name: thomasdarimont
 name: keycloak
 sources:
-- https://github.com/bitnami/containers/tree/main/bitnami/keycloak
-- https://github.com/keycloak/keycloak
-version: 13.0.5
+- https://github.com/codecentric/helm-charts
+- https://github.com/jboss-dockerfiles/keycloak
+- https://github.com/bitnami/charts/tree/master/bitnami/postgresql
+version: 18.4.0
