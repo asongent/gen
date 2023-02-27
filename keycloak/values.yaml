@@ -141,7 +141,7 @@ extraEnv: |-
   - name: KEYCLOAK_PASSWORD
     value: password
   - name: KC_HTTP_RELATIVE_PATH
-    value: /
+    value: /auth
 
 # extraEnv: ""
 #   - name: KEYCLOAK_LOGLEVEL
