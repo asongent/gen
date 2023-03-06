@@ -3,8 +3,11 @@ kind: ConfigMap
 metadata:
   name: argocd-cm
 data:
-  kustomize.version.v4.1.1_ksops: /custom-tools/kustomize
-  kustomize.buildOptions.v4.1.1_ksops: "--enable-alpha-plugins"
+  # kustomize.version.v4.1.1_ksops: /custom-tools/kustomize
+  # kustomize.version.v4.1.1_ksops: /custom-tools/kustomize
+  # kustomize.buildOptions.v4.1.1_ksops: "--enable-alpha-plugins"
+  # kustomize.buildOptions: "--enable-alpha-plugins"
+  kustomize.buildOptions: "--enable-alpha-plugins"
   kustomize.version.v4.5.7: /custom-tools/kustomize_4_5_7
   resource.compareoptions: |
     ignoreAggregatedRoles: true

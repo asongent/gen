@@ -11,9 +11,9 @@ resources:
 
 patchesStrategicMerge:
 - configmap-patch.yaml
-- add-custom-kustomize-merged.yaml
+# - add-custom-kustomize-merged.yaml
 
-# - add-custom-kustomize.yaml
+- add-custom-kustomize.yaml
 # - vs-patch.yaml
 
 # images:

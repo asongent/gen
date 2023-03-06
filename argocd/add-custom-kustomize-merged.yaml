@@ -36,15 +36,15 @@ spec:
             - mountPath: /custom-tools
               name: custom-tools
         - name: install-ksops
-          image: viaductoss/ksops:v3.0.2
+          image: viaductoss/ksops:v4.0.1
           command: ["/bin/sh", "-c"]
           args:
-          - 'echo "Installing KSOPS..."; cp ksops /custom-tools/; cp $GOPATH/bin/kustomize /custom-tools/; echo "Done.";'
-            # - echo "Installing KSOPS...";
-            #   export PKG_NAME=ksops;
-            #   mv ${PKG_NAME}.so /custom-tools/;
-            #   mv $GOPATH/bin/kustomize /custom-tools/;
-            #   echo "Done.";
+          # - 'echo "Installing KSOPS..."; cp ksops /custom-tools/; cp $GOPATH/bin/kustomize /custom-tools/; echo "Done.";'
+            - echo "Installing KSOPS...";
+              export PKG_NAME=ksops;
+              mv ${PKG_NAME}.so /custom-tools/;
+              mv $GOPATH/bin/kustomize /custom-tools/;
+              echo "Done.";
           volumeMounts:
             - mountPath: /custom-tools
               name: custom-tools
@@ -58,8 +58,8 @@ spec:
               name: custom-tools
               subPath: kustomize
               # Verify this matches a XDG_CONFIG_HOME=/.config env variable
-            # - mountPath: /.config/kustomize/plugin/viaduct.ai/v1/ksops/ksops.so Default
-            - mountPath: /.config/kustomize/plugin/viaduct.ai/v1/ksops/ksop
+            - mountPath: /.config/kustomize/plugin/viaduct.ai/v1/ksops/ksops.so #Default
+            # - mountPath: /.config/kustomize/plugin/viaduct.ai/v1/ksops/ksop
               name: custom-tools
               # subPath: ksops.so default
               subPath: ksops
