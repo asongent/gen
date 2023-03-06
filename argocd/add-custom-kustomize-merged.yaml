@@ -20,6 +20,10 @@ spec:
       volumes:
         - name: custom-tools
           emptyDir: {}
+        ## Added this
+        - name: sops-age
+          secret:
+            secretName: sops-age
       # 2. Use an init container to download/copy custom binaries into the emptyDir
       initContainers:
         - name: download-tools
@@ -35,11 +39,12 @@ spec:
           image: viaductoss/ksops:v3.0.2
           command: ["/bin/sh", "-c"]
           args:
-            - echo "Installing KSOPS...";
-              export PKG_NAME=ksops;
-              mv ${PKG_NAME}.so /custom-tools/;
-              mv $GOPATH/bin/kustomize /custom-tools/;
-              echo "Done.";
+          - 'echo "Installing KSOPS..."; cp ksops /custom-tools/; cp $GOPATH/bin/kustomize /custom-tools/; echo "Done.";'
+            # - echo "Installing KSOPS...";
+            #   export PKG_NAME=ksops;
+            #   mv ${PKG_NAME}.so /custom-tools/;
+            #   mv $GOPATH/bin/kustomize /custom-tools/;
+            #   echo "Done.";
           volumeMounts:
             - mountPath: /custom-tools
               name: custom-tools
@@ -53,11 +58,21 @@ spec:
               name: custom-tools
               subPath: kustomize
               # Verify this matches a XDG_CONFIG_HOME=/.config env variable
-            - mountPath: /.config/kustomize/plugin/viaduct.ai/v1/ksops/ksops.so
+            # - mountPath: /.config/kustomize/plugin/viaduct.ai/v1/ksops/ksops.so Default
+            - mountPath: /.config/kustomize/plugin/viaduct.ai/v1/ksops/ksop
               name: custom-tools
-              subPath: ksops.so
+              # subPath: ksops.so default
+              subPath: ksops
+            ##Added mountPath
+            - mountPath: /.config/sops/age/keys.so
+              name: sops-age
+              subPath: keys.so
+              
           # 4. Set the XDG_CONFIG_HOME env variable to allow kustomize to detect the plugin
           env:
             - name: XDG_CONFIG_HOME
               value: /.config
+            ## addefd this line for sops enc
+            - name: SOPS_AGE_KEY_FILE
+              value: /.config/sops/age/keys.so
       

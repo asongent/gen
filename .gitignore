@@ -2,4 +2,5 @@ hpa.yaml
 tls-secret.yaml
 sonar.yaml
 keycloak-db-*
-secret-*
+# secret-*
+# .sops
