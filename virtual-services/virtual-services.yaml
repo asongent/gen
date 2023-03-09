@@ -172,7 +172,7 @@ spec:
         prefix: /
     route:
     - destination:
-        host: sonarqube-sonarqube
+        host: sonarqube
         port:
           number: 80
 
