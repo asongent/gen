@@ -1,46 +1,37 @@
 {{- if .Values.networkPolicy.enabled }}
-apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
+apiVersion: {{ include "common.capabilities.networkPolicy.apiVersion" . }}
 metadata:
-  name: {{ include "keycloak.fullname" . | quote }}
-  labels:
-    {{- include "keycloak.labels" . | nindent 4 }}
-    {{- range $key, $value := .Values.networkPolicy.labels }}
-    {{- printf "%s: %s" $key (tpl $value $ | quote) | nindent 4 }}
+  name: {{ template "common.names.fullname" . }}
+  namespace: {{ include "common.names.namespace" . | quote }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: keycloak
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
     {{- end }}
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
 spec:
-  policyTypes:
-    - Ingress
   podSelector:
-    matchLabels:
-      {{- include "keycloak.selectorLabels" . | nindent 6 }}
+    matchLabels: {{- include "common.labels.matchLabels" . | nindent 6 }}
   ingress:
-    {{- with .Values.networkPolicy.extraFrom }}
-    - from:
-        {{- toYaml . | nindent 8 }}
-      ports:
-        - protocol: TCP
-          port: 8080
-        - protocol: TCP
-          port: 8443
-        {{ range $.Values.extraPorts }}
-        - protocol: {{ default "TCP" .protocol }}
-          port: {{ .containerPort }}
+    - ports:
+        - port: {{ .Values.containerPorts.infinispan }}
+        - port: {{ .Values.containerPorts.http }}
+        {{- if .Values.tls.enabled }}
+        - port: {{ .Values.containerPorts.https }}
         {{- end }}
-    {{- end }}
-    - from:
+      {{- if not .Values.networkPolicy.allowExternal }}
+      from:
         - podSelector:
             matchLabels:
-              {{- include "keycloak.selectorLabels" . | nindent 14 }}
-      ports:
-        - protocol: TCP
-          port: 8080
-        - protocol: TCP
-          port: 8443
-        - protocol: TCP
-          port: 9990
-        {{ range .Values.extraPorts }}
-        - protocol: {{ default "TCP" .protocol }}
-          port: {{ .containerPort }}
+              {{ template "common.names.fullname" . }}-client: "true"
+        - podSelector:
+            matchLabels: {{- include "common.labels.matchLabels" . | nindent 14 }}
+              app.kubernetes.io/component: keycloak
+        {{- if .Values.networkPolicy.additionalRules }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.networkPolicy.additionalRules "context" $) | nindent 8 }}
         {{- end }}
+      {{- end }}
 {{- end }}

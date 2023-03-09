@@ -106,7 +106,7 @@ kind: VirtualService
 metadata:
   labels:
   name: keycloak
-  namespace: user-management
+  namespace: keycloak
 spec:
   gateways:
   - istio-system/general-gateway
@@ -121,7 +121,7 @@ spec:
         prefix: /
     route:
     - destination:
-        host: keycloak-http
+        host: keycloak
         port:
           number: 80
 
@@ -150,6 +150,31 @@ spec:
         port:
           number: 8082
 
+--- 
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  labels:
+  name: sonarqube
+  namespace: sonarqube
+spec:
+  gateways:
+  - istio-system/general-gateway
+  hosts:
+  - 'sonarqube.fredgentech.net'
+  http:
+  - retries:
+      attempts: 3
+      perTryTimeout: 2s
+    match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: sonarqube-sonarqube
+        port:
+          number: 80
 
 ## Gitlab config
 
