@@ -9,12 +9,12 @@ spec:
     server: https://kubernetes.default.svc
   project: default
   source:
-    # helm:
-    #   valueFiles:
-    #   - values.yaml
+    helm:
+      valueFiles:
+      - values.yaml
     path: metrics-server
-    kustomize:
-      version: v4.5.7
+    # kustomize:
+    #   version: v4.5.7
     repoURL:  https://github.com/asongent/gen.git
     targetRevision: HEAD
   syncPolicy:
