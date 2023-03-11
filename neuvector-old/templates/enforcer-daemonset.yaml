@@ -13,7 +13,8 @@ metadata:
     heritage: {{ .Release.Service }}
     release: {{ .Release.Name }}
 spec:
-  updateStrategy: {{- toYaml .Values.enforcer.updateStrategy | nindent 4 }}
+  updateStrategy:
+    type: RollingUpdate  
   selector:
     matchLabels:
       app: neuvector-enforcer-pod
@@ -22,13 +23,6 @@ spec:
       labels:
         app: neuvector-enforcer-pod
         release: {{ .Release.Name }}
-        {{- with .Values.enforcer.podLabels }}
-        {{- toYaml . | nindent 8 }}
-        {{- end }}
-      {{- with .Values.enforcer.podAnnotations }}
-      annotations:
-      {{- toYaml . | nindent 8 }}
-      {{- end }}
     spec:
     {{- if .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -39,34 +33,13 @@ spec:
 {{ toYaml .Values.enforcer.tolerations | indent 8 }}
     {{- end }}
       hostPID: true
-    {{- if .Values.enforcer.priorityClassName }}
-      priorityClassName: {{ .Values.enforcer.priorityClassName }}
-    {{- end }}
-      serviceAccountName: {{ .Values.serviceAccount }}
-      serviceAccount: {{ .Values.serviceAccount }}
       containers:
         - name: neuvector-enforcer-pod
-          {{- if eq .Values.registry "registry.neuvector.com" }}
-          {{- if .Values.oem }}
-          image: "{{ .Values.registry }}/{{ .Values.oem }}/enforcer:{{ .Values.tag }}"
-          {{- else }}
-          image: "{{ .Values.registry }}/enforcer:{{ .Values.tag }}"
-          {{- end }}
-          {{- else }}
-          {{- if .Values.enforcer.image.hash }}
-          image: "{{ .Values.registry }}/{{ .Values.enforcer.image.repository }}@{{ .Values.enforcer.image.hash }}"
-          {{- else }}
           image: "{{ .Values.registry }}/{{ .Values.enforcer.image.repository }}:{{ .Values.tag }}"
-          {{- end }}
-          {{- end }}
           securityContext:
             privileged: true
           resources:
-          {{- if .Values.enforcer.resources }}
-{{ toYaml .Values.enforcer.resources | indent 12 }}
-          {{- else }}
 {{ toYaml .Values.resources | indent 12 }}
-          {{- end }}
           env:
             - name: CLUSTER_JOIN_ADDR
               value: neuvector-svc-controller.{{ .Release.Namespace }}
@@ -80,10 +53,6 @@ spec:
                   fieldPath: status.podIP
           volumeMounts:
           {{- if .Values.containerd.enabled }}
-            - mountPath: /var/run/containerd/containerd.sock
-          {{- else if .Values.k3s.enabled }}
-            - mountPath: /var/run/containerd/containerd.sock
-          {{- else if .Values.bottlerocket.enabled }}
             - mountPath: /var/run/containerd/containerd.sock
           {{- else if .Values.crio.enabled }}
             - mountPath: /var/run/crio/crio.sock
@@ -101,20 +70,6 @@ spec:
             - mountPath: /lib/modules
               name: modules-vol
               readOnly: true
-          {{- if .Values.enforcer.internal.certificate.secret }}
-            - mountPath: /etc/neuvector/certs/internal/cert.key
-              subPath: {{ .Values.enforcer.internal.certificate.keyFile }}
-              name: internal-cert
-              readOnly: true
-            - mountPath: /etc/neuvector/certs/internal/cert.pem
-              subPath: {{ .Values.enforcer.internal.certificate.pemFile }}
-              name: internal-cert
-              readOnly: true
-            - mountPath: /etc/neuvector/certs/internal/ca.cert
-              subPath: {{ .Values.enforcer.internal.certificate.caFile }}
-              name: internal-cert
-              readOnly: true
-          {{- end }}
       terminationGracePeriodSeconds: 1200
       restartPolicy: Always
       volumes:
@@ -124,10 +79,6 @@ spec:
             path: {{ .Values.containerd.path }}
           {{- else if .Values.crio.enabled }}
             path: {{ .Values.crio.path }}
-          {{- else if .Values.k3s.enabled }}
-            path: {{ .Values.k3s.runtimePath }}
-          {{- else if .Values.bottlerocket.enabled }}
-            path: {{ .Values.bottlerocket.runtimePath }}
           {{- else }}
             path: {{ .Values.docker.path }}
           {{- end }}
@@ -140,9 +91,4 @@ spec:
         - name: modules-vol
           hostPath:
             path: /lib/modules
-      {{- if .Values.enforcer.internal.certificate.secret }}
-        - name: internal-cert
-          secret:
-            secretName: {{ .Values.enforcer.internal.certificate.secret }}
-      {{- end }}
 {{- end }}

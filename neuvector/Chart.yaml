@@ -1,15 +1,11 @@
 apiVersion: v1
-appVersion: 3.2.1
-description: NeuVector Full Lifecycle Container Security Platform delivers the only
-  cloud-native security with uncompromising end-to-end protection from DevOps vulnerability
-  protection to automated run-time security, and featuring a true Layer 7 container
-  firewall.
+appVersion: 5.1.1
+description: Helm chart for NeuVector's core services
 engine: gotpl
 home: https://neuvector.com
+icon: https://avatars2.githubusercontent.com/u/19367275?s=200&v=4
 maintainers:
 - email: support@neuvector.com
   name: becitsthere
-- email: matthieu.paret@lifen.fr
-  name: mtparet
-name: neuvector
-version: 1.5.2
+name: core
+version: 2.4.2

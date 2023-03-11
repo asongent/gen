@@ -1,4 +1,3 @@
-{{- if not .Values.controller.pvc.existingClaim -}}
 {{- if and .Values.controller.enabled .Values.controller.pvc.enabled -}}
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -18,10 +17,5 @@ spec:
 {{- end }}
   resources:
     requests:
-{{- if .Values.controller.pvc.capacity }}
-      storage: {{ .Values.controller.pvc.capacity }}
-{{- else }}
       storage: 1Gi
-{{- end }}
-{{- end }}
 {{- end }}
