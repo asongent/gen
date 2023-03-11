@@ -1,5 +1,0 @@
-apiVersion: v2
-appVersion: 1.4.0
-description: A Helm chart for Kubernetes
-name: seldon-deploy
-version: 1.4.0
