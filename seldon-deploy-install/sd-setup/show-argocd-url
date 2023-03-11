@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+#
+# show-seldon-deploy-url
+#
+set -o nounset
+set -o errexit
+set -o pipefail
+set -o noclobber
+set -o noglob
+#set -o xtrace
+
+# wait to become available - takes a while
+ip=$(kubectl get service argocd-server -n argocd -o jsonpath='{.status.loadBalancer.ingress[*].ip}') || true
+# on aws could be hostname
+if [ -z "${ip}" ]; then
+  ip=`kubectl get service argocd-server -n argocd -o jsonpath='{.status.loadBalancer.ingress[*].hostname}'` || true
+fi
+
+
+echo "https://$ip/"

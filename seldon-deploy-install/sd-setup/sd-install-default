@@ -1,0 +1,83 @@
+#!/usr/bin/env bash
+#
+# sd-install-default
+#
+set -o nounset
+set -o errexit
+set -o pipefail
+set -o noclobber
+set -o noglob
+#set -o xtrace
+
+STARTUP_DIR="$( cd "$( dirname "$0" )" && pwd )"
+
+# run the check-config script first
+echo "running check-config ..."
+${STARTUP_DIR}/../check-config
+
+ISTIO_INGRESS=$(kubectl get svc -n istio-system istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}');
+ISTIO_INGRESS+=$(kubectl get svc -n istio-system istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].hostname}');
+DOCKER_REPO_TO_USE=${DOCKER_REPO_TO_USE:-seldonio}
+
+SDCONFIG_FILE=${HOME}/.config/seldon/seldon-deploy/sdconfig.txt
+
+source "${SDCONFIG_FILE}"
+ENABLE_APP_ANALYTICS=${ENABLE_APP_ANALYTICS:-true}
+ENABLE_APP_AUTH=${ENABLE_APP_AUTH:-true}
+ENABLE_GITOPS=${ENABLE_GITOPS:-true}
+ENABLE_KFSERVING=${ENABLE_KFSERVING:-true}
+ENABLE_GIT_SSH_CREDS=${ENABLE_GIT_SSH_CREDS:-false}
+GIT_SSHKEY_PASSPHRASE=${GIT_SSHKEY_PASSPHRASE:-""}
+OIDC_PROVIDER=${OIDC_PROVIDER:-"$EXTERNAL_PROTOCOL://$ISTIO_INGRESS/auth/realms/deploy-realm"}
+REDIRECT_URL=${REDIRECT_URL:-"$EXTERNAL_PROTOCOL://$ISTIO_INGRESS/seldon-deploy/auth/callback"}
+ENABLE_METADATA_POSTGRES=${ENABLE_METADATA_POSTGRES:-true}
+
+
+IMAGE_NAME=seldon-deploy-server
+IMAGE_TAG=$(cat ${STARTUP_DIR}/../VERSION)
+
+#git-creds secret
+if [ "$ENABLE_GIT_SSH_CREDS" = "true" ]; then
+  kubectl create secret generic git-creds -n seldon-system --from-file ~/.ssh/id_rsa --from-file ~/.ssh/known_hosts --from-literal=passphrase="$GIT_SSHKEY_PASSPHRASE" --from-literal=username="$GIT_USER" --from-literal=token="$GIT_TOKEN" --from-literal=email="$GIT_EMAIL"  --dry-run=client -o yaml | kubectl apply -f -
+else
+  kubectl create secret generic git-creds -n seldon-system --from-literal=username="$GIT_USER" --from-literal=token="$GIT_TOKEN" --from-literal=email="$GIT_EMAIL"  --dry-run=client -o yaml | kubectl apply -f -
+fi
+
+if [ "$ENABLE_GITOPS" = "true" ]; then
+  kubectl create namespace argocd --dry-run=client -o yaml | kubectl apply -f -
+fi
+
+HELM_CHARTS_DIR=${STARTUP_DIR}/helm-charts
+SD_HELM_VALUES_FILE=${SD_HELM_VALUES_FILE:-values.yaml}
+VALUES_FPATH=${HELM_CHARTS_DIR}/seldon-deploy/${SD_HELM_VALUES_FILE}
+
+CLUSTERWIDE="true"
+
+if [ "$MULTITENANT" = "true" ]; then
+  CLUSTERWIDE="false"
+fi
+
+kubectl create namespace seldon-system || true
+
+helm upgrade seldon-deploy ${HELM_CHARTS_DIR}/seldon-deploy/ \
+	--namespace=seldon-system \
+	-f ${VALUES_FPATH} \
+	--set image.image=${DOCKER_REPO_TO_USE}/${IMAGE_NAME}:${IMAGE_TAG} \
+	--set external.host=$EXTERNAL_HOST \
+	--set external.protocol=$EXTERNAL_PROTOCOL \
+	--set seldon.protocol=$EXTERNAL_PROTOCOL \
+	--set kfserving.protocol=$KFSERVING_PROTOCOL \
+	--set virtualService.create=$VIRTUALSERVICE_CREATE \
+	--set rbac.clusterWide=$CLUSTERWIDE \
+	--set enableAppAnalytics=$ENABLE_APP_ANALYTICS \
+	--set enableAppAuth=$ENABLE_APP_AUTH \
+	--set env.OIDC_PROVIDER=$OIDC_PROVIDER \
+	--set env.REDIRECT_URL=$REDIRECT_URL \
+	--set gitops.argocd.enabled=$ENABLE_GITOPS \
+	--set kfserving.enabled=$ENABLE_KFSERVING \
+	--set metadata.pg.enabled=$ENABLE_METADATA_POSTGRES \
+	--install --recreate-pods
+
+sleep 5
+
+kubectl rollout status deployment/seldon-deploy  -n seldon-system

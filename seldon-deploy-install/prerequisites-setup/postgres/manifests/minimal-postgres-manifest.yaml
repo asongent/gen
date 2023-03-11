@@ -1,0 +1,18 @@
+apiVersion: "acid.zalan.do/v1"
+kind: postgresql
+metadata:
+  name: seldon-metadata-storage
+  namespace: postgres
+spec:
+  teamId: "seldon"
+  volume:
+    size: 1Gi
+  numberOfInstances: 2
+  users:
+    seldon:  # database owner
+    - superuser
+    - createdb
+  databases:
+    metadata: seldon  # dbname: owner
+  postgresql:
+    version: "13"

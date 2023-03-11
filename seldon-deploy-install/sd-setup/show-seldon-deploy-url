@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+#
+# show-seldon-deploy-url
+#
+set -o nounset
+set -o errexit
+set -o pipefail
+set -o noclobber
+set -o noglob
+#set -o xtrace
+
+STARTUP_DIR="$( cd "$( dirname "$0" )" && pwd )"
+
+ISTIO_INGRESS=$(kubectl get svc -n istio-system istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+ISTIO_INGRESS+=$(kubectl get svc -n istio-system istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+SDCONFIG_FILE=${HOME}/.config/seldon/seldon-deploy/sdconfig.txt
+source "${SDCONFIG_FILE}"
+
+SELDON_DEPLOY_URL="${EXTERNAL_PROTOCOL}://${ISTIO_INGRESS}/seldon-deploy/"
+echo "${SELDON_DEPLOY_URL}"

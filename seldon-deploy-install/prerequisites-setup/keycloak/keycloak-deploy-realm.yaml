@@ -1,0 +1,15 @@
+keycloak:
+    image:
+      tag: 10.0.2
+
+    extraVolumes: |
+      - name: realm-secret
+        secret:
+          secretName: realm-secret
+  
+    extraVolumeMounts: |
+      - name: realm-secret
+        mountPath: "/realm/"
+        readOnly: true
+  
+    extraArgs: -Dkeycloak.import=/realm/realm-export.json

@@ -1,0 +1,33 @@
+prometheus:
+  nodeExporter:
+    service:
+      hostPort: 9200
+      servicePort: 9200
+  server:
+    extraInitContainers:
+      - name: app-data-permission-fix
+        image: busybox
+        command: ["/bin/chmod","-R","777","/data"]
+        volumeMounts:
+          - name: storage-volume
+            mountPath: /data
+        securityContext:
+          runAsGroup: 0
+          runAsNonRoot: false
+          runAsUser: 0
+    extraConfigmapMounts:
+      - name: prometheus-config-volume
+        mountPath: /etc/prometheus/conf/
+        subPath: ""
+        configMap: prometheus-server-conf
+        readOnly: true
+      - name: prometheus-rules-volume
+        mountPath: /etc/prometheus-rules
+        subPath: ""
+        configMap: prometheus-rules
+        readOnly: true
+      - name: model-usage-rules-volume
+        mountPath: /etc/prometheus-rules/model-usage/
+        subPath: ""
+        configMap: model-usage-rules
+        readOnly: true

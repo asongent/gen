@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+#
+# check-config
+#
+set -o nounset
+set -o errexit
+set -o pipefail
+set -o noclobber
+set -o noglob
+#set -o xtrace
+
+STARTUP_DIR="$( cd "$( dirname "$0" )" && pwd )"
+
+SDCONFIG_FILE=${HOME}/.config/seldon/seldon-deploy/sdconfig.txt
+
+create_config_file() {
+(
+cat <<'EOF'
+DOCKER_REPO=
+GIT_USER=
+GIT_TOKEN=
+GIT_EMAIL=
+ENABLE_GIT_SSH_CREDS=false
+SD_USER_EMAIL=admin@seldon.io
+SD_PASSWORD=12341234
+#EXTERNAL_HOST can be blank
+EXTERNAL_HOST=
+EXTERNAL_PROTOCOL=https
+KFSERVING_PROTOCOL=https
+VIRTUALSERVICE_CREATE=true
+MULTITENANT=false
+ENABLE_APP_AUTH=true
+ENABLE_METADATA_POSTGRES=true
+EOF
+) | cat > ${SDCONFIG_FILE}
+
+    echo "created config file to fill in"
+    realpath ${SDCONFIG_FILE}
+}
+
+if [[ ! -d "$(dirname ${SDCONFIG_FILE})" ]]; then
+    mkdir -p "$(dirname ${SDCONFIG_FILE})"
+fi
+
+if [[ -f "${SDCONFIG_FILE}" ]]; then
+    echo "found config file"
+    realpath ${SDCONFIG_FILE}
+else
+    create_config_file
+fi
+
+check_var() {
+    eval VAR='$'$1
+    if [ $2 = "VALUE_REQUIRED" ]; then
+        if [[ -z "$VAR" ]]; then
+            echo "$1: value not set"
+            exit 1
+        fi
+    else
+        if [ ! $2 = "VALUE_NOT_REQUIRED" ];then
+            echo "invalid check using $2"
+            exit 2
+        fi
+    fi
+}
+
+# Ensure config contains certain variables, and have values where necessary
+source "${SDCONFIG_FILE}"
+check_var "GIT_USER"             "VALUE_REQUIRED"
+check_var "GIT_TOKEN"            "VALUE_REQUIRED"
+check_var "GIT_EMAIL"            "VALUE_REQUIRED"
+check_var "SD_USER_EMAIL"     "VALUE_REQUIRED"
+check_var "SD_PASSWORD"       "VALUE_REQUIRED"
+check_var "EXTERNAL_HOST"           "VALUE_NOT_REQUIRED"
+check_var "EXTERNAL_PROTOCOL"       "VALUE_REQUIRED"
+check_var "KFSERVING_PROTOCOL"      "VALUE_REQUIRED"
+check_var "VIRTUALSERVICE_CREATE"   "VALUE_REQUIRED"

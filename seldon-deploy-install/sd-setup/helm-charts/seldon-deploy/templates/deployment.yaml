@@ -1,0 +1,259 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "seldon-deploy.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "seldon-deploy.name" . }}
+    helm.sh/chart: {{ include "seldon-deploy.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "seldon-deploy.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      annotations:
+        prometheus.io/scrape: "true"
+        sidecar.istio.io/inject: "false"
+      labels:
+        app.kubernetes.io/name: {{ include "seldon-deploy.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.image }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8000
+              protocol: TCP
+            - name: metrics
+              containerPort: 8001
+              protocol: TCP
+            - name: webhook
+              containerPort: 8080
+              protocol: TCP
+          env:
+            - name: SELDON_DEPLOY_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            {{- range $key, $value := .Values.env }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+            {{- if .Values.enableAppAuth }}
+            - name: "ENABLE_APP_AUTH"
+              value: "{{ .Values.enableAppAuth }}"
+            {{- end}}
+            {{- if .Values.enableAppAnalytics }}
+            - name: "ENABLE_APP_ANALYTICS"
+              value: "{{ .Values.enableAppAnalytics }}"
+            {{- end}}
+            - name: "ENABLE_READ_NAMESPACES"
+              value: "{{ .Values.rbac.readNamespaces }}"
+            - name: "LOADTEST_IMAGE"
+              value: "{{ .Values.loadtest.image }}"
+            - name: "ALIBI_DETECT_SERVER_IMAGE"
+              value: "{{ .Values.alibidetect.image }}"
+            - name: "BATCHJOBS_PROCESSOR_IMAGE"
+              value: "{{ .Values.batchjobs.processor.image }}"
+            - name: "BATCHJOBS_MC_IMAGE"
+              value: "{{ .Values.batchjobs.mc.image }}"
+            - name: "BATCHJOBS_PVC_DEFAULT_SIZE"
+              value: "{{ .Values.batchjobs.pvc.defaultSize }}"
+            {{- if .Values.gitops.fileFormat }}
+            - name: "GITOPS_FORMAT"
+              value: "{{ .Values.gitops.fileFormat }}"
+            {{- end}}
+            {{- if .Values.gitops.argocd.enabled }}
+            - name: "ARGOCD_NAMESPACE"
+              value: "{{ .Values.gitops.argocd.namespace }}"
+            {{- end}}
+            {{- if .Values.requestLogger.namespace.name }}
+            - name: "REQUEST_LOGGER_NAMESPACE"
+              value: "{{ .Values.requestLogger.namespace.name }}"
+            {{- end}}
+            {{- if and .Values.metadata.pg.secret .Values.metadata.pg.enabled }}
+            - name: "METADATA_PG_ENABLED"
+              value: "true"
+            - name: "METADATA_PG_HOST"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.metadata.pg.secret }}
+                  key: host
+            - name: "METADATA_PG_PORT"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.metadata.pg.secret }}
+                  key: port
+            - name: "METADATA_PG_USER"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.metadata.pg.secret }}
+                  key: user
+            - name: "METADATA_PG_PASSWORD"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.metadata.pg.secret }}
+                  key: password
+            - name: "METADATA_PG_DBNAME"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.metadata.pg.secret }}
+                  key: dbname
+            - name: "METADATA_PG_SSLMODE"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.metadata.pg.secret }}
+                  key: sslmode
+            {{- end}}
+            {{- if .Values.metadata.disableRuntimeWatchers }}
+            - name: "DISABLE_RUNTIME_META"
+              value: "true"
+            {{- end }}
+            {{- if .Values.metadata.disableRuntimeWatchers }}
+            - name: "DISABLE_RUNTIME_META_WATCHERS"
+              value: "true"
+            {{- end}}
+            {{- if and .Values.gitops.git.secret .Values.gitops.argocd.enabled }}
+            - name: "GIT_USER"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.gitops.git.secret }}
+                  key: username
+            - name: "GIT_TOKEN"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.gitops.git.secret }}
+                  key: token
+                  optional: true
+            - name: "GIT_EMAIL"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.gitops.git.secret }}
+                  key: email
+            - name: "GIT_SSHKEY"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.gitops.git.secret }}
+                  key: id_rsa
+                  optional: true
+            - name: "GIT_SSHKEY_PASSPHRASE"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.gitops.git.secret }}
+                  key: passphrase
+                  optional: true
+            {{- else }}
+            {{- if and .Values.gitops.git.user .Values.gitops.argocd.enabled }}
+            - name: "GIT_USER"
+              valueFrom:
+                secretKeyRef:
+                  name: git-{{ include "seldon-deploy.fullname" . }}
+                  key: username
+            - name: "GIT_TOKEN"
+              valueFrom:
+                secretKeyRef:
+                  name: git-{{ include "seldon-deploy.fullname" . }}
+                  key: token
+            - name: "GIT_EMAIL"
+              valueFrom:
+                secretKeyRef:
+                  name: git-{{ include "seldon-deploy.fullname" . }}
+                  key: email
+            {{- end }}
+            {{- end }}
+            {{- if .Values.external.protocol }}
+            - name: "EXTERNAL_PROTOCOL"
+              value: "{{ .Values.external.protocol }}"
+            {{- end }}
+            - name: "INFERENCESERVICES"
+              value: "{{ .Values.kfserving.enabled }}"
+            - name: "SELDONDEPLOYMENTS"
+              value: "{{ .Values.seldon.enabled }}"
+            {{- if .Values.virtualService.create }}
+            - name: "EXTERNAL_PREFIX"
+              value: "{{ .Values.virtualService.prefix }}"
+            {{- end }}
+            {{- if .Values.elasticsearch.jwtSecretName }}
+            - name: "ELASTICSEARCH_TOKEN"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.elasticsearch.jwtSecretName }}
+                  key: {{ .Values.elasticsearch.jwtSecretKey }}
+            {{- end }}
+            {{- if .Values.elasticsearch.basicAuth }}
+            - name: "ELASTICSEARCH_USER"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.elasticsearch.secret.name }}
+                  key: {{ .Values.elasticsearch.secret.userKey }}
+            - name: "ELASTICSEARCH_PASS"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.elasticsearch.secret.name }}
+                  key: {{ .Values.elasticsearch.secret.passwordKey }}
+            {{- end }}
+            {{- if .Values.prometheus.seldon.jwtSecretName }}
+            - name: "PROMETHEUS_SELDON_TOKEN"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.prometheus.seldon.jwtSecretName }}
+                  key: {{ .Values.prometheus.seldon.jwtSecretKey }}
+            {{- end }}
+            - name: "BATCH_SERVICE_ACCOUNT"
+              value: {{ .Values.batchjobs.serviceAccount }}
+            {{- if .Values.defaultUserID }}
+            - name: DEFAULT_USER_ID
+              value: '{{ .Values.defaultUserID }}'
+            {{- end }}
+          livenessProbe:
+            httpGet:
+              path: /seldon-deploy/api/status
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /seldon-deploy/api/status
+              port: http
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+          volumeMounts:
+            - name: custom-theme
+              mountPath: "/seldon-deploy/custom-theme"
+{{- if and .Values.gitops.git.secret .Values.gitops.argocd.enabled }}
+            - name: ssh-known-hosts
+              mountPath: "/etc/ssh"
+{{- end }}
+      volumes:
+        - name: custom-theme
+          secret:
+            secretName: seldon-deploy-custom-theme
+            optional: true
+{{- if and .Values.gitops.git.secret .Values.gitops.argocd.enabled }}
+        - name: ssh-known-hosts
+          secret:
+            secretName: {{ .Values.gitops.git.secret }}
+            optional: true
+            items:
+              - key: known_hosts
+                path: ssh_known_hosts
+{{- end }}
+      serviceAccount: {{ include "seldon-deploy.serviceAccountName" . }}
+      serviceAccountName: {{ include "seldon-deploy.serviceAccountName" . }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+

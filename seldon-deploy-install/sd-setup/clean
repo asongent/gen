@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+#
+# clean
+#
+set -o nounset
+set -o errexit
+set -o pipefail
+set -o noclobber
+set -o noglob
+#set -o xtrace
+
+STARTUP_DIR="$( cd "$( dirname "$0" )" && pwd )"
+
+TEMPRESOURCES=${STARTUP_DIR}/tempresources
+
+rm -rf ${TEMPRESOURCES} && echo removed ${TEMPRESOURCES}
+

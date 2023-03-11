@@ -1,0 +1,49 @@
+# If you used the OpenLDAP Server deployment in step 1,
+# then this object already exists.
+# If it doesn't, uncomment this.
+#dn: dc=example,dc=com
+#objectClass: dcObject
+#objectClass: organization
+#o: Example
+#dc: example
+
+dn: ou=People,dc=example,dc=com
+objectClass: organizationalUnit
+ou: People
+
+dn: cn=Hari Seldon,ou=People,dc=example,dc=com
+objectClass: person
+objectClass: inetOrgPerson
+givenName: Hari
+sn: Seldon
+cn: Hari Seldon
+uid: hseldon
+mail: hseldon@example.com
+userpassword: 12341234
+
+dn: cn=Isaac Asimov,ou=People,dc=example,dc=com
+objectClass: person
+objectClass: inetOrgPerson
+givenName: Isaac
+sn: Asimov
+cn: Isaac Asimov
+uid: iasimov
+mail: iasimov@example.com
+userpassword: 43214321
+
+# Group definitions.
+
+dn: ou=Groups,dc=example,dc=com
+objectClass: organizationalUnit
+ou: Groups
+
+dn: cn=admins,ou=Groups,dc=example,dc=com
+objectClass: groupOfNames
+cn: admins
+member: cn=Hari Seldon,ou=People,dc=example,dc=com
+
+dn: cn=developers,ou=Groups,dc=example,dc=com
+objectClass: groupOfNames
+cn: developers
+member: cn=Hari Seldon,ou=People,dc=example,dc=com
+member: cn=Isaac Asimov,ou=People,dc=example,dc=com

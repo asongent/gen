@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+#
+# sd-install-kubeflow
+#
+# not doing nounset as ENABLE_APP_AUTH prob won't be
+set -o errexit
+set -o pipefail
+set -o noclobber
+set -o noglob
+#set -o xtrace
+
+STARTUP_DIR="$( cd "$( dirname "$0" )" && pwd )"
+OIDC_PROVIDER=${OIDC_PROVIDER:-"http://dex.auth.svc.cluster.local:5556/dex"}
+SDCONFIG_FILE=${HOME}/.config/seldon/seldon-deploy/sdconfig.txt
+
+source "${SDCONFIG_FILE}"
+
+if [ "${ENABLE_APP_AUTH}" = "true" ]
+then
+  echo "ENABLE_APP_AUTH=true not supported for kubeflow"
+  exit 1
+fi
+
+
+SD_HELM_VALUES_FILE=values-kubeflow.yaml OIDC_PROVIDER=${OIDC_PROVIDER} ENABLE_APP_AUTH=false ${STARTUP_DIR}/sd-install-default
+

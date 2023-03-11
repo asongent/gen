@@ -1,0 +1,18 @@
+apiVersion: "acid.zalan.do/v1"
+kind: postgresql
+metadata:
+  name: seldon-metadata-storage
+  namespace: postgres
+spec:
+  teamId: "seldon"
+  volume:
+    size: 0.5Gi # only half gig to avoid running out of disk on kind.
+  numberOfInstances: 1 # no HA when running in kind.
+  users:
+    seldon:  # database owner
+    - superuser
+    - createdb
+  databases:
+    metadata: seldon  # dbname: owner
+  postgresql:
+    version: "13"

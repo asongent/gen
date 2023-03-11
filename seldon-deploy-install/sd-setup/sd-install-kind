@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+#
+# sd-install-kind
+#
+# not doing nounset as ENABLE_APP_AUTH prob won't be
+set -o errexit
+set -o pipefail
+set -o noclobber
+set -o noglob
+#set -o xtrace
+
+STARTUP_DIR="$( cd "$( dirname "$0" )" && pwd )"
+
+SDCONFIG_FILE=${HOME}/.config/seldon/seldon-deploy/sdconfig.txt
+
+source "${SDCONFIG_FILE}"
+
+if [ "${EXTERNAL_PROTOCOL}" != "http" ]
+then
+  echo "EXTERNAL_PROTOCOL must be http for KIND"
+  exit 1
+fi
+
+if [ "${ENABLE_APP_AUTH}" = "true" ]
+then
+  echo "ENABLE_APP_AUTH=true not supported for KIND"
+  exit 1
+fi
+
+ENABLE_APP_AUTH=false ENABLE_APP_ANALYTICS=false ENABLE_GITOPS=false ${STARTUP_DIR}/sd-install-default
+

@@ -1,400 +1,465 @@
-# Jaeger
+<!--- app-name: Jaeger -->
 
-[Jaeger](https://www.jaegertracing.io/) is a distributed tracing system.
+# Jaeger packaged by Bitnami
+
+Jaeger is a distributed tracing system. It is used for monitoring and troubleshooting microservices-based distributed systems.
+
+[Overview of Jaeger](https://jaegertracing.io/)
+
+Trademarks: This software listing is packaged by Bitnami. The respective trademarks mentioned in the offering are owned by the respective companies, and use of them does not imply any affiliation or endorsement.
+
+## TL;DR
+
+```console
+helm repo add my-repo https://charts.bitnami.com/bitnami
+helm install my-release my-repo/jaeger
+```
 
 ## Introduction
 
-This chart adds all components required to run Jaeger as described in the [jaeger-kubernetes](https://github.com/jaegertracing/jaeger-kubernetes) GitHub page for a production-like deployment. The chart default will deploy a new Cassandra cluster (using the [cassandra chart](https://github.com/kubernetes/charts/tree/master/incubator/cassandra)), but also supports using an existing Cassandra cluster, deploying a new ElasticSearch cluster (using the [elasticsearch chart](https://github.com/elastic/helm-charts/tree/master/elasticsearch)), or connecting to an existing ElasticSearch cluster. Once the storage backend is available, the chart will deploy jaeger-agent as a DaemonSet and deploy the jaeger-collector and jaeger-query components as Deployments.
+This chart bootstraps a [jaeger](https://github.com/bitnami/containers/tree/main/bitnami/jaeger) deployment on a [Kubernetes](https://kubernetes.io) cluster using the [Helm](https://helm.sh) package manager.
+
+Bitnami charts can be used with [Kubeapps](https://kubeapps.dev/) for deployment and management of Helm Charts in clusters.
+
+## Prerequisites
+
+- Kubernetes 1.19+
+- Helm 3.2.0+
+- PV provisioner support in the underlying infrastructure
+- ReadWriteMany volumes for deployment scaling
 
 ## Installing the Chart
 
-Add the Jaeger Tracing Helm repository:
-
-```bash
-helm repo add jaegertracing https://jaegertracing.github.io/helm-charts
-```
-
-To install a release named `jaeger`:
-
-```bash
-helm install jaeger jaegertracing/jaeger
-```
-
-By default, the chart deploys the following:
-
-- Jaeger Agent DaemonSet
-- Jaeger Collector Deployment
-- Jaeger Query (UI) Deployment
-- Cassandra StatefulSet (subject to change!)
-
-![Jaeger with Default
-components](https://www.jaegertracing.io/img/architecture-v1.png)
-
-## Configuration
-
-See [Customizing the Chart Before Installing](https://helm.sh/docs/intro/using_helm/#customizing-the-chart-before-installing). To see all configurable options with detailed comments, visit the chart's [values.yaml](https://github.com/jaegertracing/helm-charts/blob/master/charts/jaeger/values.yaml), or run these configuration commands:
+To install the chart with the release name `my-release`:
 
 ```console
-$ helm show values jaegertracing/jaeger
+helm repo add my-repo https://charts.bitnami.com/bitnami
+helm install my-release my-repo/jaeger
 ```
 
-You may also `helm show values` on this chart's [dependencies](#dependencies) for additional options.
+These commands deploy jaeger on the Kubernetes cluster in the default configuration. The [Parameters](#parameters) section lists the parameters that can be configured during installation.
 
-### Dependencies
+> **Tip**: List all releases using `helm list`
 
-If installing with a dependency such as Cassandra, Elasticsearch and/or Kafka
-their, values can be shown by running:
+## Uninstalling the Chart
+
+To uninstall/delete the `my-release` statefulset:
 
 ```console
-helm repo add elastic https://helm.elastic.co
-helm show values elastic/elasticsearch
+helm delete my-release
 ```
 
-```console
-helm repo add incubator https://kubernetes-charts-incubator.storage.googleapis.com/
-helm show values incubator/cassandra
-```
+The command removes all the Kubernetes components associated with the chart and deletes the release. Use the option `--purge` to delete all history too.
 
-```console
-helm repo add bitnami
-helm show values bitnami/kafka
-```
+## Parameters
 
-Please note, any dependency values must be nested within the key named after the
-chart, i.e. `elasticsearch`, `cassandra` and/or `kafka`.
+### Global parameters
 
-## Storage
+| Name                      | Description                                     | Value |
+| ------------------------- | ----------------------------------------------- | ----- |
+| `global.imageRegistry`    | Global Docker image registry                    | `""`  |
+| `global.imagePullSecrets` | Global Docker registry secret names as an array | `[]`  |
+| `global.storageClass`     | Global StorageClass for Persistent Volume(s)    | `""`  |
 
-As per Jaeger documentation, for large scale production deployment the Jaeger
-team [recommends Elasticsearch backend over Cassandra](https://www.jaegertracing.io/docs/latest/faq/#what-is-the-recommended-storage-backend),
-as such the default backend may change in the future and **it is highly
-recommended to explicitly configure storage**.
+### Common parameters
 
-If you are just starting out with a testing/demo setup, you can also use in-memory storage for a
-fast and easy setup experience using the [Jaeger All in One executable](https://www.jaegertracing.io/docs/1.29/getting-started/#all-in-one).
+| Name                     | Description                                                                             | Value          |
+| ------------------------ | --------------------------------------------------------------------------------------- | -------------- |
+| `nameOverride`           | String to partially override common.names.fullname                                      | `""`           |
+| `fullnameOverride`       | String to fully override common.names.fullname                                          | `""`           |
+| `kubeVersion`            | Force target Kubernetes version (using Helm capabilities if not set)                    | `""`           |
+| `commonLabels`           | Labels to add to all deployed objects (sub-charts are not considered)                   | `{}`           |
+| `commonAnnotations`      | Annotations to add to all deployed objects                                              | `{}`           |
+| `diagnosticMode.enabled` | Enable diagnostic mode (all probes will be disabled and the command will be overridden) | `false`        |
+| `diagnosticMode.command` | Command to override all containers in the deployment                                    | `["sleep"]`    |
+| `diagnosticMode.args`    | Args to override all containers in the deployment                                       | `["infinity"]` |
 
-### Elasticsearch configuration
+### Jaeger parameters
 
-#### Elasticsearch Rollover
+| Name                | Description                                                                                            | Value                 |
+| ------------------- | ------------------------------------------------------------------------------------------------------ | --------------------- |
+| `image.registry`    | Jaeger image registry                                                                                  | `docker.io`           |
+| `image.repository`  | Jaeger image repository                                                                                | `bitnami/jaeger`      |
+| `image.tag`         | Jaeger image tag (immutable tags are recommended)                                                      | `1.42.0-debian-11-r7` |
+| `image.digest`      | Jaeger image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag | `""`                  |
+| `image.pullPolicy`  | image pull policy                                                                                      | `IfNotPresent`        |
+| `image.pullSecrets` | Jaeger image pull secrets                                                                              | `[]`                  |
+| `image.debug`       | Enable image debug mode                                                                                | `false`               |
 
-If using the [Elasticsearch
-Rollover](https://www.jaegertracing.io/docs/latest/deployment/#elasticsearch-rollover)
-feature, elasticsearch must already be present and so must be deployed
-separately from this chart, if not the rollover init hook won't be able to
-complete successfully.
+### Query deployment parameters
 
-#### Installing the Chart using a New ElasticSearch Cluster
+| Name                                                | Description                                                                               | Value           |
+| --------------------------------------------------- | ----------------------------------------------------------------------------------------- | --------------- |
+| `query.command`                                     | Command for running the container (set to default if not set). Use array form             | `[]`            |
+| `query.args`                                        | Args for running the container (set to default if not set). Use array form                | `[]`            |
+| `query.lifecycleHooks`                              | Override default etcd container hooks                                                     | `{}`            |
+| `query.extraEnvVars`                                | Extra environment variables to be set on jaeger container                                 | `[]`            |
+| `query.extraEnvVarsCM`                              | Name of existing ConfigMap containing extra env vars                                      | `""`            |
+| `query.extraEnvVarsSecret`                          | Name of existing Secret containing extra env vars                                         | `""`            |
+| `query.replicaCount`                                | Number of Jaeger replicas                                                                 | `1`             |
+| `query.livenessProbe.enabled`                       | Enable livenessProbe on Query nodes                                                       | `true`          |
+| `query.livenessProbe.initialDelaySeconds`           | Initial delay seconds for livenessProbe                                                   | `10`            |
+| `query.livenessProbe.periodSeconds`                 | Period seconds for livenessProbe                                                          | `10`            |
+| `query.livenessProbe.timeoutSeconds`                | Timeout seconds for livenessProbe                                                         | `1`             |
+| `query.livenessProbe.failureThreshold`              | Failure threshold for livenessProbe                                                       | `3`             |
+| `query.livenessProbe.successThreshold`              | Success threshold for livenessProbe                                                       | `1`             |
+| `query.startupProbe.enabled`                        | Enable startupProbe on Query containers                                                   | `false`         |
+| `query.startupProbe.initialDelaySeconds`            | Initial delay seconds for startupProbe                                                    | `10`            |
+| `query.startupProbe.periodSeconds`                  | Period seconds for startupProbe                                                           | `10`            |
+| `query.startupProbe.timeoutSeconds`                 | Timeout seconds for startupProbe                                                          | `1`             |
+| `query.startupProbe.failureThreshold`               | Failure threshold for startupProbe                                                        | `15`            |
+| `query.startupProbe.successThreshold`               | Success threshold for startupProbe                                                        | `1`             |
+| `query.readinessProbe.enabled`                      | Enable readinessProbe                                                                     | `false`         |
+| `query.readinessProbe.initialDelaySeconds`          | Initial delay seconds for readinessProbe                                                  | `10`            |
+| `query.readinessProbe.periodSeconds`                | Period seconds for readinessProbe                                                         | `10`            |
+| `query.readinessProbe.timeoutSeconds`               | Timeout seconds for readinessProbe                                                        | `1`             |
+| `query.readinessProbe.failureThreshold`             | Failure threshold for readinessProbe                                                      | `15`            |
+| `query.readinessProbe.successThreshold`             | Success threshold for readinessProbe                                                      | `1`             |
+| `query.customLivenessProbe`                         | Custom livenessProbe that overrides the default one                                       | `{}`            |
+| `query.customStartupProbe`                          | Override default startup probe                                                            | `{}`            |
+| `query.customReadinessProbe`                        | Override default readiness probe                                                          | `{}`            |
+| `query.resources.limits`                            | The resources limits for Jaeger containers                                                | `{}`            |
+| `query.resources.requests`                          | The requested resources for Jaeger containers                                             | `{}`            |
+| `query.extraVolumeMounts`                           | Optionally specify extra list of additional volumeMounts for jaeger container             | `[]`            |
+| `query.containerPorts.api`                          | Port for API                                                                              | `16686`         |
+| `query.containerPorts.admin`                        | Port for admin                                                                            | `16687`         |
+| `query.service.type`                                | Jaeger service type                                                                       | `ClusterIP`     |
+| `query.service.ports.api`                           | Port for API                                                                              | `16686`         |
+| `query.service.ports.admin`                         | Port for admin                                                                            | `16687`         |
+| `query.service.nodePorts.api`                       | Node port for API                                                                         | `""`            |
+| `query.service.nodePorts.admin`                     | Node port for admin                                                                       | `""`            |
+| `query.service.extraPorts`                          | Extra ports to expose in the service (normally used with the `sidecar` value)             | `[]`            |
+| `query.service.loadBalancerIP`                      | LoadBalancerIP if service type is `LoadBalancer`                                          | `""`            |
+| `query.service.loadBalancerSourceRanges`            | Service Load Balancer sources                                                             | `[]`            |
+| `query.service.clusterIP`                           | Service Cluster IP                                                                        | `""`            |
+| `query.service.externalTrafficPolicy`               | Service external traffic policy                                                           | `Cluster`       |
+| `query.service.annotations`                         | Provide any additional annotations which may be required.                                 | `{}`            |
+| `query.service.sessionAffinity`                     | Session Affinity for Kubernetes service, can be "None" or "ClientIP"                      | `None`          |
+| `query.service.sessionAffinityConfig`               | Additional settings for the sessionAffinity                                               | `{}`            |
+| `query.service.metrics.annotations`                 | Annotations for Prometheus metrics                                                        | `{}`            |
+| `query.serviceAccount.create`                       | Enables ServiceAccount                                                                    | `true`          |
+| `query.serviceAccount.name`                         | ServiceAccount name                                                                       | `""`            |
+| `query.serviceAccount.annotations`                  | Annotations to add to all deployed objects                                                | `{}`            |
+| `query.serviceAccount.automountServiceAccountToken` | Automount API credentials for a service account.                                          | `true`          |
+| `query.podSecurityContext.enabled`                  | Enabled Jaeger pods' Security Context                                                     | `true`          |
+| `query.podSecurityContext.fsGroup`                  | Set Jaeger pod's Security Context fsGroup                                                 | `1001`          |
+| `query.containerSecurityContext.enabled`            | Enabled Jaeger containers' Security Context                                               | `true`          |
+| `query.containerSecurityContext.runAsUser`          | Set Jaeger container's Security Context runAsUser                                         | `1001`          |
+| `query.containerSecurityContext.runAsNonRoot`       | Force the container to be run as non root                                                 | `true`          |
+| `query.podAnnotations`                              | Additional pod annotations                                                                | `{}`            |
+| `query.podLabels`                                   | Additional pod labels                                                                     | `{}`            |
+| `query.podAffinityPreset`                           | Pod affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`       | `""`            |
+| `query.podAntiAffinityPreset`                       | Pod anti-affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`  | `soft`          |
+| `query.nodeAffinityPreset.type`                     | Node affinity preset type. Ignored if `affinity` is set. Allowed values: `soft` or `hard` | `""`            |
+| `query.nodeAffinityPreset.key`                      | Node label key to match. Ignored if `affinity` is set                                     | `""`            |
+| `query.nodeAffinityPreset.values`                   | Node label values to match. Ignored if `affinity` is set                                  | `[]`            |
+| `query.priorityClassName`                           | Server priorityClassName                                                                  | `""`            |
+| `query.affinity`                                    | Affinity for pod assignment                                                               | `{}`            |
+| `query.nodeSelector`                                | Node labels for pod assignment                                                            | `{}`            |
+| `query.tolerations`                                 | Tolerations for pod assignment                                                            | `[]`            |
+| `query.topologySpreadConstraints`                   | Topology Spread Constraints for pod assignment                                            | `[]`            |
+| `query.schedulerName`                               | Alternative scheduler                                                                     | `""`            |
+| `query.updateStrategy.type`                         | Jaeger query deployment strategy type                                                     | `RollingUpdate` |
+| `query.updateStrategy.rollingUpdate`                | Jaeger query deployment rolling update configuration parameters                           | `{}`            |
+| `query.extraVolumes`                                | Optionally specify extra list of additional volumes for jaeger container                  | `[]`            |
+| `query.initContainers`                              | Add additional init containers to the jaeger pods                                         | `[]`            |
+| `query.sidecars`                                    | Add additional sidecar containers to the jaeger pods                                      | `[]`            |
 
-To install the chart with the release name `jaeger` using a new ElasticSearch cluster instead of Cassandra (default), run the following command:
+### Collector deployment parameters
 
-```console
-helm install jaeger jaegertracing/jaeger \
-  --set provisionDataStore.cassandra=false \
-  --set provisionDataStore.elasticsearch=true \
-  --set storage.type=elasticsearch
-```
+| Name                                                    | Description                                                                                | Value           |
+| ------------------------------------------------------- | ------------------------------------------------------------------------------------------ | --------------- |
+| `collector.command`                                     | Command for running the container (set to default if not set). Use array form              | `[]`            |
+| `collector.args`                                        | Args for running the container (set to default if not set). Use array form                 | `[]`            |
+| `collector.lifecycleHooks`                              | Override default etcd container hooks                                                      | `{}`            |
+| `collector.extraEnvVars`                                | Extra environment variables to be set on jaeger container                                  | `[]`            |
+| `collector.extraEnvVarsCM`                              | Name of existing ConfigMap containing extra env vars                                       | `""`            |
+| `collector.extraEnvVarsSecret`                          | Name of existing Secret containing extra env vars                                          | `""`            |
+| `collector.replicaCount`                                | Number of Jaeger replicas                                                                  | `1`             |
+| `collector.livenessProbe.enabled`                       | Enable livenessProbe on collector nodes                                                    | `true`          |
+| `collector.livenessProbe.initialDelaySeconds`           | Initial delay seconds for livenessProbe                                                    | `10`            |
+| `collector.livenessProbe.periodSeconds`                 | Period seconds for livenessProbe                                                           | `10`            |
+| `collector.livenessProbe.timeoutSeconds`                | Timeout seconds for livenessProbe                                                          | `1`             |
+| `collector.livenessProbe.failureThreshold`              | Failure threshold for livenessProbe                                                        | `3`             |
+| `collector.livenessProbe.successThreshold`              | Success threshold for livenessProbe                                                        | `1`             |
+| `collector.startupProbe.enabled`                        | Enable startupProbe on collector containers                                                | `false`         |
+| `collector.startupProbe.initialDelaySeconds`            | Initial delay seconds for startupProbe                                                     | `10`            |
+| `collector.startupProbe.periodSeconds`                  | Period seconds for startupProbe                                                            | `10`            |
+| `collector.startupProbe.timeoutSeconds`                 | Timeout seconds for startupProbe                                                           | `1`             |
+| `collector.startupProbe.failureThreshold`               | Failure threshold for startupProbe                                                         | `15`            |
+| `collector.startupProbe.successThreshold`               | Success threshold for startupProbe                                                         | `1`             |
+| `collector.readinessProbe.enabled`                      | Enable readinessProbe                                                                      | `false`         |
+| `collector.readinessProbe.initialDelaySeconds`          | Initial delay seconds for readinessProbe                                                   | `10`            |
+| `collector.readinessProbe.periodSeconds`                | Period seconds for readinessProbe                                                          | `10`            |
+| `collector.readinessProbe.timeoutSeconds`               | Timeout seconds for readinessProbe                                                         | `1`             |
+| `collector.readinessProbe.failureThreshold`             | Failure threshold for readinessProbe                                                       | `15`            |
+| `collector.readinessProbe.successThreshold`             | Success threshold for readinessProbe                                                       | `1`             |
+| `collector.customLivenessProbe`                         | Custom livenessProbe that overrides the default one                                        | `{}`            |
+| `collector.customStartupProbe`                          | Override default startup probe                                                             | `{}`            |
+| `collector.customReadinessProbe`                        | Override default readiness probe                                                           | `{}`            |
+| `collector.resources.limits`                            | The resources limits for Jaeger containers                                                 | `{}`            |
+| `collector.resources.requests`                          | The requested resources for Jaeger containers                                              | `{}`            |
+| `collector.extraVolumeMounts`                           | Optionally specify extra list of additional volumeMounts for jaeger container              | `[]`            |
+| `collector.containerPorts.zipkin`                       | can accept Zipkin spans in Thrift, JSON and Proto (disabled by default)                    | `9411`          |
+| `collector.containerPorts.grpc`                         | used by jaeger-agent to send spans in model.proto format                                   | `14250`         |
+| `collector.containerPorts.binary`                       | can accept spans directly from clients in jaeger.thrift format over binary thrift protocol | `14268`         |
+| `collector.containerPorts.admin`                        | Admin port: health check at / and metrics at /metrics                                      | `14269`         |
+| `collector.service.type`                                | Jaeger service type                                                                        | `ClusterIP`     |
+| `collector.service.ports.zipkin`                        | can accept Zipkin spans in Thrift, JSON and Proto (disabled by default)                    | `9411`          |
+| `collector.service.ports.grpc`                          | used by jaeger-agent to send spans in model.proto format                                   | `14250`         |
+| `collector.service.ports.binary`                        | can accept spans directly from clients in jaeger.thrift format over binary thrift protocol | `14268`         |
+| `collector.service.ports.admin`                         | Admin port: health check at / and metrics at /metrics                                      | `14269`         |
+| `collector.service.nodePorts.zipkin`                    | can accept Zipkin spans in Thrift, JSON and Proto (disabled by default)                    | `""`            |
+| `collector.service.nodePorts.grpc`                      | used by jaeger-agent to send spans in model.proto format                                   | `""`            |
+| `collector.service.nodePorts.binary`                    | can accept spans directly from clients in jaeger.thrift format over binary thrift protocol | `""`            |
+| `collector.service.nodePorts.admin`                     | Admin port: health check at / and metrics at /metrics                                      | `""`            |
+| `collector.service.extraPorts`                          | Extra ports to expose in the service (normally used with the `sidecar` value)              | `[]`            |
+| `collector.service.loadBalancerIP`                      | LoadBalancerIP if service type is `LoadBalancer`                                           | `""`            |
+| `collector.service.loadBalancerSourceRanges`            | Service Load Balancer sources                                                              | `[]`            |
+| `collector.service.clusterIP`                           | Service Cluster IP                                                                         | `""`            |
+| `collector.service.externalTrafficPolicy`               | Service external traffic policy                                                            | `Cluster`       |
+| `collector.service.annotations`                         | Provide any additional annotations which may be required.                                  | `{}`            |
+| `collector.service.sessionAffinity`                     | Session Affinity for Kubernetes service, can be "None" or "ClientIP"                       | `None`          |
+| `collector.service.sessionAffinityConfig`               | Additional settings for the sessionAffinity                                                | `{}`            |
+| `collector.service.metrics.annotations`                 | Annotations for Prometheus metrics                                                         | `{}`            |
+| `collector.serviceAccount.create`                       | Enables ServiceAccount                                                                     | `true`          |
+| `collector.serviceAccount.name`                         | ServiceAccount name                                                                        | `""`            |
+| `collector.serviceAccount.annotations`                  | Annotations to add to all deployed objects                                                 | `{}`            |
+| `collector.serviceAccount.automountServiceAccountToken` | Automount API credentials for a service account.                                           | `true`          |
+| `collector.podSecurityContext.enabled`                  | Enabled Jaeger pods' Security Context                                                      | `true`          |
+| `collector.podSecurityContext.fsGroup`                  | Set Jaeger pod's Security Context fsGroup                                                  | `1001`          |
+| `collector.containerSecurityContext.enabled`            | Enabled Jaeger containers' Security Context                                                | `true`          |
+| `collector.containerSecurityContext.runAsUser`          | Set Jaeger container's Security Context runAsUser                                          | `1001`          |
+| `collector.containerSecurityContext.runAsNonRoot`       | Force the container to be run as non root                                                  | `true`          |
+| `collector.podAnnotations`                              | Additional pod annotations                                                                 | `{}`            |
+| `collector.podLabels`                                   | Additional pod labels                                                                      | `{}`            |
+| `collector.podAffinityPreset`                           | Pod affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`        | `""`            |
+| `collector.podAntiAffinityPreset`                       | Pod anti-affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`   | `soft`          |
+| `collector.nodeAffinityPreset.type`                     | Node affinity preset type. Ignored if `affinity` is set. Allowed values: `soft` or `hard`  | `""`            |
+| `collector.nodeAffinityPreset.key`                      | Node label key to match. Ignored if `affinity` is set                                      | `""`            |
+| `collector.nodeAffinityPreset.values`                   | Node label values to match. Ignored if `affinity` is set                                   | `[]`            |
+| `collector.priorityClassName`                           | Server priorityClassName                                                                   | `""`            |
+| `collector.affinity`                                    | Affinity for pod assignment                                                                | `{}`            |
+| `collector.nodeSelector`                                | Node labels for pod assignment                                                             | `{}`            |
+| `collector.tolerations`                                 | Tolerations for pod assignment                                                             | `[]`            |
+| `collector.topologySpreadConstraints`                   | Topology Spread Constraints for pod assignment                                             | `[]`            |
+| `collector.schedulerName`                               | Alternative scheduler                                                                      | `""`            |
+| `collector.updateStrategy.type`                         | Jaeger collector deployment strategy type                                                  | `RollingUpdate` |
+| `collector.updateStrategy.rollingUpdate`                | Jaeger collector deployment rolling update configuration parameters                        | `{}`            |
+| `collector.extraVolumes`                                | Optionally specify extra list of additional volumes for jaeger container                   | `[]`            |
+| `collector.initContainers`                              | Add additional init containers to the jaeger pods                                          | `[]`            |
+| `collector.sidecars`                                    | Add additional sidecar containers to the jaeger pods                                       | `[]`            |
 
-#### Installing the Chart using an Existing Elasticsearch Cluster
+### agent deployment parameters
 
-A release can be configured as follows to use an existing ElasticSearch cluster as it as the storage backend:
+| Name                                                | Description                                                                                                    | Value           |
+| --------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- | --------------- |
+| `agent.command`                                     | Command for running the container (set to default if not set). Use array form                                  | `[]`            |
+| `agent.args`                                        | Args for running the container (set to default if not set). Use array form                                     | `[]`            |
+| `agent.lifecycleHooks`                              | Override default etcd container hooks                                                                          | `{}`            |
+| `agent.extraEnvVars`                                | Extra environment variables to be set on jaeger container                                                      | `[]`            |
+| `agent.extraEnvVarsCM`                              | Name of existing ConfigMap containing extra env vars                                                           | `""`            |
+| `agent.extraEnvVarsSecret`                          | Name of existing Secret containing extra env vars                                                              | `""`            |
+| `agent.replicaCount`                                | Number of Jaeger replicas                                                                                      | `1`             |
+| `agent.livenessProbe.enabled`                       | Enable livenessProbe on agent nodes                                                                            | `true`          |
+| `agent.livenessProbe.initialDelaySeconds`           | Initial delay seconds for livenessProbe                                                                        | `10`            |
+| `agent.livenessProbe.periodSeconds`                 | Period seconds for livenessProbe                                                                               | `10`            |
+| `agent.livenessProbe.timeoutSeconds`                | Timeout seconds for livenessProbe                                                                              | `1`             |
+| `agent.livenessProbe.failureThreshold`              | Failure threshold for livenessProbe                                                                            | `3`             |
+| `agent.livenessProbe.successThreshold`              | Success threshold for livenessProbe                                                                            | `1`             |
+| `agent.startupProbe.enabled`                        | Enable startupProbe on agent containers                                                                        | `false`         |
+| `agent.startupProbe.initialDelaySeconds`            | Initial delay seconds for startupProbe                                                                         | `10`            |
+| `agent.startupProbe.periodSeconds`                  | Period seconds for startupProbe                                                                                | `10`            |
+| `agent.startupProbe.timeoutSeconds`                 | Timeout seconds for startupProbe                                                                               | `1`             |
+| `agent.startupProbe.failureThreshold`               | Failure threshold for startupProbe                                                                             | `15`            |
+| `agent.startupProbe.successThreshold`               | Success threshold for startupProbe                                                                             | `1`             |
+| `agent.readinessProbe.enabled`                      | Enable readinessProbe                                                                                          | `false`         |
+| `agent.readinessProbe.initialDelaySeconds`          | Initial delay seconds for readinessProbe                                                                       | `10`            |
+| `agent.readinessProbe.periodSeconds`                | Period seconds for readinessProbe                                                                              | `10`            |
+| `agent.readinessProbe.timeoutSeconds`               | Timeout seconds for readinessProbe                                                                             | `1`             |
+| `agent.readinessProbe.failureThreshold`             | Failure threshold for readinessProbe                                                                           | `15`            |
+| `agent.readinessProbe.successThreshold`             | Success threshold for readinessProbe                                                                           | `1`             |
+| `agent.customLivenessProbe`                         | Custom livenessProbe that overrides the default one                                                            | `{}`            |
+| `agent.customStartupProbe`                          | Override default startup probe                                                                                 | `{}`            |
+| `agent.customReadinessProbe`                        | Override default readiness probe                                                                               | `{}`            |
+| `agent.resources.limits`                            | The resources limits for Jaeger containers                                                                     | `{}`            |
+| `agent.resources.requests`                          | The requested resources for Jaeger containers                                                                  | `{}`            |
+| `agent.extraVolumeMounts`                           | Optionally specify extra list of additional volumeMounts for jaeger container                                  | `[]`            |
+| `agent.containerPorts.compact`                      | accept jaeger.thrift in compact Thrift protocol used by most current Jaeger clients                            | `6831`          |
+| `agent.containerPorts.binary`                       | accept jaeger.thrift in binary Thrift protocol used by Node.js Jaeger client                                   | `6832`          |
+| `agent.containerPorts.config`                       | Serve configs, sampling strategies                                                                             | `5778`          |
+| `agent.containerPorts.zipkin`                       | Accept zipkin.thrift in compact Thrift protocol (deprecated; only used by very old Jaeger clients, circa 2016) | `5775`          |
+| `agent.containerPorts.admin`                        | Admin port: health check at / and metrics at /metrics                                                          | `14271`         |
+| `agent.service.type`                                | Jaeger service type                                                                                            | `ClusterIP`     |
+| `agent.service.ports.compact`                       | accept jaeger.thrift in compact Thrift protocol used by most current Jaeger clients                            | `6831`          |
+| `agent.service.ports.binary`                        | accept jaeger.thrift in binary Thrift protocol used by Node.js Jaeger client                                   | `6832`          |
+| `agent.service.ports.config`                        | Serve configs, sampling strategies                                                                             | `5778`          |
+| `agent.service.ports.zipkin`                        | Accept zipkin.thrift in compact Thrift protocol (deprecated; only used by very old Jaeger clients, circa 2016) | `5775`          |
+| `agent.service.ports.admin`                         | Admin port: health check at / and metrics at /metrics                                                          | `14271`         |
+| `agent.service.nodePorts.compact`                   | accept jaeger.thrift in compact Thrift protocol used by most current Jaeger clients                            | `""`            |
+| `agent.service.nodePorts.binary`                    | accept jaeger.thrift in binary Thrift protocol used by Node.js Jaeger client                                   | `""`            |
+| `agent.service.nodePorts.config`                    | Serve configs, sampling strategies                                                                             | `""`            |
+| `agent.service.nodePorts.zipkin`                    | Accept zipkin.thrift in compact Thrift protocol (deprecated; only used by very old Jaeger clients, circa 2016) | `""`            |
+| `agent.service.nodePorts.admin`                     | Admin port: health check at / and metrics at /metrics                                                          | `""`            |
+| `agent.service.extraPorts`                          | Extra ports to expose in the service (normally used with the `sidecar` value)                                  | `[]`            |
+| `agent.service.loadBalancerIP`                      | LoadBalancerIP if service type is `LoadBalancer`                                                               | `""`            |
+| `agent.service.loadBalancerSourceRanges`            | Service Load Balancer sources                                                                                  | `[]`            |
+| `agent.service.clusterIP`                           | Service Cluster IP                                                                                             | `""`            |
+| `agent.service.externalTrafficPolicy`               | Service external traffic policy                                                                                | `Cluster`       |
+| `agent.service.annotations`                         | Provide any additional annotations which may be required.                                                      | `{}`            |
+| `agent.service.sessionAffinity`                     | Session Affinity for Kubernetes service, can be "None" or "ClientIP"                                           | `None`          |
+| `agent.service.sessionAffinityConfig`               | Additional settings for the sessionAffinity                                                                    | `{}`            |
+| `agent.service.metrics.annotations`                 | Annotations for Prometheus metrics                                                                             | `{}`            |
+| `agent.serviceAccount.create`                       | Enables ServiceAccount                                                                                         | `true`          |
+| `agent.serviceAccount.name`                         | ServiceAccount name                                                                                            | `""`            |
+| `agent.serviceAccount.annotations`                  | Annotations to add to all deployed objects                                                                     | `{}`            |
+| `agent.serviceAccount.automountServiceAccountToken` | Automount API credentials for a service account.                                                               | `true`          |
+| `agent.podSecurityContext.enabled`                  | Enabled Jaeger pods' Security Context                                                                          | `true`          |
+| `agent.podSecurityContext.fsGroup`                  | Set Jaeger pod's Security Context fsGroup                                                                      | `1001`          |
+| `agent.containerSecurityContext.enabled`            | Enabled Jaeger containers' Security Context                                                                    | `true`          |
+| `agent.containerSecurityContext.runAsUser`          | Set Jaeger container's Security Context runAsUser                                                              | `1001`          |
+| `agent.containerSecurityContext.runAsNonRoot`       | Force the container to be run as non root                                                                      | `true`          |
+| `agent.podAnnotations`                              | Additional pod annotations                                                                                     | `{}`            |
+| `agent.podLabels`                                   | Additional pod labels                                                                                          | `{}`            |
+| `agent.podAffinityPreset`                           | Pod affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`                            | `""`            |
+| `agent.podAntiAffinityPreset`                       | Pod anti-affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`                       | `soft`          |
+| `agent.nodeAffinityPreset.type`                     | Node affinity preset type. Ignored if `affinity` is set. Allowed values: `soft` or `hard`                      | `""`            |
+| `agent.nodeAffinityPreset.key`                      | Node label key to match. Ignored if `affinity` is set                                                          | `""`            |
+| `agent.nodeAffinityPreset.values`                   | Node label values to match. Ignored if `affinity` is set                                                       | `[]`            |
+| `agent.priorityClassName`                           | Server priorityClassName                                                                                       | `""`            |
+| `agent.affinity`                                    | Affinity for pod assignment                                                                                    | `{}`            |
+| `agent.nodeSelector`                                | Node labels for pod assignment                                                                                 | `{}`            |
+| `agent.tolerations`                                 | Tolerations for pod assignment                                                                                 | `[]`            |
+| `agent.topologySpreadConstraints`                   | Topology Spread Constraints for pod assignment                                                                 | `[]`            |
+| `agent.schedulerName`                               | Alternative scheduler                                                                                          | `""`            |
+| `agent.updateStrategy.type`                         | Jaeger agent deployment strategy type                                                                          | `RollingUpdate` |
+| `agent.updateStrategy.rollingUpdate`                | Jaeger agent deployment rolling update configuration parameters                                                | `{}`            |
+| `agent.extraVolumes`                                | Optionally specify extra list of additional volumes for jaeger container                                       | `[]`            |
+| `agent.initContainers`                              | Add additional init containers to the jaeger pods                                                              | `[]`            |
+| `agent.sidecars`                                    | Add additional sidecar containers to the jaeger pods                                                           | `[]`            |
+| `migration.podLabels`                               | Additional pod labels                                                                                          | `{}`            |
+| `migration.podAnnotations`                          | Additional pod annotations                                                                                     | `{}`            |
+| `migration.annotations`                             | Provide any additional annotations which may be required.                                                      | `{}`            |
+| `migration.podSecurityContext.enabled`              | Enabled Jaeger pods' Security Context                                                                          | `true`          |
+| `migration.podSecurityContext.fsGroup`              | Set Jaeger pod's Security Context fsGroup                                                                      | `1001`          |
+| `migration.extraEnvVars`                            | Extra environment variables to be set on jaeger migration container                                            | `[]`            |
+| `migration.extraEnvVarsCM`                          | Name of existing ConfigMap containing extra env vars                                                           | `""`            |
+| `migration.extraEnvVarsSecret`                      | Name of existing Secret containing extra env vars                                                              | `""`            |
+| `migration.extraVolumeMounts`                       | Optionally specify extra list of additional volumeMounts for jaeger container                                  | `[]`            |
+| `migration.resources.limits`                        | The resources limits for Jaeger containers                                                                     | `{}`            |
+| `migration.resources.requests`                      | The requested resources for Jaeger containers                                                                  | `{}`            |
+| `migration.extraVolumes`                            | Optionally specify extra list of additional volumes for jaeger container                                       | `[]`            |
 
-```console
-helm install jaeger jaegertracing/jaeger \
-  --set provisionDataStore.cassandra=false \
-  --set storage.type=elasticsearch \
-  --set storage.elasticsearch.host=<HOST> \
-  --set storage.elasticsearch.port=<PORT> \
-  --set storage.elasticsearch.user=<USER> \
-  --set storage.elasticsearch.password=<password>
-```
+### Set the image to use for the migration job
 
-#### Installing the Chart using an Existing ElasticSearch Cluster with TLS
+| Name                                         | Description                                                                                               | Value                |
+| -------------------------------------------- | --------------------------------------------------------------------------------------------------------- | -------------------- |
+| `cqlshImage.registry`                        | Cassandra image registry                                                                                  | `docker.io`          |
+| `cqlshImage.repository`                      | Cassandra image repository                                                                                | `bitnami/cassandra`  |
+| `cqlshImage.tag`                             | Cassandra image tag (immutable tags are recommended)                                                      | `4.0.8-debian-11-r4` |
+| `cqlshImage.digest`                          | Cassandra image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag | `""`                 |
+| `cqlshImage.pullPolicy`                      | image pull policy                                                                                         | `IfNotPresent`       |
+| `cqlshImage.pullSecrets`                     | Cassandra image pull secrets                                                                              | `[]`                 |
+| `cqlshImage.debug`                           | Enable image debug mode                                                                                   | `false`              |
+| `externalDatabase.host`                      | External database host                                                                                    | `""`                 |
+| `externalDatabase.port`                      | External database port                                                                                    | `9042`               |
+| `externalDatabase.dbUser.user`               | Cassandra admin user                                                                                      | `bn_jaeger`          |
+| `externalDatabase.dbUser.password`           | Password for `dbUser.user`. Randomly generated if empty                                                   | `""`                 |
+| `externalDatabase.existingSecret`            | Name of existing secret containing the database secret                                                    | `""`                 |
+| `externalDatabase.existingSecretPasswordKey` | Name of existing secret key containing the database password secret key                                   | `""`                 |
+| `externalDatabase.cluster.datacenter`        | Name for cassandra's jaeger datacenter                                                                    | `dc1`                |
+| `externalDatabase.keyspace`                  | Name for cassandra's jaeger keyspace                                                                      | `bitnami_jaeger`     |
 
-If you already have an existing running ElasticSearch cluster with TLS, you can configure the chart as follows to use it as your backing store:
+### Cassandra storage sub-chart
 
-Content of the `jaeger-values.yaml` file:
+| Name                           | Description                                             | Value            |
+| ------------------------------ | ------------------------------------------------------- | ---------------- |
+| `cassandra.enabled`            | Enables cassandra storage pod                           | `true`           |
+| `cassandra.cluster.datacenter` | Name for cassandra's jaeger datacenter                  | `dc1`            |
+| `cassandra.keyspace`           | Name for cassandra's jaeger keyspace                    | `bitnami_jaeger` |
+| `cassandra.dbUser.user`        | Cassandra admin user                                    | `bn_jaeger`      |
+| `cassandra.dbUser.password`    | Password for `dbUser.user`. Randomly generated if empty | `""`             |
+| `cassandra.service.ports.cql`  | Cassandra cql port                                      | `9042`           |
 
-```YAML
-storage:
-  type: elasticsearch
-  elasticsearch:
-    host: <HOST>
-    port: <PORT>
-    scheme: https
-    user: <USER>
-    password: <PASSWORD>
-provisionDataStore:
-  cassandra: false
-  elasticsearch: false
-query:
-  cmdlineParams:
-    es.tls.ca: "/tls/es.pem"
-  extraConfigmapMounts:
-    - name: jaeger-tls
-      mountPath: /tls
-      subPath: ""
-      configMap: jaeger-tls
-      readOnly: true
-collector:
-  cmdlineParams:
-    es.tls.ca: "/tls/es.pem"
-  extraConfigmapMounts:
-    - name: jaeger-tls
-      mountPath: /tls
-      subPath: ""
-      configMap: jaeger-tls
-      readOnly: true
-spark:
-  enabled: true
-  cmdlineParams:
-    java.opts: "-Djavax.net.ssl.trustStore=/tls/trust.store -Djavax.net.ssl.trustStorePassword=changeit"
-  extraConfigmapMounts:
-    - name: jaeger-tls
-      mountPath: /tls
-      subPath: ""
-      configMap: jaeger-tls
-      readOnly: true
+> **Tip**: You can use the default [values.yaml](values.yaml)
 
-```
+## Configuration and installation details
 
-Generate configmap jaeger-tls:
+### [Rolling VS Immutable tags](https://docs.bitnami.com/containers/how-to/understand-rolling-tags-containers/)
 
-```console
-keytool -import -trustcacerts -keystore trust.store -storepass changeit -alias es-root -file es.pem
-kubectl create configmap jaeger-tls --from-file=trust.store --from-file=es.pem
-```
+It is strongly recommended to use immutable tags in a production environment. This ensures your deployment does not change automatically if the same tag is updated with a different image.
 
-```console
-helm install jaeger jaegertracing/jaeger --values jaeger-values.yaml
-```
+Bitnami will release a new chart updating its containers if a new version of the main container, significant changes, or critical vulnerabilities exist.
 
-### Cassandra configuration
+### Persistence
 
-#### Installing the Chart using an Existing Cassandra Cluster
+The [Bitnami jaeger](https://github.com/bitnami/containers/tree/main/bitnami/jaeger) image stores the trace onto an external database. Persistent Volume Claims are used to keep the data across deployments.
 
-If you already have an existing running Cassandra cluster, you can configure the chart as follows to use it as your backing store (make sure you replace `<HOST>`, `<PORT>`, etc with your values):
+### Additional environment variables
 
-```console
-helm install jaeger jaegertracing/jaeger \
-  --set provisionDataStore.cassandra=false \
-  --set storage.cassandra.host=<HOST> \
-  --set storage.cassandra.port=<PORT> \
-  --set storage.cassandra.user=<USER> \
-  --set storage.cassandra.password=<PASSWORD>
-```
-
-#### Installing the Chart using an Existing Cassandra Cluster with TLS
-
-If you already have an existing running Cassandra cluster with TLS, you can configure the chart as follows to use it as your backing store:
-
-Content of the `values.yaml` file:
-
-```YAML
-storage:
-  type: cassandra
-  cassandra:
-    host: <HOST>
-    port: <PORT>
-    user: <USER>
-    password: <PASSWORD>
-    tls:
-      enabled: true
-      secretName: cassandra-tls-secret
-
-provisionDataStore:
-  cassandra: false
-```
-
-Content of the `jaeger-tls-cassandra-secret.yaml` file:
-
-```YAML
-apiVersion: v1
-kind: Secret
-metadata:
-  name: cassandra-tls-secret
-data:
-  commonName: <SERVER NAME>
-  ca-cert.pem: |
-    -----BEGIN CERTIFICATE-----
-    <CERT>
-    -----END CERTIFICATE-----
-  client-cert.pem: |
-    -----BEGIN CERTIFICATE-----
-    <CERT>
-    -----END CERTIFICATE-----
-  client-key.pem: |
-    -----BEGIN RSA PRIVATE KEY-----
-    -----END RSA PRIVATE KEY-----
-  cqlshrc: |
-    [ssl]
-    certfile = ~/.cassandra/ca-cert.pem
-    userkey = ~/.cassandra/client-key.pem
-    usercert = ~/.cassandra/client-cert.pem
-
-```
-
-```console
-kubectl apply -f jaeger-tls-cassandra-secret.yaml
-helm install jaeger jaegertracing/jaeger --values values.yaml
-```
-
-### Ingester Configuration
-
-#### Installing the Chart with Ingester enabled
-
-The architecture illustrated below can be achieved by enabling the ingester component. When enabled, Cassandra or Elasticsearch (depending on the configured values) now becomes the ingester's storage backend, whereas Kafka becomes the storage backend of the collector service.
-
-![Jaeger with Ingester](https://www.jaegertracing.io/img/architecture-v2.png)
-
-#### Installing the Chart with Ingester enabled using a New Kafka Cluster
-
-To provision a new Kafka cluster along with jaeger-ingester:
-
-```console
-helm install jaeger jaegertracing/jaeger \
-  --set provisionDataStore.kafka=true \
-  --set ingester.enabled=true
-```
-
-#### Installing the Chart with Ingester using an existing Kafka Cluster
-
-You can use an existing Kafka cluster with jaeger too
-
-```console
-helm install jaeger jaegertracing/jaeger \
-  --set ingester.enabled=true \
-  --set storage.kafka.brokers={<BROKER1:PORT>,<BROKER2:PORT>} \
-  --set storage.kafka.topic=<TOPIC>
-```
-
-### Other Storage Configuration
-
-If you are using grpc-plugin based storage, you can set environment
-variables that are needed by the plugin.
-
-As as example if using the [jaeger-mongodb](https://github.com/mongodb-labs/jaeger-mongodb)
-plugin you can set the `MONGO_URL` as follows...
-
-```YAML
-storage:
-  type: grpc-plugin
-  grpcPlugin:
-    extraEnv:
-      - name: MONGO_URL
-        valueFrom:
-          secretKeyRef:
-            key: MONGO_URL
-            name: jaeger-secrets
-```
-
-### All in One In-Memory Configuration
-
-#### Installing the Chart using the All in One executable and in-memory storage
-
-To install the chart with the release name `jaeger` using in-memory storage and the All in One
-executable, configure the chart as follows:
-
-Content of the `values.yaml` file:
+In case you want to add extra environment variables (useful for advanced operations like custom init scripts), you can use the `extraEnvVars` property inside each of the subsections: `collector`, `agent`, `query`.
 
 ```yaml
-provisionDataStore:
-  cassandra: false
-allInOne:
-  enabled: true
-storage:
-  type: none
+collector:
+  extraEnvVars:
+    - name: ENV_VAR_NAME
+      value: ENV_VAR_VALUE
+
 agent:
-  enabled: false
-collector:
-  enabled: false
+  extraEnvVars:
+    - name: ENV_VAR_NAME
+      value: ENV_VAR_VALUE
+
 query:
-  enabled: false
+  extraEnvVars:
+    - name: ENV_VAR_NAME
+      value: ENV_VAR_VALUE
 ```
 
-It's possible to specify resources and extra environment variables for the all in one deployment:
+Alternatively, you can use a ConfigMap or a Secret with the environment variables. To do so, use the `extraEnvVarsCM` or the `extraEnvVarsSecret` values.
 
-```yaml
-allInOne:
-  extraEnv:
-    - name: QUERY_BASE_PATH
-      value: /jaeger
-  resources:
-    limits:
-      cpu: 500m
-      memory: 512Mi
-    requests:
-      cpu: 256m
-      memory: 128Mi
+### Sidecars
+
+If additional containers are needed in the same pod as jaeger (such as additional metrics or logging exporters), they can be defined using the `sidecars` parameter inside each of the subsections: `collector`, `agent`, `query` . If these sidecars export extra ports, extra port definitions can be added using the `service.extraPorts` parameter. [Learn more about configuring and using sidecar containers](https://docs.bitnami.com/kubernetes/infrastructure/jaeger/configuration/configure-sidecar-init-containers/).
+
+### Pod affinity
+
+This chart allows you to set your custom affinity using the `affinity` parameter. Find more information about Pod affinity in the [kubernetes documentation](https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity).
+
+As an alternative, use one of the preset configurations for pod affinity, pod anti-affinity, and node affinity available at the [bitnami/common](https://github.com/bitnami/charts/tree/main/bitnami/common#affinities) chart. To do so, set the `podAffinityPreset`, `podAntiAffinityPreset`, or `nodeAffinityPreset` parameters inside each of the subsections: `distributor`, `compactor`, `ingester`, `querier`, `queryFrontend` and `vulture`.
+
+### External database support
+
+You may want to have Jaeger connect to an external database rather than installing one inside your cluster. Typical reasons for this are to use a managed database service, or to share a common database server for all your applications. To achieve this, the chart allows you to specify credentials for an external database with the [`externalDatabase` parameter](#parameters). You should also disable the Cassandra installation with the `cassandra.enabled` option. Here is an example:
+
+```console
+cassandra.enabled=false
+externalDatabase.host=myexternalhost
+externalDatabase.port=9042
 ```
 
-```bash
-helm install jaeger jaegertracing/jaeger --values values.yaml
-```
+## Troubleshooting
 
-## oAuth2 Sidecar
-If extra protection of the Jaeger UI is needed, then the oAuth2 sidecar can be enabled in the Jaeger Query. The oAuth2
-sidecar acts as a security proxy in front of the Jaeger Query service and enforces user authentication before reaching
-the Jaeger UI. This method can work with any valid provider including Keycloak, Azure, Google, GitHub, and more.
+Find more information about how to deal with common errors related to Bitnami's Helm charts in [this troubleshooting guide](https://docs.bitnami.com/general/how-to/troubleshoot-helm-chart-issues).
 
-Offical docs [here](https://oauth2-proxy.github.io/oauth2-proxy/docs/behaviour)
+## Upgrading
 
-Content of the `jaeger-values.yaml` file:
+### To 1.0.0
 
-```YAML
-query:
-  enabled: true
-  oAuthSidecar:
-    enabled: true
-    image: quay.io/oauth2-proxy/oauth2-proxy:v7.3.0
-    pullPolicy: IfNotPresent
-    containerPort: 4180
-    args:
-      - --config
-      - /etc/oauth2-proxy/oauth2-proxy.cfg
-      - --client-secret
-      - "$(client-secret)"
-    extraEnv:
-      - name: client-secret
-        valueFrom:
-          secretKeyRef:
-            name: client-secret
-            key: client-secret-key
-    extraConfigmapMounts: []
-    extraSecretMounts: []
-    config: |-
-      provider = "oidc"
-      https_address = ":4180"
-      upstreams = ["http://localhost:16686"]
-      redirect_url = "https://jaeger-svc-domain/oauth2/callback"
-      client_id = "jaeger-query"
-      oidc_issuer_url = "https://keycloak-svc-domain/auth/realms/Default"
-      cookie_secure = "true"
-      cookie_secret = ""
-      email_domains = "*"
-      oidc_groups_claim = "groups"
-      user_id_claim = "preferred_username"
-      skip_provider_button = "true"
-```
+This major updates the Cassandra subchart to its newest major, 10.0.0. [Here](https://github.com/bitnami/charts/pull/14076) you can find more information about the changes introduced in that version.
 
-## Installing extra kubernetes objects
+## License
 
-If additional kubernetes objects need to be installed alongside this chart, set the `extraObjects` array to contain
-the yaml describing these objects. The values in the array are treated as a template to allow the use of variable
-substitution and function calls as in the example below.
+Copyright &copy; 2023 Bitnami
 
-Content of the `jaeger-values.yaml` file:
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-```YAML
-extraObjects:
-  - apiVersion: rbac.authorization.k8s.io/v1
-    kind: RoleBinding
-    metadata:
-      name: {{ .Release.Name }}-someRoleBinding
-    roleRef:
-      apiGroup: rbac.authorization.k8s.io
-      kind: Role
-      name: someRole
-    subjects:
-      - kind: ServiceAccount
-        name: "{{ include \"jaeger.esLookback.serviceAccountName\" . }}"
-```
+<http://www.apache.org/licenses/LICENSE-2.0>
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
