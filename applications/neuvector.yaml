@@ -13,8 +13,6 @@ spec:
       valueFiles:
       - values.yaml
     path: neuvector
-    # kustomize:
-    #   version: v4.5.7
     repoURL:  https://github.com/asongent/gen.git
     targetRevision: HEAD
   syncPolicy:
