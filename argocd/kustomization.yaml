@@ -11,6 +11,7 @@ resources:
 
 patchesStrategicMerge:
 - configmap-patch.yaml
+# - testing-argocd.yaml
 - add-custom-kustomize-merged.yaml
 
 # - add-custom-kustomize.yaml

@@ -12,7 +12,7 @@ data:
   resource.compareoptions: |
     ignoreAggregatedRoles: true
   # ui.bannercontent: "Welcome To New Generation Technology!"
-  timeout.reconciliation: 10s
+  timeout.reconciliation: 5s
   resource.customizations: |
     admissionregistration.k8s.io/MutatingWebhookConfiguration:
       ignoreDifferences: |

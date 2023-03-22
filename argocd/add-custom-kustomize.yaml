@@ -17,7 +17,7 @@ spec:
           command: [sh, -c]
           args:
             - wget -qO- https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv4.5.7/kustomize_v4.5.7_linux_amd64.tar.gz | tar -xvzf - &&
-              mv kustomize /custom-tools/kustomize_4_5_7
+              mv kustomize /custom-tools
           volumeMounts:
             - mountPath: /custom-tools
               name: custom-tools
@@ -28,8 +28,9 @@ spec:
           args:
             - echo "Installing KSOPS...";
               export PKG_NAME=ksops;
-              mv ${PKG_NAME}.so /custom-tools/;
-              mv $GOPATH/bin/kustomize /custom-tools/;
+              cp ${PKG_NAME}.so /custom-tools/;
+              cp ${PKG_NAME}.so /.config/kustomize/plugin/viaduct.ai/v1/ksops/
+              cp $GOPATH/bin/kustomize /custom-tools/;
               echo "Done.";
           volumeMounts:
             - mountPath: /custom-tools
@@ -59,7 +60,7 @@ spec:
         - mountPath: /usr/local/bin/kustomize
           name: custom-tools
           subPath: kustomize
-        - mountPath: /.config/kustomize/plugin/viaduct.ai/v1/ksops/ksops
+        - mountPath: /.config/kustomize/plugin/viaduct.ai/v1/ksops/
           name: custom-tools
           subPath: ksops
       volumes:
