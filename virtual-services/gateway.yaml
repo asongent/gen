@@ -7,8 +7,9 @@ metadata:
   namespace: istio-system
   labels:
     app.kubernetes.io/instance: ingressgateway
-    app: ingressgateway
+    #app: ingressgateway
     istio: ingressgateway
+    app: istio-ingressgateway
 spec:
   selector:
     istio: ingressgateway
@@ -33,38 +34,38 @@ spec:
       credentialName: gateway-certs 
 
 
---- 
-apiVersion: networking.istio.io/v1alpha3
-kind: Gateway
-metadata:
-  name: seldon-gateway
-  namespace: istio-system
-  labels:
-    app.kubernetes.io/instance: ingressgateway
-    app: ingressgateway
-    istio: ingressgateway
-spec:
-  selector:
-    istio: ingressgateway # use istio default controller
-  servers:
-  - hosts:
-    - 'seldon-model.fredgentech.net'
-    port:
-      name: http
-      number: 80
-      protocol: HTTP
-    # Upgrade HTTP to HTTPS
-    tls:
-      httpsRedirect: true
-  - hosts:
-    - 'seldon-model.fredgentech.net'
-    port:
-      name: https
-      number: 443
-      protocol: HTTPS
-    tls:
-      mode: SIMPLE
-      credentialName: gateway-certs 
+# --- 
+# apiVersion: networking.istio.io/v1alpha3
+# kind: Gateway
+# metadata:
+#   name: seldon-gateway
+#   namespace: istio-system
+#   labels:
+#     app.kubernetes.io/instance: ingressgateway
+#     app: ingressgateway
+#     istio: ingressgateway
+# spec:
+#   selector:
+#     istio: ingressgateway # use istio default controller
+#   servers:
+#   - hosts:
+#     - 'seldon-model.fredgentech.net'
+#     port:
+#       name: http
+#       number: 80
+#       protocol: HTTP
+#     # Upgrade HTTP to HTTPS
+#     tls:
+#       httpsRedirect: true
+#   - hosts:
+#     - 'seldon-model.fredgentech.net'
+#     port:
+#       name: https
+#       number: 443
+#       protocol: HTTPS
+#     tls:
+#       mode: SIMPLE
+#       credentialName: gateway-certs 
 
 
 
