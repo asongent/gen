@@ -61,9 +61,6 @@ spec:
               done;
 
               echo 'PostgreSQL OK ✓'
-          # env:
-          # - name: POSTGRES_HOST_AUTH_METHOD
-          #   value: "trust" 
           resources:
             {{- toYaml .Values.pgchecker.resources | nindent 12 }}
         {{- end }}

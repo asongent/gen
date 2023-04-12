@@ -104,7 +104,7 @@ command: []
 ## Overrides the default args for the Keycloak container
 args: []
 
-# Additional environment variables for Keycloak 
+# Additional environment variables for Keycloak
 extraEnv: |
   - name: KEYCLOAK_USER
     valueFrom:
@@ -116,48 +116,14 @@ extraEnv: |
       secretKeyRef:
         name: keycloak-admin
         key: password
-  - name: DB_VENDOR
-    value: postgres
-  - name: DB_ADDR
-    value: "keycloak-test.c8tbwexvdvdx.us-east-1.rds.amazonaws.com"
-  - name: DB_PORT
-    value: "5432"
-  - name: DB_DATABASE
-    value: usermanagement
-  - name: DB_USER_FILE
-    value: /secrets/db-creds/user
-  - name: DB_PASSWORD_FILE
-    value: /secrets/db-creds/password
-    
-# - name: KC_HTTP_RELATIVE_PATH
-#   value: /auth
-# - name: KC_HTTPS_CERTIFICATE_FILE
-#   value: /opt/keycloak/conf/tls.crt
-# - name: KC_HTTPS_CERTIFICATE_KEY_FILE
-#   value: /opt/keycloak/conf/tls.key
-# - name: KC_HOSTNAME
-#   value: keycloak.fredgentech.net
-# - name: KC_PROXY
-#   value: passthrough
-# - name: KC_HOSTNAME_STRICT_HTTPS
-#   value: "true"
-# - name: KC_HOSTNAME_STRICT
-#   value: "true"
-# - name: KC_HTTP_ENABLED
-#   value: "true"
-
-
-
-
-# extraEnv: ""
-#   - name: KEYCLOAK_LOGLEVEL
-#     value: DEBUG
-#   - name: WILDFLY_LOGLEVEL
-#     value: DEBUG
-#   - name: CACHE_OWNERS_COUNT
-#     value: "2"
-#   - name: CACHE_OWNERS_AUTH_SESSIONS_COUNT
-#     value: "2"
+# - name: KEYCLOAK_LOGLEVEL
+#   value: DEBUG
+# - name: WILDFLY_LOGLEVEL
+#   value: DEBUG
+# - name: CACHE_OWNERS_COUNT
+#   value: "2"
+# - name: CACHE_OWNERS_AUTH_SESSIONS_COUNT
+  #   value: "2"
 
 # Additional environment variables for Keycloak mapped from Secret or ConfigMap
 extraEnvFrom: ""
@@ -207,45 +173,25 @@ podLabels: {}
 podAnnotations: {}
 
 # Liveness probe configuration
-# livenessProbe: |
-#   httpGet:
-#     path: /auth/
-#     port: http
-#   initialDelaySeconds: 0
-#   timeoutSeconds: 5
-
 livenessProbe: |
   httpGet:
-    path: /auth/realms/master
+    path: /auth/
     port: http
-    scheme: HTTP
-  failureThreshold: 15
-  timeoutSeconds: 2
-  periodSeconds: 15
-
-
-
+  initialDelaySeconds: 0
+  timeoutSeconds: 5
 
 # Readiness probe configuration
-# readinessProbe: |
-#   httpGet:
-#     path: /auth/realms/master
-#     port: http
-#   initialDelaySeconds: 30
-#   timeoutSeconds: 1
-
 readinessProbe: |
   httpGet:
     path: /auth/realms/master
     port: http
-    scheme: HTTP
-  failureThreshold: 30
+  initialDelaySeconds: 30
   timeoutSeconds: 1
 
 # Startup probe configuration
 startupProbe: |
   httpGet:
-    path: /auth/realms/master
+    path: /auth/
     port: http
   initialDelaySeconds: 30
   timeoutSeconds: 1
@@ -272,24 +218,11 @@ startupScripts:
   # echo 'Hello from my custom startup script!'
 
 # Add additional volumes, e. g. for custom themes
-# extraVolumes: ""
-extraVolumes: |
-  - name: db-creds
-    secret:
-      secretName: keycloak-database
-  - name: kc-http-certificate-file
-    secret:
-      secretName: keycloak-tls
+extraVolumes: ""
 
 # Add additional volumes mounts, e. g. for custom themes
-# extraVolumeMounts: ""
-extraVolumeMounts: |
-  - name: db-creds
-    mountPath: /secrets/db-creds
-    readOnly: true
-  - name: kc-http-certificate-file
-    mountPath: /opt/keycloak/conf
-    readOnly: true
+extraVolumeMounts: ""
+
 # Add additional ports, e. g. for admin console or exposing JGroups ports
 extraPorts: []
 
@@ -305,7 +238,6 @@ statefulsetAnnotations: {}
 statefulsetLabels: {}
 
 # Configuration for secrets that should be created
-
 secrets: {}
   # mysecret:
   #   type: {}
@@ -313,6 +245,7 @@ secrets: {}
   #   labels: {}
   #   stringData: {}
   #   data: {}
+
 service:
   # Annotations for headless and HTTP Services
   annotations: {}
@@ -461,7 +394,7 @@ pgchecker:
 
 postgresql:
   # If `true`, the Postgresql dependency is enabled
-  enabled: false
+  enabled: true
   # PostgreSQL User to create
   postgresqlUsername: keycloak
   # PostgreSQL Password for the new user
