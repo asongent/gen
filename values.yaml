@@ -116,6 +116,20 @@ extraEnv: |-
       secretKeyRef:
         name: keycloak-admin
         key: password
+  - name: KC_HTTPS_CERTIFICATE_FILE
+    value: /opt/keycloak/conf/tls.crt
+  - name: KC_HTTPS_CERTIFICATE_KEY_FILE
+    value: /opt/keycloak/conf/tls.key
+  - name: KC_HOSTNAME
+    value: keycloak.fredgentech.net
+  - name: KC_PROXY
+    value: passthrough
+  - name: KC_HOSTNAME_STRICT_HTTPS
+    value: "true"
+  - name: KC_HOSTNAME_STRICT
+    value: "true"
+  - name: KC_HTTP_ENABLED
+    value: "true"
   - name: DB_VENDOR
     value: postgres
   - name: DB_ADDR
@@ -128,23 +142,8 @@ extraEnv: |-
     value: /secrets/db-creds/user
   - name: DB_PASSWORD_FILE
     value: /secrets/db-creds/password
-# - name: KC_HTTP_RELATIVE_PATH
-#   value: /auth
-
-#  - name: KC_HTTPS_CERTIFICATE_FILE
-#   value: /opt/keycloak/conf/tls.crt
-# - name: KC_HTTPS_CERTIFICATE_KEY_FILE
-#   value: /opt/keycloak/conf/tls.key
-# - name: KC_HOSTNAME
-#   value: keycloak.fredgentech.net
-# - name: KC_PROXY
-#   value: passthrough
-# - name: KC_HOSTNAME_STRICT_HTTPS
-#   value: "true"
-# - name: KC_HOSTNAME_STRICT
-#   value: "true"
-# - name: KC_HTTP_ENABLED
-#   value: "true"
+  - name: KC_HTTP_RELATIVE_PATH
+    value: /auth
 
 
 
