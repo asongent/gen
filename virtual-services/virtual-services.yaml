@@ -138,7 +138,7 @@ spec:
     - 'keycloak.fredgentech.net'
   tls:
   - match:
-    - port: 8443
+    - port: 443
       sniHosts:
       - 'keycloak.fredgentech.net'
     route:
