@@ -121,7 +121,7 @@ spec:
         prefix: /
     route:
     - destination:
-        host: keycloak
+        host: keycloak-http
         port:
           number: 80
 

@@ -133,7 +133,7 @@ extraEnv: |-
   - name: DB_VENDOR
     value: postgres
   - name: DB_ADDR
-    value: "192.168.109.128"
+    value: "keycloak-test.c8tbwexvdvdx.us-east-1.rds.amazonaws.com"
   - name: DB_PORT
     value: "5432"
   - name: DB_DATABASE
