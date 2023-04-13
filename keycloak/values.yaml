@@ -118,6 +118,8 @@ extraEnv: |
         key: password
   - name: DB_VENDOR
     value: postgres
+  - name: PROXY_ADDRESS_FORWARDING
+    value: true
   - name: DB_ADDR
     value: "keycloak-test.c8tbwexvdvdx.us-east-1.rds.amazonaws.com"
   - name: DB_PORT
