@@ -128,8 +128,6 @@ extraEnv: |
     value: /secrets/db-creds/user
   - name: DB_PASSWORD_FILE
     value: /secrets/db-creds/password
-  - name: KC_HTTP_RELATIVE_PATH
-    value: /auth
   - name: KC_HTTPS_CERTIFICATE_FILE
     value: /opt/keycloak/conf/tls.crt
   - name: KC_HTTPS_CERTIFICATE_KEY_FILE
@@ -143,8 +141,11 @@ extraEnv: |
   - name: KC_HOSTNAME_STRICT
     value: "true"
   - name: KC_HTTP_ENABLED
-    value: "true"
-
+    value: "true"   
+  - name: PROXY_ADDRESS_FORWARDING
+    value: true
+  - name: KC_HTTP_RELATIVE_PATH
+    value: /auth
 
 
 
