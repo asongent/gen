@@ -21,9 +21,10 @@ spec:
         - name: custom-tools
           emptyDir: {}
         ## Added this
-        # - name: sops-age
-        #   secret:
-        #     secretName: sops-age
+        ## Add this when you are using age ONLY. Not need using AWS KMS key for encryption
+        - name: sops-age
+          secret:
+            secretName: sops-age
       # 2. Use an init container to download/copy custom binaries into the emptyDir
       initContainers:
         - name: download-tools
@@ -62,28 +63,18 @@ spec:
               # subPath: ksops.so default
               subPath: ksops
             ##Added mountPath
-            # - mountPath: /.config/sops/age/keys.so
-            #   name: sops-age
-            #   subPath: keys.so
-              
+            - mountPath: /.config/sops/age/keys.so
+              name: sops-age
+              subPath: keys.so
           # 4. Set the XDG_CONFIG_HOME env variable to allow kustomize to detect the plugin
           env:
-            # - name: XDG_CONFIG_HOME
-            #   value: /.config
-            # ## addefd this line for sops enc
-            # - name: SOPS_AGE_KEY_FILE
-            #   value: /.config/sops/age/keys.so
-  
-            - name: AWS_ACCESS_KEY_ID
-              valueFrom:
-                secretKeyRef:
-                  name: sops-kms-secret
-                  key: accesskey
-            - name: AWS_SECRET_ACCESS_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: sops-kms-secret
-                  key: secretkey
+            - name: XDG_CONFIG_HOME
+              value: /.config
+            ## addefd this line for sops enc
+            - name: SOPS_AGE_KEY_FILE
+              value: /.config/sops/age/keys.so
+
+        
       
 
 

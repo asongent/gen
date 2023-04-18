@@ -1,0 +1,153 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: argocd-repo-server
+  namespace: argocd
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      'app.kubernetes.io/name': argocd-repo-server
+  template:
+    spec:
+      initContainers:
+        - name: download-tools
+          image: alpine:3.8
+          command: [sh, -c]
+          args:
+            - wget -qO- https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv4.5.7/kustomize_v4.5.7_linux_amd64.tar.gz | tar -xvzf - &&
+              mv kustomize /custom-tools
+          volumeMounts:
+            - mountPath: /custom-tools
+              name: custom-tools
+
+        - name: install-ksops
+          image: viaductoss/ksops:v4.0.1
+          command: ["/bin/sh", "-c"]
+          args:
+            - echo "Installing KSOPS...";
+              export PKG_NAME=ksops;
+              cp ${PKG_NAME}.so /custom-tools/;
+              cp ${PKG_NAME}.so /.config/kustomize/plugin/viaduct.ai/v1/ksops/
+              cp $GOPATH/bin/kustomize /custom-tools/;
+              echo "Done.";
+          volumeMounts:
+            - mountPath: /custom-tools
+              name: custom-tools
+        - name: import-gpg-key
+          image: argoproj/argocd:v2.1.7
+          command: ["gpg", "--import","/sops-gpg/sops.asc"]
+          env:
+            - name: GNUPGHOME
+              value: /gnupg-home/.gnupg
+          volumeMounts:
+            - mountPath: /sops-gpg
+              name: sops-gpg
+            - mountPath: /gnupg-home
+              name: gnupg-home
+      containers:
+      - name: argocd-repo-server
+        env:
+          - name: XDG_CONFIG_HOME
+            value: /.config
+          - name: GNUPGHOME
+            value: /home/argocd/.gnupg
+        volumeMounts:
+        - mountPath: /home/argocd/.gnupg
+          name: gnupg-home
+          subPath: .gnupg
+        - mountPath: /usr/local/bin/kustomize
+          name: custom-tools
+          subPath: kustomize
+        - mountPath: /.config/kustomize/plugin/viaduct.ai/v1/ksops/
+          name: custom-tools
+          subPath: ksops
+      volumes:
+      - name: custom-tools
+        emptyDir: {}
+      - name: gnupg-home
+        emptyDir: {}
+      - name: sops-gpg
+        secret:
+          secretName: sops-gpg
+
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: argocd-repo-server
+# spec:
+#   replicas: 2
+#   selector:
+#     matchLabels:
+#       'app.kubernetes.io/name': argocd-repo-server
+#   template:
+#     spec:
+#       # 1. Define an emptyDir volume which will hold the custom binaries
+#       volumes:
+#         - name: custom-tools
+#           emptyDir: {}
+#       # 2. Use an init container to download/copy custom binaries into the emptyDir
+#       initContainers:
+#         - name: install-ksops
+#           image: viaductoss/ksops:v4.1.0
+#           command: ["/bin/sh", "-c"]
+#           args:
+#             - echo "Installing KSOPS...";
+#               mv ksops /custom-tools/;
+#               mv $GOPATH/bin/kustomize /custom-tools/;
+#               echo "Done.";
+#           volumeMounts:
+#             - mountPath: /custom-tools
+#               name: custom-tools
+#       # 3. Volume mount the custom binary to the bin directory (overriding the existing version)
+#       containers:
+#         - name: argocd-repo-server
+#           volumeMounts:
+#             - mountPath: /usr/local/bin/kustomize
+#               name: custom-tools
+#               subPath: kustomize
+#             - mountPath: /usr/local/bin/ksops
+#               name: custom-tools
+#               subPath: ksops
+
+# ---
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: argocd-repo-server
+#   labels:
+#     app.kubernetes.io/component: repo-server
+#     app.kubernetes.io/name: argocd-repo-server
+#     app.kubernetes.io/part-of: argocd
+# spec:
+#   replicas: 2
+#   selector:
+#     matchLabels:
+#       'app.kubernetes.io/name': argocd-repo-server
+#   template:
+#     metadata:
+#       labels:
+#         app.kubernetes.io/name: argocd-repo-server  
+#     spec:
+#       # 1. Define an emptyDir volume which will hold the custom binaries
+#       volumes:
+#         - name: custom-tools
+#           emptyDir: {}
+#       # 2. Use an init container to download/copy custom binaries into the emptyDir
+#       initContainers:
+#         - name: download-tools
+#           image: alpine:3.8
+#           command: [sh, -c]
+#           args:
+#             - wget -qO- https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv4.5.7/kustomize_v4.5.7_linux_amd64.tar.gz | tar -xvzf - &&
+#               mv kustomize /custom-tools/kustomize_4_5_7
+#           volumeMounts:
+#             - mountPath: /custom-tools
+#               name: custom-tools
+#       # 3. Volume mount the custom-tools directory to the repo-server
+#       containers:
+#         - name: argocd-repo-server
+#           volumeMounts:
+#             - mountPath: /custom-tools
+#               name: custom-tools
