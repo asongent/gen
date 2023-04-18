@@ -73,6 +73,17 @@ spec:
             ## addefd this line for sops enc
             - name: SOPS_AGE_KEY_FILE
               value: /.config/sops/age/keys.so
+  
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: sops-kms-secret
+                  key: accesskey
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: sops-kms-secret
+                  key: secretkey
       
 
 

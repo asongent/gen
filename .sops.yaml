@@ -4,3 +4,4 @@ creation_rules:
   - encrypted_regex: "^(data|stringData)$"
     age: age17h3ge2vqnqkeemusg3zhmaxq5m0ttf6jkyjeam4a2vnxaaxq4das5wynws
     # pgp: CB1720D88CA48B0ED108E052EF116BA1D2FA1256
+    kms: arn:aws:kms:us-east-1:843825445314:key/2e1e7834-0686-4173-ab02-9f7725a78c81
