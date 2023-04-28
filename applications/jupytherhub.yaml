@@ -5,14 +5,14 @@ metadata:
   namespace: argocd
 spec:
   destination:
-    namespace: jupytherhub
+    namespace: jupyterhub
     server: https://kubernetes.default.svc
   project: default
   source:
     helm:
       valueFiles:
       - values.yaml
-    path: jupytherhub
+    path: jupyterhub
     repoURL:  https://github.com/asongent/gen.git
     targetRevision: HEAD
   syncPolicy:

@@ -62,7 +62,7 @@ status: {}
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: jupytherhub
+  name: jupyterhub
 spec: {}
 status: {}
 
