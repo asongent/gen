@@ -77,7 +77,7 @@ hub:
       subPath:
       storageClassName:
     url: postgres+psycopg2://databaseadmin:aWdka2R6a2FzdHl3ZXFpdXdzCg==@master-dbms.c8tbwexvdvdx.us-east-1.rds.amazonaws.com:5432/jupytherhub
-    password:
+    password: 
   labels: {}
   annotations: {}
   command: []
@@ -186,7 +186,7 @@ proxy:
     rollingUpdate:
   # service relates to the proxy-public service
   service:
-    type: LoadBalancer
+    type: ClusterIP
     labels: {}
     annotations: {}
     nodePorts:
