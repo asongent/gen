@@ -100,7 +100,29 @@ spec:
           number: 80
 
 ---
-
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  labels:
+  name: neuvector
+  namespace: neuvector
+spec:
+  gateways:
+  - istio-system/general-gateway
+  hosts:
+  - 'neuvector.fredgentech.net'
+  http:
+  - retries:
+      attempts: 3
+      perTryTimeout: 2s
+    match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: neuvector-service-webui
+        port:
+          number: 8443
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService

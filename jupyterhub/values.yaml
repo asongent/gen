@@ -156,7 +156,7 @@ rbac:
 # proxy relates to the proxy pod, the proxy-public service, and the autohttps
 # pod and proxy-http service.
 proxy:
-  secretToken:
+  secretToken: 43053f9b93618b0437d85d20f424167dc392442573b9bf33170d2992d6566acb
   annotations: {}
   deploymentStrategy:
     ## type: Recreate

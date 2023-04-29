@@ -1,0 +1,31 @@
+hub:
+  revisionHistoryLimit:
+  config:
+    GenericOAuthenticator:
+      client_id: JupytherHub
+      client_secret: SQNqIXb7Js4TnxkK4V6Z4LijNsrbEs7O
+      oauth_callback_url: https://jupyterhub.fredgentech.net/hub/oauth_callback
+      authorize_url: https://${host}/realms/${realm}/protocol/openid-connect/auth
+      token_url: https://${host}/realms/${realm}/protocol/openid-connect/token
+      userdata_url: https://${host}/realms/${realm}/protocol/openid-connect/userinfo
+      login_service: keycloak
+      username_key: preferred_username
+      userdata_params:
+        state: state
+    JupyterHub:
+      admin_access: true
+      authenticator_class: generic-oauth
+  service:
+    type: ClusterIP
+  db:
+    type: postgres #sqlite-pvc
+    upgrade:
+    pvc:
+      annotations: {}
+      selector: {}
+      accessModes:
+        - ReadWriteOnce
+      storage: 1Gi
+      subPath:
+      storageClassName:
+    url: postgres+psycopg2://databaseadmin:aWdka2R6a2FzdHl3ZXFpdXdzCg==@master-dbms.c8tbwexvdvdx.us-east-1.rds.amazonaws.com:5432/jupytherhub
