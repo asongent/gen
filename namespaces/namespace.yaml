@@ -70,6 +70,13 @@ status: {}
 apiVersion: v1
 kind: Namespace
 metadata:
+  name: airflow
+spec: {}
+status: {}
+--- 
+apiVersion: v1
+kind: Namespace
+metadata:
   name: seldon-system
 spec: {}
 status: {}
