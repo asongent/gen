@@ -1045,7 +1045,59 @@ webserver:
   # as a custom webserver_config.py. You can bake a webserver_config.py in to
   # your image instead or specify a configmap containing the
   # webserver_config.py.
-  webserverConfig: ~
+  webserverConfig: |
+    """Default configuration for the Airflow webserver."""  
+   
+    import os
+    from airflow.www.fab_security.manager import AUTH_OAUTH
+    from flask_appbuilder import expose
+
+    WTF_CSRF_ENABLED = True
+    AUTH_ROLES_SYNC_AT_LOGIN = True
+    AUTH_ROLE_ADMIN = 'Admin'
+
+
+    AUTH_TYPE = AUTH_OAUTH
+    AUTH_USER_REGISTRATION = True
+    AUTH_USER_REGISTRATION_ROLE = "Admin"
+
+    AUTH_ROLES_MAPPING = {
+       
+      "Viewer": ["View"],
+      "Admin": ["Admin"],
+      "airflow_admin": ["Admin"],
+      "airflow_op": ["Op"],
+      "airflow_user": ["User"],
+      "airflow_viewer": ["Viewer"],
+      "airflow_public": ["Public"],
+    }
+
+    PROVIDER_NAME = 'keycloak'
+    CLIENT_ID = 'airflow'
+    CLIENT_SECRET = ''
+    OIDC_ISSUER = 'https://keycloak.your-company.net/auth/realms/datascientists'
+    OIDC_BASE_URL = "{oidc_issuer}/protocol/openid-connect".format(oidc_issuer=OIDC_ISSUER)
+    OIDC_TOKEN_URL = "{oidc_base_url}/token".format(oidc_base_url=OIDC_BASE_URL)
+    OIDC_AUTH_URL = "{oidc_base_url}/auth".format(oidc_base_url=OIDC_BASE_URL)
+    # When using OAuth Auth, uncomment to setup provider(s) info
+    OAUTH_PROVIDERS = [{
+        'name':PROVIDER_NAME,
+        'token_key':'access_token',
+        'icon':'fa-circle-o',
+        'remote_app': {
+            'api_base_url':OIDC_BASE_URL,
+            'access_token_url':OIDC_TOKEN_URL,
+            'authorize_url':OIDC_AUTH_URL,
+            'request_token_url': None,
+            'client_id': CLIENT_ID,
+            'client_secret': CLIENT_SECRET,
+            'client_kwargs':{
+                'scope': 'email profile'
+            },
+        }
+    }]
+    CSRF_ENABLED = True
+    
   # webserverConfig: |
   #   from airflow import configuration as conf
 
