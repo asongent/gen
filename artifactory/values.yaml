@@ -50,9 +50,9 @@ artifactory:
      password:
        name: "artifactory-credentials"
        key: "password"
-    #  url:
-    #    name: "rds-artifactory"
-    #    key: "db-url"
+     url: 
+       name: "artifactory-credentials"
+       key: "db-url"
 postgresql:
     enabled: false
 router:
