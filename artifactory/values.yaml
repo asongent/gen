@@ -39,8 +39,8 @@ artifactory:
   database: 
     type: postgresql
     driver: org.postgresql.Driver
-    # url: 'jdbc:postgresql://192.168.109.128:5432/artifactory' #local DB
-    url: 'jdbc:postgresql://dbms.fredgentech.net:5432/artifactory'
+    # # url: 'jdbc:postgresql://192.168.109.128:5432/artifactory' #local DB
+    # url: 'jdbc:postgresql://dbms.fredgentech.net:5432/artifactory'
     # user: ''
     # password: '' 
     secrets: 
