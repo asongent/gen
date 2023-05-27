@@ -3,5 +3,7 @@ tls-secret.yaml
 sonar.yaml
 keycloak-db-*
 keycloak-bitnami
+artifactory-secret-enc.yaml
+artifactory-secret-enc.yaml
 # secret-*
 # .sops

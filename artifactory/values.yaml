@@ -26,7 +26,7 @@ artifactory:
     enabled: false
     tlsSecretName: ""
     service:
-      type: LoadBalancer
+      type: ClusterIP
   ingress:
     enabled: false
     tls:
@@ -40,9 +40,19 @@ artifactory:
     type: postgresql
     driver: org.postgresql.Driver
     # url: 'jdbc:postgresql://192.168.109.128:5432/artifactory' #local DB
-    url: 'jdbc:postgresql://shared-db.cxhfaqsey0ug.us-west-2.rds.amazonaws.com/artifactory'
-    user: 'administrator'
-    password: 'Password123' 
+    url: 'jdbc:postgresql://dbms.fredgentech.net:5432/artifactory'
+    # user: ''
+    # password: '' 
+    secrets: 
+     user:
+       name: "artifactory-credentials"
+       key: "user"
+     password:
+       name: "artifactory-credentials"
+       key: "password"
+    #  url:
+    #    name: "rds-artifactory"
+    #    key: "db-url"
 postgresql:
     enabled: false
 router:
