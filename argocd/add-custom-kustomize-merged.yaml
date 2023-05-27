@@ -16,6 +16,8 @@ spec:
       labels:
         app.kubernetes.io/name: argocd-repo-server  
     spec:
+      imagePullSecrets:
+        - name: private-registry
       # 1. Define an emptyDir volume which will hold the custom binaries
       volumes:
         - name: custom-tools
@@ -28,7 +30,7 @@ spec:
       # 2. Use an init container to download/copy custom binaries into the emptyDir
       initContainers:
         - name: download-tools
-          image: alpine:3.8
+          image: jmugu/alpine:3.8
           command: [sh, -c]
           args:
             - wget -qO- https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv4.5.7/kustomize_v4.5.7_linux_amd64.tar.gz | tar -xvzf - &&
@@ -37,7 +39,7 @@ spec:
             - mountPath: /custom-tools
               name: custom-tools
         - name: install-ksops
-          image: viaductoss/ksops:v4.1.0
+          image: jmugu/ksops:v4.1.0  #viaductoss/ksops:v4.1.0 
           command: ["/bin/sh", "-c"]
           args:
             - echo "Installing KSOPS...";
