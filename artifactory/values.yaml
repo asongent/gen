@@ -40,19 +40,19 @@ artifactory:
     type: postgresql
     driver: org.postgresql.Driver
     # # url: 'jdbc:postgresql://192.168.109.128:5432/artifactory' #local DB
-    # url: 'jdbc:postgresql://dbms.fredgentech.net:5432/artifactory'
-    # user: ''
-    # password: '' 
-    secrets: 
-     user:
-       name: "artifactory-credentials"
-       key: "user"
-     password:
-       name: "artifactory-credentials"
-       key: "password"
-     url: 
-       name: "artifactory-credentials"
-       key: "db-url"
+    url: 'jdbc:postgresql://dbms.fredgentech.net:5432/artifactory'
+    user: 'databaseadmin'
+    password: 'aWdka2R6a2FzdHl3ZXFpdXdzCg==' 
+    # secrets: 
+    #  user:
+    #    name: "artifactory-credentials"
+    #    key: "user"
+    #  password:
+    #    name: "artifactory-credentials"
+    #    key: "password"
+    #  url: 
+    #    name: "artifactory-credentials"
+    #    key: "db-url"
 postgresql:
     enabled: false
 router:
