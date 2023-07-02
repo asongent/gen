@@ -74,7 +74,7 @@ image:
   registry: gchr.io
   repository: asongent/sonarqube
   tag: 9.9.0-debian-11-r8
-  digest: "sha256:36732a3d013c6f1915d8a50af76d01e46baf15ea26b40e194194e76408d79301"
+  digest: ""
   ## Specify a imagePullPolicy
   ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
   ## ref: https://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -431,7 +431,7 @@ initContainers: []
 service:
   ## @param service.type SonarQube&trade; service type
   ##
-  type: LoadBalancer
+  type: ClusterIP
   ## @param service.ports.http SonarQube&trade; service HTTP port
   ## @param service.ports.elastic SonarQube&trade; service ElasticSearch port
   ##
@@ -604,10 +604,10 @@ caCerts:
   ## @param caCerts.image.digest Bitnami Shell image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag
   ## @param caCerts.image.pullPolicy Bitnami Shell image pull policy
   ## @param caCerts.image.pullSecrets Bitnami Shell image pull secrets
-  ##
+  ## ghcr.io/asongent/bitnami-shell:11-debian-11-r90
   image:
-    registry: docker.io
-    repository: bitnami/bitnami-shell
+    registry: ghrc.io
+    repository: asongent/bitnami-shell
     tag: 11-debian-11-r90
     digest: ""
     pullPolicy: IfNotPresent
@@ -618,7 +618,8 @@ caCerts:
     ## pullSecrets:
     ##   - myRegistryKeySecretName
     ##
-    pullSecrets: []
+    pullSecrets: 
+    - 
   ## @param caCerts.secret Name of the secret containing the certificates
   ##
   secret: ca-certs-secret
@@ -667,8 +668,8 @@ plugins:
   ## @param plugins.image.pullSecrets Bitnami Shell image pull secrets
   ##
   image:
-    registry: docker.io
-    repository: bitnami/bitnami-shell
+    registry: ghcr.io
+    repository: asongent/bitnami-shell
     tag: 11-debian-11-r90
     digest: ""
     pullPolicy: IfNotPresent
@@ -679,7 +680,8 @@ plugins:
     ## pullSecrets:
     ##   - myRegistryKeySecretName
     ##
-    pullSecrets: []
+    pullSecrets: 
+    - private-registry 
   ## Init container's resource requests and limits
   ## ref: https://kubernetes.io/docs/user-guide/compute-resources/
   ## @param plugins.resources.limits The resources limits for the init container
@@ -746,10 +748,10 @@ volumePermissions:
   ## @param volumePermissions.image.digest Bitnami Shell image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag
   ## @param volumePermissions.image.pullPolicy Bitnami Shell image pull policy
   ## @param volumePermissions.image.pullSecrets Bitnami Shell image pull secrets
-  ##
+  ##  ghcr.io/asongent/bitnami-shell:11-debian-11-r90
   image:
-    registry: docker.io
-    repository: bitnami/bitnami-shell
+    registry: ghcr.io
+    repository: asongent/bitnami-shell
     tag: 11-debian-11-r90
     digest: ""
     pullPolicy: IfNotPresent
@@ -760,7 +762,8 @@ volumePermissions:
     ## pullSecrets:
     ##   - myRegistryKeySecretName
     ##
-    pullSecrets: []
+    pullSecrets: 
+    - private-registry 
   ## Init container's resource requests and limits
   ## ref: https://kubernetes.io/docs/user-guide/compute-resources/
   ## @param volumePermissions.resources.limits The resources limits for the init container
@@ -796,10 +799,10 @@ sysctl:
   ## @param sysctl.image.digest Bitnami Shell image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag
   ## @param sysctl.image.pullPolicy Bitnami Shell image pull policy
   ## @param sysctl.image.pullSecrets Bitnami Shell image pull secrets
-  ##
+  ##  ghcr.io/asongent/bitnami-shell:11-debian-11-r90
   image:
-    registry: docker.io
-    repository: bitnami/bitnami-shell
+    registry: ghcr.io
+    repository: asongent/bitnami-shell
     tag: 11-debian-11-r90
     digest: ""
     pullPolicy: IfNotPresent
@@ -810,7 +813,8 @@ sysctl:
     ## pullSecrets:
     ##   - myRegistryKeySecretName
     ##
-    pullSecrets: []
+    pullSecrets: 
+    - private-registry 
   ## Init container's resource requests and limits
   ## ref: https://kubernetes.io/docs/user-guide/compute-resources/
   ## @param sysctl.resources.limits The resources limits for the init container
@@ -878,8 +882,8 @@ metrics:
     ## @param metrics.jmx.image.pullSecrets Specify docker-registry secret names as an array
     ##
     image:
-      registry: docker.io
-      repository: bitnami/jmx-exporter
+      registry: ghcr.io
+      repository: asongent/jmx-exporter
       tag: 0.17.2-debian-11-r53
       digest: ""
       pullPolicy: IfNotPresent
@@ -890,7 +894,8 @@ metrics:
       ## pullSecrets:
       ##   - myRegistryKeySecretName
       ##
-      pullSecrets: []
+      pullSecrets: 
+      - private-registry
     ## @param metrics.jmx.containerPorts.metrics JMX Exporter metrics container port
     ##
     containerPorts:
