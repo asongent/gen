@@ -1065,7 +1065,7 @@ externalDatabase:
   host: "dbms.fredgentech.net"
   ## @param externalDatabase.user User of an external PostgreSQL instance to connect (only if postgresql.enabled=false)
   ##
-  user: ""
+  user: "databaseadmin"
   ## @param externalDatabase.password Password of an external PostgreSQL instance to connect (only if postgresql.enabled=false)
   ##
   password: ""
