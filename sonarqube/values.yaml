@@ -71,8 +71,8 @@ diagnosticMode:
 ## @param image.debug Enable SonarQube&trade; image debug mode
 ##
 image:
-  registry: docker.io
-  repository: bitnami/sonarqube
+  registry: gchr.io
+  repository: asongent/docker.io/bitnami/sonarqube
   tag: 9.9.0-debian-11-r8
   digest: ""
   ## Specify a imagePullPolicy
@@ -87,7 +87,7 @@ image:
   ## pullSecrets:
   ##   - myRegistryKeySecretName
   ##
-  pullSecrets: []
+  pullSecrets: private-registry
   ## Enable debug mode
   ##
   debug: false
@@ -97,7 +97,7 @@ image:
 ## ref: https://github.com/bitnami/containers/tree/main/bitnami/sonarqube#environment-variables
 ## @param sonarqubeUsername SonarQube&trade; username
 ##
-sonarqubeUsername: user
+sonarqubeUsername: "Administrator"
 ## @param sonarqubePassword SonarQube&trade; user password
 ## Defaults to a random 10-character alphanumeric string if not set
 ##
@@ -109,10 +109,10 @@ provisioningFolder: "/bitnami/sonarqube-provisioning"
 ## NOTE: Must contain key `sonarqube-password`
 ## NOTE: When it's set, the `sonarqubePassword` parameter is ignored
 ##
-existingSecret: ""
+existingSecret: "sonarqube-admin"
 ## @param sonarqubeEmail SonarQube&trade; user email
 ##
-sonarqubeEmail: user@example.com
+sonarqubeEmail: asongentle@gmail.com
 ## @param minHeapSize Minimum heap size for SonarQube&trade;
 ##
 minHeapSize: 1024m
