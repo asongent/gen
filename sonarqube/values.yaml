@@ -98,7 +98,7 @@ image:
 ## ref: https://github.com/bitnami/containers/tree/main/bitnami/sonarqube#environment-variables
 ## @param sonarqubeUsername SonarQube&trade; username
 ##
-sonarqubeUsername: "fredgent"
+sonarqubeUsername: "user"
 ## @param sonarqubePassword SonarQube&trade; user password
 ## Defaults to a random 10-character alphanumeric string if not set
 ##
@@ -110,7 +110,7 @@ provisioningFolder: "/bitnami/sonarqube-provisioning"
 ## NOTE: Must contain key `sonarqube-password`
 ## NOTE: When it's set, the `sonarqubePassword` parameter is ignored
 ##
-existingSecret: "sonarqube-admin"
+existingSecret: "" #"sonarqube-admin"
 ## @param sonarqubeEmail SonarQube&trade; user email
 ##
 sonarqubeEmail: asongentle@gmail.com
