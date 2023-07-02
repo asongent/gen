@@ -74,7 +74,7 @@ image:
   registry: gchr.io
   repository: asongent/sonarqube
   tag: 9.9.0-debian-11-r8
-  digest: ""
+  digest: "sha256:36732a3d013c6f1915d8a50af76d01e46baf15ea26b40e194194e76408d79301"
   ## Specify a imagePullPolicy
   ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
   ## ref: https://kubernetes.io/docs/user-guide/images/#pre-pulling-images
