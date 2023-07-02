@@ -1001,7 +1001,7 @@ metrics:
 postgresql:
   ## @param postgresql.enabled Deploy PostgreSQL subchart
   ##
-  enabled: true
+  enabled: false
   ## @param postgresql.nameOverride Override name of the PostgreSQL chart
   ##
   nameOverride: ""
@@ -1062,17 +1062,17 @@ postgresql:
 externalDatabase:
   ## @param externalDatabase.host Host of an external PostgreSQL instance to connect (only if postgresql.enabled=false)
   ##
-  host: ""
+  host: "dbms.fredgentech.net"
   ## @param externalDatabase.user User of an external PostgreSQL instance to connect (only if postgresql.enabled=false)
   ##
-  user: postgres
+  user: ""
   ## @param externalDatabase.password Password of an external PostgreSQL instance to connect (only if postgresql.enabled=false)
   ##
   password: ""
   ## @param externalDatabase.existingSecret Secret containing the password of an external PostgreSQL instance to connect (only if postgresql.enabled=false)
   ## Name of an existing secret resource containing the DB password in a 'password' key
   ##
-  existingSecret: ""
+  existingSecret: "sonarqube-database"
   ## @param externalDatabase.database Database inside an external PostgreSQL to connect (only if postgresql.enabled=false)
   ##
   database: sonarqube
