@@ -71,7 +71,7 @@ diagnosticMode:
 ## @param image.debug Enable SonarQube&trade; image debug mode
 ##
 image:
-  registry: gchr.io
+  registry: ghcr.io
   repository: asongent/sonarqube
   tag: 9.9.0-debian-11-r8
   digest: ""
