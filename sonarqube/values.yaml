@@ -72,7 +72,7 @@ diagnosticMode:
 ##
 image:
   registry: gchr.io
-  repository: asongent/docker.io/bitnami/sonarqube
+  repository: asongent/sonarqube
   tag: 9.9.0-debian-11-r8
   digest: ""
   ## Specify a imagePullPolicy
