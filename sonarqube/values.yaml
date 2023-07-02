@@ -98,7 +98,7 @@ image:
 ## ref: https://github.com/bitnami/containers/tree/main/bitnami/sonarqube#environment-variables
 ## @param sonarqubeUsername SonarQube&trade; username
 ##
-sonarqubeUsername: "Administrator"
+sonarqubeUsername: "fredgent"
 ## @param sonarqubePassword SonarQube&trade; user password
 ## Defaults to a random 10-character alphanumeric string if not set
 ##
