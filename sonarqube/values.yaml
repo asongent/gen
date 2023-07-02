@@ -110,7 +110,7 @@ provisioningFolder: "/bitnami/sonarqube-provisioning"
 ## NOTE: Must contain key `sonarqube-password`
 ## NOTE: When it's set, the `sonarqubePassword` parameter is ignored
 ##
-existingSecret: "" #"sonarqube-admin"
+existingSecret: "sonarqube-admin"
 ## @param sonarqubeEmail SonarQube&trade; user email
 ##
 sonarqubeEmail: asongentle@gmail.com
