@@ -16,7 +16,7 @@ artifactory:
       other: ""
     persistence: 
       mountPath: "/var/opt/jfrog/artifactory"
-      enabled: true
+      enabled: false
       accesMode: ReadWriteOnce
       size: 50Gi
   installer:

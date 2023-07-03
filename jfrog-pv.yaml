@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: artifactory-volume-jfrog-artifactory-0
+  labels:
+    type: local
+spec:
+  storageClassName: local-storage
+  capacity:
+    storage: 50Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/var/opt/jfrog/artifactory"
