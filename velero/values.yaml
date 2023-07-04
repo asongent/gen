@@ -519,7 +519,7 @@ schedules:
       env: production
     annotations:
       env: production
-    schedule: "0/5 * * * *"
+    schedule: "10 * * * *"
     useOwnerReferencesInBackup: false
     template:
       ttl: "240h"

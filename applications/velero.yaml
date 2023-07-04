@@ -13,7 +13,7 @@ spec:
       valueFiles:
       - values.yaml 
   destination:
-    namespace: artifactory
+    namespace: velero
     server: https://kubernetes.default.svc
   syncPolicy:
     automated:
