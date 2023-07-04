@@ -125,6 +125,6 @@ status: {}
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: verelo
+  name: velero
 spec: {}
 status: {}
