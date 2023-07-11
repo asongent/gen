@@ -30,8 +30,6 @@ spec:
       # 2. Use an init container to download/copy custom binaries into the emptyDir
       initContainers:
         - name: download-tools
-          imagePullSecrets:
-            - name: private-registry
           image: ghcr.io/asongent/alpine:3.8 #jmugu/alpine:3.8
           command: [sh, -c]
           args:
