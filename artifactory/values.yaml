@@ -19,7 +19,7 @@ artifactory:
       enabled: true
       accesMode: ReadWriteOnce
       size: 50Gi
-      type:  Filesystem
+      type:  local
       storageClassName: "manual"
   installer:
     platform: jcr-helm
