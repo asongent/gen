@@ -128,3 +128,11 @@ metadata:
   name: velero
 spec: {}
 status: {}
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: longhorn-system
+spec: {}
+status: {}
