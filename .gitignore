@@ -1,3 +1,4 @@
+gitlab-xx
 hpa.yaml
 tls-secret.yaml
 sonar.yaml
@@ -6,5 +7,6 @@ keycloak-bitnami
 artifactory-secret-enc.yaml
 artifactory-secret-enc.yaml
 gitlab-testing
+argocd-iu-old
 # secret-*
 # .sops
