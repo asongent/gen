@@ -4,17 +4,14 @@ metadata:
   name: gitlab
   namespace: argocd
 spec:
-  project: default
-  source:
-    repoURL:  https://github.com/asongent/gen.git
-    targetRevision: HEAD
-    path: gitlab/charts
-    helm:
-      valueFiles:
-      - values.yaml
   destination:
     namespace: gitlab
     server: https://kubernetes.default.svc
+  project: default
+  source:
+    path: gitlab
+    repoURL:  https://github.com/asongent/gen.git
+    targetRevision: HEAD
   syncPolicy:
     automated:
       prune: true

@@ -8,5 +8,6 @@ artifactory-secret-enc.yaml
 artifactory-secret-enc.yaml
 gitlab-testing
 argocd-iu-old
+gitlab-ironbank/
 # secret-*
 # .sops
