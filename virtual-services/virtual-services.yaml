@@ -243,7 +243,7 @@ spec:
         prefix: /
     route:
     - destination:
-        host: release-name-minio-svc.gitlab.svc.cluster.local
+        host: gitlab-minio-svc
         port:
           number:  9000
 
