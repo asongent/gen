@@ -8,7 +8,10 @@ spec:
   source:
     repoURL:  https://github.com/asongent/gen.git
     targetRevision: HEAD
-    path: gitlab
+    path: gitlab/charts
+    helm:
+      valueFiles:
+      - values.yaml
   destination:
     namespace: gitlab
     server: https://kubernetes.default.svc
