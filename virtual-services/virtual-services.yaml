@@ -220,7 +220,7 @@ spec:
     - destination:
         host: gitlab-webservice-default
         port:
-          number:  8080
+          number:  8181
 
 ---
 apiVersion: networking.istio.io/v1alpha3
