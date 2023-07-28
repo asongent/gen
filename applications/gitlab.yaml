@@ -10,9 +10,8 @@ spec:
   project: default
   source:
     path: gitlab
-    helm:
-      valueFiles:
-      - values.yaml
+    kustomize:
+      version: v4.5.7
     repoURL:  https://github.com/asongent/gen.git
     targetRevision: HEAD
   syncPolicy:
