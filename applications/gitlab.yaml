@@ -9,7 +9,7 @@ spec:
     server: https://kubernetes.default.svc
   project: default
   source:
-    path: gitlab-ce
+    path: gitlab
     kustomize:
       version: v4.5.7
     repoURL:  https://github.com/asongent/gen.git

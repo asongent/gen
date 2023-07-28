@@ -218,9 +218,9 @@ spec:
         prefix: /
     route:
     - destination:
-        host: gitlab
+        host: gitlab-webservice-default
         port:
-          number:  9000
+          number:  8080
 
 ---
 apiVersion: networking.istio.io/v1alpha3
