@@ -100,6 +100,7 @@ config:
   # -- ArgoCD Image Updater registries list configuration. More information [here](https://argocd-image-updater.readthedocs.io/en/stable/configuration/registries/)
   registries:
     - name: Docker Hub
+      prefix: docker.io
       api_url: https://registry-1.docker.io
       ping: yes
       credentials: secret:argocd/dockerhub#docker-auth 
