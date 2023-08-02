@@ -102,7 +102,7 @@ config:
     - name: Docker Hub
       prefix: docker.io
       api_url: https://docker.io
-      ping: yes
+      ping: no
       credentials: secret:argocd/docker-auth#.dockerconfigjson #pullsecret:argocd/docker-auth  
       defaultns: library
     # - name: Google Container Registry
