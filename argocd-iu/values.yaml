@@ -103,7 +103,7 @@ config:
       prefix: docker.io
       api_url: https://docker.io
       ping: no
-      credentials: secret:argocd/docker-auth#.dockerconfigjson #pullsecret:argocd/docker-auth  
+      credentials: pullsecret:argocd/docker-auth   #secret:argocd/docker-auth#.dockerconfigjson #pullsecret:argocd/docker-auth  
       defaultns: library
     # - name: Google Container Registry
     #   api_url: https://gcr.io
