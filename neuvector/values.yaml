@@ -262,8 +262,10 @@ manager:
     hash:
   priorityClassName:
   env:
-    ssl: false
+    ssl: false #This is set to "true" by default. Turning it to "false" works well when exposing it with istio virtualservice
     envs: []
+    # This setting should be enabled when in FIPS environments to prevent Java errors arising from the FIPS alignment
+     #disableFipsInJava: true 
 #      - name: CUSTOM_PAGE_HEADER_COLOR
 #        value: "#FFFFFF"
 #      - name: CUSTOM_PAGE_FOOTER_COLOR
