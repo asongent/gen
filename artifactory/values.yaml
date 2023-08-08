@@ -5,7 +5,7 @@ artifactory:
       repository: jfrog/artifactory-jcr
     resources: 
       requests:
-        memory: "1Gi"
+        memory: "2Gi"
         cpu: "500m"
       limits:
         memory: "4Gi"
@@ -18,8 +18,7 @@ artifactory:
       mountPath: "/var/opt/jfrog/artifactory"
       enabled: true
       accesMode: ReadWriteOnce
-      size: 50Gi
-      type:  local
+      size: 100Gi
       storageClassName: ~ # "manual"
   installer:
     platform: jcr-helm
