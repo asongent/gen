@@ -4,7 +4,7 @@ metadata:
   name: devsecops
   namespace: argocd
   annotations:
-   argocd-image-update.argoproj.io/image-list: jmugu/devsecops:DevSecOps-v^
+   argocd-image-update.argoproj.io/image-list: docker.io/jmugu/devsecops:DevSecOps-v^
    argocd-image-update.argoproj.io/write-back-method: git:secret:argocd/git-auth
    argocd-image-update.argoproj.io/git-branch: master
 spec:

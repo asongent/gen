@@ -1,0 +1,55 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-labels
+spec:
+  validationFailureAction: Audit
+  rules:
+    - name: check-for-labels
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+                - Deployment
+                - StatefulSet
+                - Jobs 
+                - DaemonSet
+      validate:
+        message: "label 'image must be from' is required"
+        pattern:
+          metadata:
+            labels:
+              app.kubernetes.io/name: "?*"
+          spec:
+            containers:
+              - image: "ghcr.io/asongen/?*"
+                name: alfred
+                resources:
+                  requests:
+                    cpu: "50mi"
+                    memory: "50mi"
+                  limits: 
+                    cpu: "50mi"
+                    memory: "50mi"
+
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: check-service-type
+spec:
+  validationFailureAction: enforce
+  rules:
+    - name: check-service-type
+      match:
+        any:
+          - resources:
+              kinds:
+                - Service
+      validate:
+        message: "Services must not have NodePod Type"
+        pattern:
+          Spec: 
+            type: "!NodePod"
+          

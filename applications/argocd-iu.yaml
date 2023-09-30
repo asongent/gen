@@ -13,7 +13,7 @@ spec:
       valueFiles:
       - values.yaml
   destination:
-    namespace: airflow
+    namespace: argocd
     server: https://kubernetes.default.svc
   syncPolicy:
     automated:
