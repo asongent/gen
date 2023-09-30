@@ -4,7 +4,7 @@ tls-secret.yaml
 sonar.yaml
 keycloak-db-*
 keycloak-bitnami
-artifactory-secret-enc.yaml
+
 artifactory-secret-enc.yaml
 gitlab-testing
 argocd-iu-old
@@ -13,3 +13,6 @@ gitlab-ce
 # secret-*
 # .sops
 neuvector-ooo
+jf-pv-pvc.yaml
+jfrog-pvc.yaml
+jfrog-pv.*
