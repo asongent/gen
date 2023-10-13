@@ -81,7 +81,7 @@ controller:
   ranchersso: # required for rancher authentication
     enabled: false
   pvc:
-    enabled: false
+    enabled: true
     existingClaim: false
     accessModes:
       - ReadWriteMany
