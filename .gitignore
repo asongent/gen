@@ -16,5 +16,5 @@ neuvector-ooo
 jf-pv-pvc.yaml
 jfrog-pvc.yaml
 jfrog-pv.*
-sonarqube-old
-sonarqube-new-bit
+sonarqube-old-old
+sonarqube-new
