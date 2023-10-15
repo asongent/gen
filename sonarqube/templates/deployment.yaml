@@ -1,425 +1,482 @@
-apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
+{{- if eq .Values.deploymentType "Deployment"}}
+apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "common.names.fullname" . }}
-  namespace: {{ .Release.Namespace | quote }}
-  labels: {{- include "common.labels.standard" . | nindent 4 }}
-    {{- if .Values.commonLabels }}
-    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
-    {{- end }}
-  {{- if .Values.commonAnnotations }}
-  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
-  {{- end }}
+  name: {{ template "sonarqube.fullname" . }}
+  labels:
+    app: {{ template "sonarqube.name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    app.kubernetes.io/name: {{ template "sonarqube.name" . }}-{{ template "sonarqube.fullname" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/part-of: sonarqube
+    app.kubernetes.io/component: {{ template "sonarqube.fullname" . }}
+    app.kubernetes.io/version: {{ tpl .Values.image.tag . | quote }}
 spec:
   replicas: {{ .Values.replicaCount }}
-  {{- if .Values.updateStrategy }}
-  strategy: {{- toYaml .Values.updateStrategy | nindent 4 }}
-  {{- end }}
   selector:
-    matchLabels: {{- include "common.labels.matchLabels" . | nindent 6 }}
+    matchLabels:
+      app: {{ template "sonarqube.name" . }}
+      release: {{ .Release.Name }}
+{{- if .Values.deploymentStrategy }}
+  strategy:
+{{ toYaml .Values.deploymentStrategy | indent 4 }}
+{{- end }}
   template:
     metadata:
+      labels:
+        app: {{ template "sonarqube.name" . }}
+        release: {{ .Release.Name }}
+{{- with .Values.podLabels }}
+{{ toYaml . | indent 8 }}
+{{- end }}
       annotations:
-        {{- if (include "sonarqube.createSecret" .) }}
+        checksum/init-sysctl: {{ include (print $.Template.BasePath "/init-sysctl.yaml") . | sha256sum }}
+        checksum/plugins: {{ include (print $.Template.BasePath "/install-plugins.yaml") . | sha256sum }}
+        checksum/config: {{ include (print $.Template.BasePath "/config.yaml") . | sha256sum }}
         checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
-        {{- end }}
-        {{- if .Values.metrics.jmx.enabled }}
-        checksum/jmx-configuration: {{ include (print $.Template.BasePath "/jmx-configmap.yaml") . | sha256sum }}
-        {{- end }}
-        {{- if .Values.podAnnotations }}
-        {{- include "common.tplvalues.render" (dict "value" .Values.podAnnotations "context" $) | nindent 8 }}
-        {{- end }}
-      labels: {{- include "common.labels.standard" . | nindent 8 }}
-        {{- if .Values.podLabels }}
-        {{- include "common.tplvalues.render" (dict "value" .Values.podLabels "context" $) | nindent 8 }}
-        {{- end }}
+{{- if .Values.prometheusExporter.enabled }}
+        checksum/prometheus-config: {{ include (print $.Template.BasePath "/prometheus-config.yaml") . | sha256sum }}
+        checksum/prometheus-ce-config: {{ include (print $.Template.BasePath "/prometheus-ce-config.yaml") . | sha256sum }}
+{{- end }}
+{{- if .Values.annotations}}
+      {{- range $key, $value := .Values.annotations }}
+        {{ $key }}: {{ $value | quote }}
+      {{- end }}
+{{- end }}
     spec:
-      serviceAccountName: {{ include "sonarqube.serviceAccountName" . }}
-      {{- include "sonarqube.imagePullSecrets" . | nindent 6 }}
-      {{- if .Values.hostAliases }}
-      hostAliases: {{- include "common.tplvalues.render" (dict "value" .Values.hostAliases "context" $) | nindent 8 }}
-      {{- end }}
-      {{- if .Values.affinity }}
-      affinity: {{- include "common.tplvalues.render" ( dict "value" .Values.affinity "context" $) | nindent 8 }}
-      {{- else }}
-      affinity:
-        podAffinity: {{- include "common.affinities.pods" (dict "type" .Values.podAffinityPreset "context" $) | nindent 10 }}
-        podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.podAntiAffinityPreset "context" $) | nindent 10 }}
-        nodeAffinity: {{- include "common.affinities.nodes" (dict "type" .Values.nodeAffinityPreset.type "key" .Values.nodeAffinityPreset.key "values" .Values.nodeAffinityPreset.values) | nindent 10 }}
-      {{- end }}
-      {{- if .Values.nodeSelector }}
-      nodeSelector: {{- include "common.tplvalues.render" ( dict "value" .Values.nodeSelector "context" $) | nindent 8 }}
-      {{- end }}
-      {{- if .Values.tolerations }}
-      tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.tolerations "context" .) | nindent 8 }}
-      {{- end }}
-      {{- if .Values.priorityClassName }}
-      priorityClassName: {{ .Values.priorityClassName | quote }}
-      {{- end }}
-      {{- if .Values.schedulerName }}
-      schedulerName: {{ .Values.schedulerName | quote }}
-      {{- end }}
-      {{- if .Values.podSecurityContext.enabled }}
-      securityContext: {{- omit .Values.podSecurityContext "enabled" | toYaml | nindent 8 }}
-      {{- end }}
-      {{- if or .Values.initContainers .Values.sysctl.enabled (and .Values.volumePermissions.enabled .Values.persistence.enabled) }}
-      initContainers:
-        {{- if .Values.plugins.install }}
-        - name: {{ printf "%s-install-plugins-initcontainer" (include "common.names.fullname" .) }}
-          image: {{ include "sonarqube.plugins.image" . }}
-          imagePullPolicy: {{ .Values.plugins.image.pullPolicy  }}
-          command: [ "sh",
-                     "-e",
-                     "/tmp/scripts/install_plugins.sh" ]
-          volumeMounts:
-            - name: install-plugins
-              mountPath: /tmp/scripts/
-            - name: provisioning
-              mountPath: {{ .Values.provisioningFolder }}/extensions/plugins/
-              subPath: extensions/plugins
-          resources: {{- toYaml .Values.plugins.resources | nindent 12 }}
-          securityContext: {{- .Values.plugins.containerSecurityContext | toYaml | nindent 12 }}
+    {{- if .Values.schedulerName }}
+      schedulerName: {{ .Values.schedulerName }}
+    {{- end }}
+      securityContext:
+{{ toYaml .Values.securityContext | indent 8 }}
+      {{- if or .Values.image.pullSecrets .Values.image.pullSecret }}
+      imagePullSecrets:
+        {{- if .Values.image.pullSecret }}
+        - name: {{ .Values.image.pullSecret }}
         {{- end }}
-        {{- if .Values.caCerts.enabled }}
-        - name:  {{ printf "%s-ca-certs-initcontainer" (include "common.names.fullname" .) }}
-          image: {{ include "sonarqube.image" . }}
-          imagePullPolicy: {{ .Values.caCerts.image.pullPolicy  }}
-          command: [ "sh" ]
-          args: [ "-c", "cp -f \"${JAVA_HOME}/lib/security/cacerts\" {{ .Values.provisioningFolder }}/certs/cacerts; if [ \"$(ls /tmp/secrets/ca-certs)\" ]; then for f in /tmp/secrets/ca-certs/*; do keytool -importcert -file \"${f}\" -alias \"$(basename \"${f}\")\" -keystore {{ .Values.provisioningFolder }}/certs/cacerts -storepass changeit -trustcacerts -noprompt; done; fi;" ]
+        {{- if .Values.image.pullSecrets}}
+{{ toYaml .Values.image.pullSecrets | indent 8 }}
+        {{- end }}
+      {{- end }}
+      initContainers:
+      {{- if .Values.extraInitContainers }}
+{{ toYaml .Values.extraInitContainers | indent 8 }}
+      {{- end }}
+      {{- if .Values.postgresql.enabled }}
+        - name: "wait-for-db"
+          image: {{ default "busybox:1.32" .Values.initContainers.image }}
+          imagePullPolicy: {{ .Values.image.pullPolicy  }}
+          {{- if $securityContext := .Values.initContainers.securityContext }}
+          securityContext:
+{{ toYaml $securityContext | indent 12 }}
+          {{- end }}
+          resources:
+{{ toYaml .Values.initContainers.resources | indent 12 }}
+          command: ["/bin/sh", "-c", "for i in $(seq 1 200); do nc -z -w3 {{ .Release.Name}}-postgresql 5432 && exit 0 || sleep 2; done; exit 1"]
+      {{- end }}
+      {{- if .Values.caCerts.enabled }}
+        - name: ca-certs
+          image: {{ default "adoptopenjdk/openjdk11:alpine" .Values.caCerts.image }}
+          imagePullPolicy: {{ .Values.image.pullPolicy  }}
+          command: ["sh"]
+          args: ["-c", "cp -f \"${JAVA_HOME}/lib/security/cacerts\" /tmp/certs/cacerts; if [ \"$(ls /tmp/secrets/ca-certs)\" ]; then for f in /tmp/secrets/ca-certs/*; do keytool -importcert -file \"${f}\" -alias \"$(basename \"${f}\")\" -keystore /tmp/certs/cacerts -storepass changeit -trustcacerts -noprompt; done; fi;"]
+          {{- if $securityContext := .Values.initContainers.securityContext }}
+          securityContext:
+{{ toYaml $securityContext | indent 12 }}
+          {{- end }}
+          resources:
+{{ toYaml .Values.initContainers.resources | indent 12 }}
           volumeMounts:
-            - name: provisioning
-              mountPath: {{ .Values.provisioningFolder }}/certs
+            - mountPath: /tmp/certs
+              name: sonarqube
               subPath: certs
             - mountPath: /tmp/secrets/ca-certs
               name: ca-certs
-          resources: {{- toYaml .Values.caCerts.resources | nindent 12 }}
-          securityContext: {{- .Values.caCerts.containerSecurityContext | toYaml | nindent 12 }}
-        {{- end }}
-        {{- if .Values.sysctl.enabled }}
-        ## Image that performs the sysctl operation to modify Kernel settings (needed sometimes to avoid boot errors)
-        - name: sysctl
-          image: {{ include "sonarqube.sysctl.image" . }}
-          imagePullPolicy: {{ .Values.sysctl.image.pullPolicy | quote }}
-          command:
-            - /bin/bash
-            - -ec
-            - |
-              {{- include "sonarqube.sysctl.ifLess" (dict "key" "vm.max_map_count" "value" "262144") | nindent 14 }}
-              {{- include "sonarqube.sysctl.ifLess" (dict "key" "fs.file-max" "value" "65536") | nindent 14 }}
-          securityContext:
-            privileged: true
-            runAsUser: 0
-          {{- if .Values.sysctl.resources }}
-          resources: {{- toYaml .Values.sysctl.resources | nindent 12 }}
-          {{- end }}
-        {{- end }}
-        {{- if and .Values.volumePermissions.enabled .Values.persistence.enabled }}
-        - name: volume-permissions
-          image: {{ include "sonarqube.volumePermissions.image" . }}
-          imagePullPolicy: {{ .Values.volumePermissions.image.pullPolicy | quote }}
-          command:
-            - /bin/bash
-          args:
-            - -ec
-            - |
-              find /bitnami/sonarqube -mindepth 1 -maxdepth 1 -not -name ".snapshot" -not -name "lost+found" | xargs -r chown -R {{ .Values.containerSecurityContext.runAsUser }}:{{ .Values.podSecurityContext.fsGroup }}
-          {{- if .Values.volumePermissions.containerSecurityContext.enabled }}
-          securityContext: {{- omit .Values.volumePermissions.containerSecurityContext "enabled" | toYaml | nindent 12 }}
-          {{- end }}
-          {{- if .Values.volumePermissions.resources }}
-          resources: {{- toYaml .Values.volumePermissions.resources | nindent 12 }}
-          {{- end }}
-          volumeMounts:
-            - name: sonarqube
-              mountPath: /bitnami/sonarqube
-              subPath: data
-        {{- end }}
-        {{- if .Values.initContainers }}
-          {{- include "common.tplvalues.render" (dict "value" .Values.initContainers "context" $) | nindent 8 }}
-        {{- end }}
-      {{- end }}
-      containers:
-        - name: sonarqube
-          image: {{ include "sonarqube.image" . }}
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          {{- if .Values.containerSecurityContext.enabled }}
-          securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
-          {{- end }}
-          {{- if .Values.diagnosticMode.enabled }}
-          command: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.command "context" $) | nindent 12 }}
-          {{- else if .Values.command }}
-          command: {{- include "common.tplvalues.render" (dict "value" .Values.command "context" $) | nindent 12 }}
-          {{- end }}
-          {{- if .Values.diagnosticMode.enabled }}
-          args: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.args "context" $) | nindent 12 }}
-          {{- else if .Values.args }}
-          args: {{- include "common.tplvalues.render" (dict "value" .Values.args "context" $) | nindent 12 }}
-          {{- end }}
+          {{- with .Values.env }}
           env:
-            - name: BITNAMI_DEBUG
-              value: {{ ternary "true" "false" (or .Values.image.debug .Values.diagnosticMode.enabled) | quote }}
-            - name: SONARQUBE_SKIP_BOOTSTRAP
-              value: {{ ternary "yes" "no" .Values.sonarqubeSkipInstall | quote }}
-            - name: SONARQUBE_USERNAME
-              value: {{ .Values.sonarqubeUsername | quote }}
-            - name: SONARQUBE_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "sonarqube.secretName" . }}
-                  key: sonarqube-password
-            - name: SONARQUBE_EMAIL
-              value: {{ .Values.sonarqubeEmail | quote }}
-            {{- if or .Values.plugins.install .Values.caCerts.enabled}}
-            - name: SONARQUBE_MOUNTED_PROVISIONING_DIR
-              value: {{ .Values.provisioningFolder }}
-            {{- end }}
-            {{- if .Values.minHeapSize }}
-            - name: SONARQUBE_MIN_HEAP_SIZE
-              value: {{ .Values.minHeapSize | quote }}
-            {{- end }}
-            {{- if .Values.maxHeapSize }}
-            - name: SONARQUBE_MAX_HEAP_SIZE
-              value: {{ .Values.maxHeapSize | quote }}
-            {{- end }}
-            {{- if .Values.sonarSecurityRealm }}
-            - name: SONAR_SECURITY_REALM
-              value: {{ .Values.sonarSecurityRealm | quote }}
-            {{- end }}
-            {{- if .Values.sonarAuthenticatorDowncase }}
-            - name: SONAR_AUTHENTICATOR_DOWNCASE
-              value: {{ .Values.sonarAuthenticatorDowncase | quote }}
-            {{- end }}
-            {{- if .Values.ldap.url }}
-            - name: LDAP_URL
-              value: {{ .Values.ldap.url | quote }}
-            {{- end }}
-            {{- if .Values.ldap.bindDn }}
-            - name: LDAP_BINDDN
-              value: {{ .Values.ldap.bindDn | quote }}
-            {{- end }}
-            {{- if .Values.ldap.bindPassword }}
-            - name: LDAP_BINDPASSWORD
-              value: {{ .Values.ldap.bindPassword | quote }}
-            {{- end }}
-            {{- if .Values.ldap.authentication }}
-            - name: LDAP_AUTHENTICATION
-              value: {{ .Values.ldap.authentication | quote }}
-            {{- end }}
-            {{- if .Values.ldap.realm }}
-            - name: LDAP_REALM
-              value: {{ .Values.ldap.realm | quote }}
-            {{- end }}
-            {{- if .Values.ldap.contextFactoryClass }}
-            - name: LDAP_CONTEXTFACTORYCLASS
-              value: {{ .Values.ldap.contextFactoryClass | quote }}
-            {{- end }}
-            {{- if .Values.ldap.StartTLS }}
-            - name: LDAP_STARTTLS
-              value: {{ .Values.ldap.StartTLS | quote }}
-            {{- end }}
-            {{- if .Values.ldap.followReferrals }}
-            - name: LDAP_FOLLOWREFERRALS
-              value: {{ .Values.ldap.followReferrals | quote }}
-            {{- end }}
-            {{- if .Values.ldap.user.baseDn }}
-            - name: LDAP_USER_BASEDN
-              value: {{ .Values.ldap.user.baseDn | quote }}
-            {{- end }}
-            {{- if .Values.ldap.user.request }}
-            - name: LDAP_USER_REQUEST
-              value: {{ .Values.ldap.user.request | quote }}
-            {{- end }}
-            {{- if .Values.ldap.user.realNameAttribute }}
-            - name: LDAP_USER_REALNAMEATTRIBUTE
-              value: {{ .Values.ldap.user.realNameAttribute | quote }}
-            {{- end }}
-            {{- if .Values.ldap.user.emailAttribute }}
-            - name: LDAP_USER_EMAILATTRIBUTE
-              value: {{ .Values.ldap.user.emailAttribute | quote }}
-            {{- end }}
-            {{- if .Values.ldap.group.baseDn }}
-            - name: LDAP_GROUP_BASEDN
-              value: {{ .Values.ldap.group.baseDn | quote }}
-            {{- end }}
-            {{- if .Values.ldap.group.request }}
-            - name: LDAP_GROUP_REQUEST
-              value: {{ .Values.ldap.group.request | quote }}
-            {{- end }}
-            {{- if .Values.ldap.group.idAttribute }}
-            - name: LDAP_GROUP_IDATTRIBUTE
-              value: {{ .Values.ldap.group.idAttribute | quote }}
-            {{- end }}
-            - name: SONARQUBE_START_TIMEOUT
-              value: {{ .Values.startTimeout | quote }}
-            - name: SONARQUBE_DATABASE_HOST
-              value: {{ include "sonarqube.database.host" . | quote }}
-            - name: SONARQUBE_DATABASE_PORT_NUMBER
-              value: {{ include "sonarqube.database.port" . | quote }}
-            - name: SONARQUBE_DATABASE_NAME
-              value: {{ include "sonarqube.database.name" . | quote }}
-            - name: SONARQUBE_DATABASE_USER
-              value: {{ include "sonarqube.database.username" . | quote }}
-            - name: SONARQUBE_DATABASE_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "sonarqube.database.secretName" . }}
-                  key: password
-            {{- if .Values.smtpHost }}
-            - name: SONARQUBE_SMTP_HOST
-              value: {{ .Values.smtpHost | quote }}
-            {{- end }}
-            {{- if .Values.smtpPort }}
-            - name: SONARQUBE_SMTP_PORT
-              value: {{ .Values.smtpPort | quote }}
-            {{- end }}
-            {{- if .Values.smtpUser }}
-            - name: SONARQUBE_SMTP_USER
-              value: {{ .Values.smtpUser | quote }}
-            {{- end }}
-            {{- if or .Values.smtpPassword .Values.smtpExistingSecret }}
-            - name: SONARQUBE_SMTP_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "sonarqube.smtpSecretName" . }}
-                  key: smtp-password
-            {{- end }}
-            {{- if .Values.smtpProtocol }}
-            - name: SONARQUBE_SMTP_PROTOCOL
-              value: {{ .Values.smtpProtocol | quote }}
-            {{- end }}
-            - name: SONARQUBE_PORT_NUMBER
-              value: {{ .Values.containerPorts.http | quote }}
-            - name: SONARQUBE_ELASTICSEARCH_PORT_NUMBER
-              value: {{ .Values.containerPorts.elastic | quote }}
-            {{- if .Values.extraProperties }}
-            - name: SONARQUBE_EXTRA_PROPERTIES
-              value: {{ join "," .Values.extraProperties | quote }}
-            {{- end }}
-            - name: SONARQUBE_WEB_JAVA_ADD_OPTS
-              value: {{ template "sonarqube.jvmOpts" . }}
-            - name: SONAR_CE_JAVAADDITIONALOPTS
-              value: {{ template "sonarqube.jvmCEOpts" . }}
-            {{- if .Values.extraEnvVars }}
-            {{- include "common.tplvalues.render" (dict "value" .Values.extraEnvVars "context" $) | nindent 12 }}
-            {{- end }}
-          envFrom:
-            {{- if .Values.extraEnvVarsCM }}
-            - configMapRef:
-                name: {{ include "common.tplvalues.render" (dict "value" .Values.extraEnvVarsCM "context" $) }}
-            {{- end }}
-            {{- if .Values.extraEnvVarsSecret }}
-            - secretRef:
-                name: {{ include "common.tplvalues.render" (dict "value" .Values.extraEnvVarsSecret "context" $) }}
-            {{- end }}
-          {{- if .Values.resources }}
-          resources: {{- toYaml .Values.resources | nindent 12 }}
+            {{- . | toYaml | trim | nindent 12 }}
           {{- end }}
+      {{- end }}
+      {{- if or .Values.initSysctl.enabled .Values.elasticsearch.configureNode }}
+        - name: init-sysctl
+          image: {{ default "busybox:1.32" .Values.initSysctl.image }}
+          imagePullPolicy: {{ .Values.image.pullPolicy  }}
+          {{- if $securityContext := (default .Values.initContainers.securityContext .Values.initSysctl.securityContext) }}
+          securityContext:
+{{ toYaml $securityContext | indent 12 }}
+          {{- end }}
+          resources:
+{{ toYaml (default .Values.initContainers.resources .Values.initSysctl.resources) | indent 12 }}
+          command: ["sh",
+            "-e",
+            "/tmp/scripts/init_sysctl.sh"]
+          volumeMounts:
+            - name: init-sysctl
+              mountPath: /tmp/scripts/
+          {{- with .Values.env }}
+          env:
+            {{- . | toYaml | trim | nindent 12 }}
+          {{- end }}
+      {{- end }}
+
+      {{- if or .Values.sonarProperties .Values.sonarSecretProperties .Values.sonarSecretKey (not .Values.elasticsearch.bootstrapChecks) }}
+        - name: concat-properties
+          image: {{ default "busybox:1.32" .Values.initContainers.image }}
+          imagePullPolicy: {{ .Values.image.pullPolicy  }}
+          command:
+          - sh
+          - -c
+          - |
+            #!/bin/sh
+            if [ -f /tmp/props/sonar.properties ]; then
+              cat /tmp/props/sonar.properties > /tmp/result/sonar.properties
+            fi
+            if [ -f /tmp/props/secret.properties ]; then
+              cat /tmp/props/secret.properties > /tmp/result/sonar.properties
+            fi
+            if [ -f /tmp/props/sonar.properties -a -f /tmp/props/secret.properties ]; then
+              awk 1 /tmp/props/sonar.properties /tmp/props/secret.properties > /tmp/result/sonar.properties
+            fi
+          volumeMounts:
+          {{- if or .Values.sonarProperties .Values.sonarSecretKey (not .Values.elasticsearch.bootstrapChecks) }}
+            - mountPath: /tmp/props/sonar.properties
+              name: config
+              subPath: sonar.properties
+          {{- end }}
+          {{- if .Values.sonarSecretProperties }}
+            - mountPath: /tmp/props/secret.properties
+              name: secret-config
+              subPath: secret.properties
+          {{- end }}
+            - mountPath: /tmp/result
+              name: concat-dir
+          {{- if $securityContext := .Values.initContainers.securityContext }}
+          securityContext:
+{{ toYaml $securityContext | indent 12 }}
+          {{- end }}
+          resources:
+{{ toYaml .Values.initContainers.resources | indent 12 }}
+          {{- with .Values.env }}
+          env:
+            {{- . | toYaml | trim | nindent 12 }}
+          {{- end }}
+      {{- end }}
+
+      {{- if .Values.prometheusExporter.enabled }}
+        - name: inject-prometheus-exporter
+          image: {{ default "curlimages/curl:8.2.0" .Values.prometheusExporter.image }}
+          imagePullPolicy: {{ .Values.image.pullPolicy  }}
+          {{- if $securityContext := (default .Values.initContainers.securityContext .Values.prometheusExporter.securityContext) }}
+          securityContext:
+{{ toYaml $securityContext | indent 12 }}
+          {{- end }}
+          resources:
+{{ toYaml (default .Values.initContainers.resources .Values.prometheusExporter.resources) | indent 12 }}
+          command: ["/bin/sh","-c"]
+          args: ["curl -s '{{ template "prometheusExporter.downloadURL" . }}' {{ if $.Values.prometheusExporter.noCheckCertificate }}--insecure{{ end }} --output /data/jmx_prometheus_javaagent.jar -v"]
+          volumeMounts:
+            - mountPath: /data
+              name: sonarqube
+              subPath: data
+          env:
+            - name: http_proxy
+              value: {{ default "" .Values.prometheusExporter.httpProxy }}
+            - name: https_proxy
+              value: {{ default "" .Values.prometheusExporter.httpsProxy }}
+            - name: no_proxy
+              value: {{ default "" .Values.prometheusExporter.noProxy }}
+          {{- with .Values.env }}
+            {{- . | toYaml | trim | nindent 12 }}
+          {{- end }}
+      {{- end }}
+      {{- if .Values.plugins.install }}
+        - name: install-plugins
+          image: {{ default "curlimages/curl:8.2.0" .Values.plugins.image }}
+          imagePullPolicy: {{ .Values.image.pullPolicy  }}
+          command: ["sh",
+            "-e",
+            "/tmp/scripts/install_plugins.sh"]
+          volumeMounts:
+            - mountPath: {{ .Values.sonarqubeFolder }}/extensions/plugins
+              name: sonarqube
+              subPath: extensions/plugins
+            - name: install-plugins
+              mountPath: /tmp/scripts/
+            {{- if .Values.plugins.netrcCreds }}
+            - name: plugins-netrc-file
+              mountPath: /root
+    {{- end }}
+          {{- if $securityContext := (default .Values.initContainers.securityContext .Values.plugins.securityContext) }}
+          securityContext:
+{{ toYaml $securityContext | indent 12 }}
+    {{- end }}
+          resources:
+{{ toYaml (default .Values.initContainers.resources .Values.plugins.resource) | indent 12 }}
+          env:
+            - name: http_proxy
+              value: {{ default "" .Values.plugins.httpProxy }}
+            - name: https_proxy
+              value: {{ default "" .Values.plugins.httpsProxy }}
+            - name: no_proxy
+              value: {{ default "" .Values.plugins.noProxy }}
+          {{- with .Values.env }}
+            {{- . | toYaml | trim | nindent 12 }}
+    {{- end }}
+    {{- end }}
+      containers:
+      {{- if .Values.extraContainers }}
+        {{- toYaml .Values.extraContainers | nindent 8 }}
+      {{- end }}
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ tpl .Values.image.tag . }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
-              containerPort: {{ .Values.containerPorts.http }}
-            - name: elastic
-              containerPort: {{ .Values.containerPorts.elastic }}
-          {{- if not .Values.diagnosticMode.enabled }}
-          {{- if .Values.customLivenessProbe }}
-          livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.customLivenessProbe "context" $) | nindent 12 }}
-          {{- else if .Values.livenessProbe.enabled }}
-          livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.livenessProbe "enabled") "context" $) | nindent 12 }}
-            httpGet:
-              path: /
-              port: http
-          {{- end }}
-          {{- if .Values.customReadinessProbe }}
-          readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.customReadinessProbe "context" $) | nindent 12 }}
-          {{- else if .Values.readinessProbe.enabled }}
-          readinessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.readinessProbe "enabled") "context" $) | nindent 12 }}
-            httpGet:
-              path: /
-              port: http
-          {{- end }}
-          {{- if .Values.customStartupProbe }}
-          startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.customStartupProbe "context" $) | nindent 12 }}
-          {{- else if .Values.startupProbe.enabled }}
-          startupProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.startupProbe "enabled") "context" $) | nindent 12 }}
-            tcpSocket:
-              port: http
-          {{- end }}
-          {{- end }}
-          {{- if .Values.lifecycleHooks }}
-          lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.lifecycleHooks "context" $) | nindent 12 }}
-          {{- end }}
-          volumeMounts:
-            - mountPath: /bitnami/sonarqube
-              name: sonarqube
-            {{- if or .Values.plugins.install .Values.caCerts.enabled }}
-            - name: provisioning
-              mountPath: {{ .Values.provisioningFolder }}
+              containerPort: {{ .Values.service.internalPort }}
+              protocol: TCP
+            {{- if .Values.prometheusExporter.enabled }}
+            - name: monitoring-web
+              containerPort: {{ .Values.prometheusExporter.webBeanPort }}
+              protocol: TCP
+            - name: monitoring-ce
+              containerPort: {{ .Values.prometheusExporter.ceBeanPort }}
+              protocol: TCP
             {{- end }}
-          {{- if .Values.extraVolumeMounts }}
-          {{- include "common.tplvalues.render" (dict "value" .Values.extraVolumeMounts "context" $) | nindent 12 }}
-          {{- end }}
-        {{- if .Values.metrics.jmx.enabled }}
-        - name: jmx-exporter
-          image: {{ include "sonarqube.metrics.jmx.image" . }}
-          imagePullPolicy: {{ .Values.metrics.jmx.image.pullPolicy | quote }}
-          {{- if .Values.metrics.jmx.containerSecurityContext.enabled }}
-          securityContext: {{- omit .Values.metrics.jmx.containerSecurityContext "enabled" | toYaml | nindent 12 }}
-          {{- end }}
-          {{- if .Values.diagnosticMode.enabled }}
-          command: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.command "context" $) | nindent 12 }}
-          args: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.args "context" $) | nindent 12 }}
-          {{- else }}
-          command:
-            - java
-            - -XX:MaxRAMPercentage=100
-            - -XshowSettings:vm
-            - -jar
-            - jmx_prometheus_httpserver.jar
-            - {{ .Values.metrics.jmx.containerPorts.metrics | quote }}
-            - /etc/jmx/sonarqube-prometheus.yml
-          {{- end }}
-          ports:
-            - name: metrics
-              containerPort: {{ .Values.metrics.jmx.containerPorts.metrics }}
-          {{- if .Values.metrics.jmx.resources }}
-          resources: {{- toYaml .Values.metrics.jmx.resources | nindent 12 }}
+          resources:
+{{ toYaml (default .Values.resources .Values.resource) | indent 12 }}
+          env:
+            {{- with .Values.env }}
+            {{- . | toYaml | trim | nindent 12 }}
+            {{- end }}
+            - name: SONAR_HELM_CHART_VERSION
+              value: {{ .Chart.Version | replace "+" "_" }}
+            - name: SONAR_WEB_JAVAOPTS
+              value: {{ template "sonarqube.jvmOpts" . }}
+            - name: SONAR_CE_JAVAOPTS
+              value: {{ template "sonarqube.jvmCEOpts" . }}
+            - name: SONAR_WEB_CONTEXT
+              value: {{ include "sonarqube.webcontext" . }}
+            - name: SONAR_JDBC_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "jdbc.secret" . }}
+                  key: {{ template "jdbc.secretPasswordKey" . }}
+            - name: SONAR_WEB_SYSTEMPASSCODE
+              valueFrom:
+                secretKeyRef:
+                {{- if and .Values.monitoringPasscodeSecretName .Values.monitoringPasscodeSecretKey }}
+                  name: {{ .Values.monitoringPasscodeSecretName }}
+                  key: {{ .Values.monitoringPasscodeSecretKey }}
+                {{- else }}
+                  name: {{ template "sonarqube.fullname" . }}-monitoring-passcode
+                  key: SONAR_WEB_SYSTEMPASSCODE
+                {{- end }}
+          envFrom:
+            - configMapRef:
+                name: {{ template "sonarqube.fullname" . }}-jdbc-config
+{{- range .Values.extraConfig.secrets }}
+            - secretRef:
+                name: {{ . }}
+{{- end }}
+{{- range .Values.extraConfig.configmaps }}
+            - configMapRef:
+                name: {{ . }}
+{{- end }}
+          livenessProbe:
+            exec:
+              command:
+              - sh
+              - -c
+              - |
+                host="$(hostname -i || echo '127.0.0.1')"
+                wget --no-proxy --quiet -O /dev/null --timeout={{ .Values.livenessProbe.timeoutSeconds }} --header="X-Sonar-Passcode: $SONAR_WEB_SYSTEMPASSCODE" "http://${host}:{{ .Values.service.internalPort }}{{ .Values.livenessProbe.sonarWebContext | default (include "sonarqube.webcontext" .) }}api/system/liveness"
+            initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+            failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
+            timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+          readinessProbe:
+            exec:
+              command:
+              - sh
+              - -c
+              - |
+                #!/bin/bash
+                # A Sonarqube container is considered ready if the status is UP, DB_MIGRATION_NEEDED or DB_MIGRATION_RUNNING
+                # status about migration are added to prevent the node to be kill while sonarqube is upgrading the database.
+                host="$(hostname -i || echo '127.0.0.1')"
+                if wget --no-proxy -qO- http://${host}:{{ .Values.service.internalPort }}{{ .Values.readinessProbe.sonarWebContext | default (include "sonarqube.webcontext" .) }}api/system/status | grep -q -e '"status":"UP"' -e '"status":"DB_MIGRATION_NEEDED"' -e '"status":"DB_MIGRATION_RUNNING"'; then
+                	exit 0
+                fi
+                exit 1
+            initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+            failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
+            timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
+          startupProbe:
+            httpGet:
+              scheme: HTTP
+              path: {{ .Values.startupProbe.sonarWebContext | default (include "sonarqube.webcontext" .) }}api/system/status
+              port: http
+            initialDelaySeconds: {{ .Values.startupProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.startupProbe.periodSeconds }}
+            failureThreshold: {{ .Values.startupProbe.failureThreshold }}
+            timeoutSeconds: {{ .Values.startupProbe.timeoutSeconds }}
+          {{- if .Values.containerSecurityContext }}
+          securityContext:
+{{- toYaml .Values.containerSecurityContext | nindent 12 }}
           {{- end }}
           volumeMounts:
-            - name: jmx-config
-              mountPath: /etc/jmx
-        {{- end }}
-        {{- if .Values.sidecars }}
-        {{- include "common.tplvalues.render" ( dict "value" .Values.sidecars "context" $) | nindent 8 }}
-        {{- end }}
+{{- if .Values.persistence.mounts }}
+{{ toYaml .Values.persistence.mounts | indent 12 }}
+{{- end }}
+{{- if .Values.extraVolumeMounts }}
+{{- .Values.extraVolumeMounts | toYaml | nindent 12 }}
+{{- end }}
+            {{- if or .Values.sonarProperties .Values.sonarSecretProperties .Values.sonarSecretKey (not .Values.elasticsearch.bootstrapChecks) }}
+            - mountPath: {{ .Values.sonarqubeFolder }}/conf/
+              name: concat-dir
+            {{- end }}
+            {{- if .Values.sonarSecretKey }}
+            - mountPath: {{ .Values.sonarqubeFolder }}/secret/
+              name: secret
+            {{- end }}
+            {{- if .Values.caCerts.enabled }}
+            - mountPath: {{ .Values.sonarqubeFolder }}/certs
+              name: sonarqube
+              subPath: certs
+            {{- end }}
+            - mountPath: {{ .Values.sonarqubeFolder }}/data
+              name: sonarqube
+              subPath: data
+            {{- if .Values.persistence.enabled }}
+            - mountPath: {{ .Values.sonarqubeFolder }}/extensions
+              name: sonarqube
+              subPath: extensions
+            {{- else if .Values.plugins.install }}
+            - mountPath: {{ .Values.sonarqubeFolder }}/extensions/plugins
+              name: sonarqube
+              subPath: extensions/plugins
+            {{- end }}
+            - mountPath: {{ .Values.sonarqubeFolder }}/temp
+              name: sonarqube
+              subPath: temp
+            - mountPath: {{ .Values.sonarqubeFolder }}/logs
+              name: sonarqube
+              subPath: logs
+            - mountPath: /tmp
+              name: tmp-dir
+            {{- if .Values.prometheusExporter.enabled }}
+            - mountPath: {{ .Values.sonarqubeFolder }}/conf/prometheus-config.yaml
+              subPath: prometheus-config.yaml
+              name: prometheus-config
+            - mountPath: {{ .Values.sonarqubeFolder }}/conf/prometheus-ce-config.yaml
+              subPath: prometheus-ce-config.yaml
+              name: prometheus-ce-config
+            {{- end }}
+    {{- if .Values.priorityClassName }}
+      priorityClassName: {{ .Values.priorityClassName }}
+    {{- end }}
+    {{- if .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.nodeSelector | indent 8 }}
+    {{- end }}
+    {{- if .Values.hostAliases }}
+      hostAliases:
+{{ toYaml .Values.hostAliases | indent 8 }}
+    {{- end }}
+    {{- if .Values.tolerations }}
+      tolerations:
+{{ toYaml .Values.tolerations | indent 8 }}
+    {{- end }}
+    {{- if .Values.affinity }}
+      affinity:
+{{ toYaml .Values.affinity | indent 8 }}
+    {{- end }}
+      serviceAccountName: {{ template "sonarqube.serviceAccountName" . }}
       volumes:
-        {{- if or .Values.plugins.install .Values.caCerts.enabled }}
-        - name: provisioning
-          emptyDir: {}
+{{- if .Values.extraVolumes }}
+{{- .Values.extraVolumes | toYaml | nindent 6 }}
+{{- end }}
+{{- if .Values.persistence.volumes }}
+{{ tpl (toYaml .Values.persistence.volumes | indent 6) . }}
+{{- end }}
+      {{- if or .Values.sonarProperties .Values.sonarSecretKey ( not .Values.elasticsearch.bootstrapChecks) }}
+      - name: config
+        configMap:
+          name: {{ template "sonarqube.fullname" . }}-config
+          items:
+          - key: sonar.properties
+            path: sonar.properties
+      {{- end }}
+      {{- if .Values.sonarSecretProperties }}
+      - name: secret-config
+        secret:
+          secretName: {{ .Values.sonarSecretProperties }}
+          items:
+          - key: secret.properties
+            path: secret.properties
+      {{- end }}
+      {{- if .Values.sonarSecretKey }}
+      - name: secret
+        secret:
+          secretName: {{ .Values.sonarSecretKey }}
+          items:
+          - key: sonar-secret.txt
+            path: sonar-secret.txt
+      {{- end }}
+      {{- if .Values.caCerts.enabled }}
+      - name: ca-certs
+        secret:
+          secretName: {{ .Values.caCerts.secret }}
+      {{- end }}
+      {{- if .Values.plugins.netrcCreds }}
+      - name: plugins-netrc-file
+        secret:
+          secretName: {{ .Values.plugins.netrcCreds }}
+          items:
+          - key: netrc
+            path: .netrc
+      {{- end }}
+      - name: init-sysctl
+        configMap:
+          name: {{ template "sonarqube.fullname" . }}-init-sysctl
+          items:
+            - key: init_sysctl.sh
+              path: init_sysctl.sh
+      - name: install-plugins
+        configMap:
+          name: {{ template "sonarqube.fullname" . }}-install-plugins
+          items:
+            - key: install_plugins.sh
+              path: install_plugins.sh
+      {{- if .Values.prometheusExporter.enabled }}
+      - name: prometheus-config
+        configMap:
+          name: {{ template "sonarqube.fullname" . }}-prometheus-config
+          items:
+            - key: prometheus-config.yaml
+              path: prometheus-config.yaml
+      - name: prometheus-ce-config
+        configMap:
+          name: {{ template "sonarqube.fullname" . }}-prometheus-ce-config
+          items:
+            - key: prometheus-ce-config.yaml
+              path: prometheus-ce-config.yaml
+      {{- end }}
+      - name: sonarqube
+        {{- if .Values.persistence.enabled }}
+        persistentVolumeClaim:
+          claimName: {{ if .Values.persistence.existingClaim }}{{ .Values.persistence.existingClaim }}{{- else }}{{ template "sonarqube.fullname" . }}{{- end }}
+        {{- else }}
+        emptyDir: {{- toYaml .Values.emptyDir | nindent 10 }}
+        {{- end  }}
+      - name : tmp-dir
+        emptyDir: {{- toYaml .Values.emptyDir | nindent 10 }}
+        {{- if or .Values.sonarProperties .Values.sonarSecretProperties .Values.sonarSecretKey ( not .Values.elasticsearch.bootstrapChecks) }}
+      - name : concat-dir
+        emptyDir: {{- toYaml .Values.emptyDir | nindent 10 -}}
         {{- end }}
-        {{- if .Values.caCerts.enabled }}
-        - name: ca-certs
-          secret:
-            secretName: {{ .Values.caCerts.secret }}
-        {{- end }}
-        - name: sonarqube
-          {{- if .Values.persistence.enabled }}
-          persistentVolumeClaim:
-            claimName: {{ (tpl .Values.persistence.existingClaim .) | default (include "common.names.fullname" .) }}
-          {{- else }}
-          emptyDir: {}
-          {{- end }}
-        {{- if .Values.metrics.jmx.enabled }}
-        - name: jmx-config
-          configMap:
-            name: {{ printf "%s-jmx-conf" (include "common.names.fullname" .) }}
-        {{- end }}
-        {{- if .Values.plugins.install }}
-        - name: install-plugins
-          configMap:
-            name: {{ printf "%s-install-plugins-configmap" (include "common.names.fullname" .) }}
-            items:
-              - key: install_plugins.sh
-                path: install_plugins.sh
-        {{- end }}
-        {{- if .Values.extraVolumes }}
-        {{- include "common.tplvalues.render" (dict "value" .Values.extraVolumes "context" $) | nindent 8 }}
-        {{- end }}
+{{- end }}
