@@ -361,8 +361,7 @@ affinity: {}
 ## @param nodeSelector Node labels for SonarQube&trade; pods assignment
 ## ref: https://kubernetes.io/docs/user-guide/node-selection/
 ##
-nodeSelector: 
-- nodeName: node-04
+nodeSelector: {}
 ## @param tolerations Tolerations for SonarQube&trade; pods assignment
 ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
 ##
