@@ -63,7 +63,7 @@ diagnosticMode:
 image:
   registry: ghcr.io
   repository: asongent/sonarqube
-  tag: 10.2.1-debian-11-r10
+  tag: 9.9.0-debian-11-r8
   digest: ""
   ## Specify a imagePullPolicy
   ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
@@ -79,13 +79,14 @@ image:
   ##
   pullSecrets: 
   - private-registry
+  ## Enable debug mode
   ##
   debug: false
+
 ## @section SonarQube&trade; Configuration parameters
 ## SonarQube&trade; settings based on environment variables
 ## ref: https://github.com/bitnami/containers/tree/main/bitnami/sonarqube#environment-variables
 ## @param sonarqubeUsername SonarQube&trade; username
-
 sonarqubeUsername: "fredgent"
 ## @param sonarqubePassword SonarQube&trade; user password
 ## Defaults to a random 10-character alphanumeric string if not set
@@ -108,10 +109,10 @@ minHeapSize: 1024m
 ## @param maxHeapSize Maximum heap size for SonarQube&trade;
 ##
 maxHeapSize: 2048m
-## @param jvmOpts Values to add to SONARQUBE_WEB_JAVA_ADD_OPTS
+## @param jvmOpts Values to add to SONARQUBE_WEB_JVM_OPTS
 ##
 jvmOpts: ""
-## @param jvmCeOpts Values to add to SONAR_CE_JAVAADDITIONALOPTS
+## @param jvmCeOpts Values to add to SONAR_CE_JAVAOPTS
 ##
 jvmCeOpts: ""
 ## @param startTimeout Timeout for the application to start in seconds
@@ -148,10 +149,10 @@ ldap:
   ## @param ldap.bindPassword The password of the user to connect with. Leave this blank for anonymous access to the LDAP directory.
   ##
   bindPassword: ""
-  ## @param ldap.authentication Possible values: simple, CRAM-MD5, DIGEST-MD5, GSSAPI. See the tutorial on authentication mechanisms (<http://java.sun.com/products/jndi/tutorial/ldap/security/auth.html>)
+  ## @param ldap.authentication Possible values: simple, CRAM-MD5, DIGEST-MD5, GSSAPI. See the tutorial on authentication mechanisms (http://java.sun.com/products/jndi/tutorial/ldap/security/auth.html)
   ##
   authentication: simple
-  ## @param ldap.realm See Digest-MD5 Authentication, CRAM-MD5 Authentication (<http://java.sun.com/products/jndi/tutorial/ldap/security/digest.html>)
+  ## @param ldap.realm See Digest-MD5 Authentication, CRAM-MD5 Authentication (http://java.sun.com/products/jndi/tutorial/ldap/security/digest.html)
   ##
   realm: ""
   ## @param ldap.contextFactoryClass Context factory class.
@@ -505,12 +506,6 @@ ingress:
   ##   cert-manager.io/cluster-issuer: cluster-issuer-name
   ##
   annotations: {}
-  ## @param ingress.labels Additional labels for the Ingress resource.
-  ## e.g:
-  ## labels:
-  ##   app: sonarqube
-  ##
-  labels: {}
   ## @param ingress.tls Enable TLS configuration for the host defined at `ingress.hostname` parameter
   ## TLS certificates will be retrieved from a TLS secret with name: `{{- printf "%s-tls" .Values.ingress.hostname }}`
   ## You can:
@@ -585,22 +580,22 @@ ingress:
 ## @section SonarQube caCerts provisioning parameters
 ##
 ## Provide a secret containing one or more certificate files in the keys that will be added to cacerts
-## The cacerts file will be set via SONARQUBE_WEB_JAVA_ADD_OPTS and SONAR_CE_JAVAADDITIONALOPTS
+## The cacerts file will be set via SONARQUBE_WEB_JVM_OPTS and SONAR_CE_JAVAOPTS
 caCerts:
   ## @param caCerts.enabled Enable the use of caCerts
   ##
   enabled: false
-  ## OS Shell + Utility image
-  ## ref: https://hub.docker.com/r/bitnami/os-shell/tags/
-  ## @param caCerts.image.registry OS Shell + Utility image registry
-  ## @param caCerts.image.repository OS Shell + Utility image repository
-  ## @param caCerts.image.tag OS Shell + Utility image tag (immutable tags are recommended)
-  ## @param caCerts.image.digest OS Shell + Utility image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag
-  ## @param caCerts.image.pullPolicy OS Shell + Utility image pull policy
-  ## @param caCerts.image.pullSecrets OS Shell + Utility image pull secrets
-  ##
+  ## Bitnami Shell image
+  ## ref: https://hub.docker.com/r/bitnami/bitnami-shell/tags/
+  ## @param caCerts.image.registry Bitnami Shell image registry
+  ## @param caCerts.image.repository Bitnami Shell image repository
+  ## @param caCerts.image.tag Bitnami Shell image tag (immutable tags are recommended)
+  ## @param caCerts.image.digest Bitnami Shell image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag
+  ## @param caCerts.image.pullPolicy Bitnami Shell image pull policy
+  ## @param caCerts.image.pullSecrets Bitnami Shell image pull secrets
+  ## ghcr.io/asongent/bitnami-shell:11-debian-11-r90
   image:
-    registry: ghcr.io
+    registry: ghrc.io
     repository: asongent/bitnami-shell
     tag: 11-debian-11-r90
     digest: ""
@@ -612,7 +607,8 @@ caCerts:
     ## pullSecrets:
     ##   - myRegistryKeySecretName
     ##
-    pullSecrets: []
+    pullSecrets: 
+    - 
   ## @param caCerts.secret Name of the secret containing the certificates
   ##
   secret: ca-certs-secret
@@ -651,14 +647,14 @@ plugins:
   ## @param plugins.noCheckCertificate Set to true to not validate the server's certificate to download plugin
   ##
   noCheckCertificate: true
-  ## OS Shell + Utility image
-  ## ref: https://hub.docker.com/r/bitnami/os-shell/tags/
-  ## @param plugins.image.registry OS Shell + Utility image registry
-  ## @param plugins.image.repository OS Shell + Utility image repository
-  ## @param plugins.image.tag OS Shell + Utility image tag (immutable tags are recommended)
-  ## @param plugins.image.digest OS Shell + Utility image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag
-  ## @param plugins.image.pullPolicy OS Shell + Utility image pull policy
-  ## @param plugins.image.pullSecrets OS Shell + Utility image pull secrets
+  ## Bitnami Shell image
+  ## ref: https://hub.docker.com/r/bitnami/bitnami-shell/tags/
+  ## @param plugins.image.registry Bitnami Shell image registry
+  ## @param plugins.image.repository Bitnami Shell image repository
+  ## @param plugins.image.tag Bitnami Shell image tag (immutable tags are recommended)
+  ## @param plugins.image.digest Bitnami Shell image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag
+  ## @param plugins.image.pullPolicy Bitnami Shell image pull policy
+  ## @param plugins.image.pullSecrets Bitnami Shell image pull secrets
   ##
   image:
     registry: ghcr.io
@@ -673,7 +669,8 @@ plugins:
     ## pullSecrets:
     ##   - myRegistryKeySecretName
     ##
-    pullSecrets: []
+    pullSecrets: 
+    - private-registry 
   ## Init container's resource requests and limits
   ## ref: https://kubernetes.io/docs/user-guide/compute-resources/
   ## @param plugins.resources.limits The resources limits for the init container
@@ -732,18 +729,18 @@ volumePermissions:
   ## @param volumePermissions.enabled Enable init container that changes the owner/group of the PV mount point to `runAsUser:fsGroup`
   ##
   enabled: false
-  ## OS Shell + Utility image
-  ## ref: https://hub.docker.com/r/bitnami/os-shell/tags/
-  ## @param volumePermissions.image.registry OS Shell + Utility image registry
-  ## @param volumePermissions.image.repository OS Shell + Utility image repository
-  ## @param volumePermissions.image.tag OS Shell + Utility image tag (immutable tags are recommended)
-  ## @param volumePermissions.image.digest OS Shell + Utility image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag
-  ## @param volumePermissions.image.pullPolicy OS Shell + Utility image pull policy
-  ## @param volumePermissions.image.pullSecrets OS Shell + Utility image pull secrets
-  ##
+  ## Bitnami Shell image
+  ## ref: https://hub.docker.com/r/bitnami/bitnami-shell/tags/
+  ## @param volumePermissions.image.registry Bitnami Shell image registry
+  ## @param volumePermissions.image.repository Bitnami Shell image repository
+  ## @param volumePermissions.image.tag Bitnami Shell image tag (immutable tags are recommended)
+  ## @param volumePermissions.image.digest Bitnami Shell image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag
+  ## @param volumePermissions.image.pullPolicy Bitnami Shell image pull policy
+  ## @param volumePermissions.image.pullSecrets Bitnami Shell image pull secrets
+  ##  ghcr.io/asongent/bitnami-shell:11-debian-11-r90
   image:
     registry: ghcr.io
-    repository: asongent/os-shell
+    repository: asongent/bitnami-shell
     tag: 11-debian-11-r90
     digest: ""
     pullPolicy: IfNotPresent
@@ -783,18 +780,18 @@ sysctl:
   ## @param sysctl.enabled Enable kernel settings modifier image
   ##
   enabled: true
-  ## OS Shell + Utility image
-  ## ref: https://hub.docker.com/r/bitnami/os-shell/tags/
-  ## @param sysctl.image.registry OS Shell + Utility image registry
-  ## @param sysctl.image.repository OS Shell + Utility image repository
-  ## @param sysctl.image.tag OS Shell + Utility image tag (immutable tags are recommended)
-  ## @param sysctl.image.digest OS Shell + Utility image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag
-  ## @param sysctl.image.pullPolicy OS Shell + Utility image pull policy
-  ## @param sysctl.image.pullSecrets OS Shell + Utility image pull secrets
-  ##
+  ## Bitnami Shell image
+  ## ref: https://hub.docker.com/r/bitnami/bitnami-shell/tags/
+  ## @param sysctl.image.registry Bitnami Shell image registry
+  ## @param sysctl.image.repository Bitnami Shell image repository
+  ## @param sysctl.image.tag Bitnami Shell image tag (immutable tags are recommended)
+  ## @param sysctl.image.digest Bitnami Shell image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag
+  ## @param sysctl.image.pullPolicy Bitnami Shell image pull policy
+  ## @param sysctl.image.pullSecrets Bitnami Shell image pull secrets
+  ##  ghcr.io/asongent/bitnami-shell:11-debian-11-r90
   image:
     registry: ghcr.io
-    repository: asongent/os-shell
+    repository: asongent/bitnami-shell
     tag: 11-debian-11-r90
     digest: ""
     pullPolicy: IfNotPresent
@@ -805,7 +802,8 @@ sysctl:
     ## pullSecrets:
     ##   - myRegistryKeySecretName
     ##
-    pullSecrets: []
+    pullSecrets: 
+    - private-registry 
   ## Init container's resource requests and limits
   ## ref: https://kubernetes.io/docs/user-guide/compute-resources/
   ## @param sysctl.resources.limits The resources limits for the init container
@@ -875,7 +873,7 @@ metrics:
     image:
       registry: ghcr.io
       repository: asongent/jmx-exporter
-      tag: 0.19.0-debian-11-r95
+      tag: 0.17.2-debian-11-r53
       digest: ""
       pullPolicy: IfNotPresent
       ## Optionally specify an array of imagePullSecrets.
@@ -1049,11 +1047,11 @@ postgresql:
       ## @param postgresql.primary.persistence.size PVC Storage Request for PostgreSQL volume
       ##
       size: 8Gi
-
 ## @section External Database settings
 ##
 ## External Database Configuration
 ## All of these values are only used when postgresql.enabled is set to false
+##
 externalDatabase:
   ## @param externalDatabase.host Host of an external PostgreSQL instance to connect (only if postgresql.enabled=false)
   ##
@@ -1066,9 +1064,11 @@ externalDatabase:
   password: ""
   ## @param externalDatabase.existingSecret Secret containing the password of an external PostgreSQL instance to connect (only if postgresql.enabled=false)
   ## Name of an existing secret resource containing the DB password in a 'password' key
+  ##
   existingSecret: "sonarqube-database"
   ## @param externalDatabase.database Database inside an external PostgreSQL to connect (only if postgresql.enabled=false)
   ##
   database: sonarqube
   ## @param externalDatabase.port Port of an external PostgreSQL to connect (only if postgresql.enabled=false)
+  ##
   port: 5432
