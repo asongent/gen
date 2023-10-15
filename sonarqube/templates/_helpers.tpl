@@ -1,9 +1,4 @@
 {{/*
-Copyright VMware, Inc.
-SPDX-License-Identifier: APACHE-2.0
-*/}}
-
-{{/*
 Return the proper SonarQube(TM) image name
 */}}
 {{- define "sonarqube.image" -}}
@@ -221,13 +216,13 @@ Set sonarqube.jvmOpts
 */}}
 {{- define "sonarqube.jvmOpts" -}}
     {{- if and .Values.caCerts.enabled .Values.metrics.jmx.enabled -}}
-        {{ printf "-Djavax.net.ssl.trustStore=/bitnami/sonarqube/certs/cacerts -Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.port=10443 -Dcom.sun.management.jmxremote.rmi.port=10444 %s" .Values.jvmOpts | trim | quote }}
+        {{ printf "-Djavax.net.ssl.trustStore=/bitnami/sonarqube/certs/cacerts -Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.port=10443 -Dcom.sun.management.jmxremote.rmi.port=10444 %s" .Values.jvmCeOpts | trim | quote }}
     {{- else if .Values.caCerts.enabled -}}
-        {{ printf "-Djavax.net.ssl.trustStore=/bitnami/sonarqube/certs/cacerts %s" .Values.jvmOpts | trim | quote }}
+        {{ printf "-Djavax.net.ssl.trustStore=/bitnami/sonarqube/certs/cacerts %s" .Values.jvmCeOpts | trim | quote }}
     {{- else if .Values.metrics.jmx.enabled -}}
-        {{ printf "-Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.port=10443 -Dcom.sun.management.jmxremote.rmi.port=10444 %s" .Values.jvmOpts | trim | quote }}
+        {{ printf "-Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.port=10443 -Dcom.sun.management.jmxremote.rmi.port=10444 %s" .Values.jvmCeOpts | trim | quote }}
     {{- else -}}
-        {{ printf "%s" .Values.jvmOpts }}
+        {{ printf "" }}
     {{- end -}}
 {{- end -}}
 
@@ -238,6 +233,6 @@ Set sonarqube.jvmCEOpts
     {{- if .Values.caCerts.enabled -}}
         {{ printf "-Djavax.net.ssl.trustStore=/bitnami/sonarqube/certs/cacerts %s" .Values.jvmCeOpts | trim | quote }}
     {{- else -}}
-        {{ printf "%s" .Values.jvmCeOpts }}
+        {{ printf "" }}
     {{- end -}}
 {{- end -}}
