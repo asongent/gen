@@ -116,7 +116,7 @@ defaultSettings:
   createDefaultDiskLabeledNodes: ~
   defaultDataPath: ~
   defaultDataLocality: ~
-  replicaSoftAntiAffinity: ~
+  replicaSoftAntiAffinity: true
   replicaAutoBalance: ~
   storageOverProvisioningPercentage: ~
   storageMinimalAvailablePercentage: ~
