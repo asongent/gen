@@ -18,3 +18,4 @@ jfrog-pvc.yaml
 jfrog-pv.*
 sonarqube-old-old
 sonarqube-new
+neuvector-old
