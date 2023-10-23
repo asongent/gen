@@ -34,7 +34,6 @@ spec:
         {{- include "common.tplvalues.render" (dict "value" .Values.podLabels "context" $) | nindent 8 }}
         {{- end }}
     spec:
-      nodeName: node-07
       serviceAccountName: {{ include "sonarqube.serviceAccountName" . }}
       {{- include "sonarqube.imagePullSecrets" . | nindent 6 }}
       {{- if .Values.hostAliases }}
