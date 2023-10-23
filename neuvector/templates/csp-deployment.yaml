@@ -1,4 +1,4 @@
-{{- if or .Values.global.aws.enabled .Values.global.azure.enabled }}
+{{- if .Values.awsbilling.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -8,7 +8,7 @@ metadata:
     chart: {{ template "neuvector.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
-{{- with .Values.global.aws.annotations }}
+{{- with .Values.awsbilling.annotations }}
   annotations:
 {{ toYaml . | indent 4 }}
 {{- end }}
@@ -22,13 +22,9 @@ spec:
         app: neuvector-csp-pod
         release: {{ .Release.Name }}
     spec:
-      {{- if .Values.global.aws.imagePullSecrets }}
+      {{- if .Values.awsbilling.imagePullSecrets }}
       imagePullSecrets:
-        - name: {{ .Values.global.aws.imagePullSecrets }}
-      {{- end }}
-      {{- if .Values.global.azure.imagePullSecrets }}
-      imagePullSecrets:
-        - name: {{ .Values.global.azure.imagePullSecrets }}
+        - name: {{ .Values.awsbilling.imagePullSecrets }}
       {{- end }}
       containers:
       - env:
@@ -42,32 +38,9 @@ spec:
           value: "v1"
         - name: USAGE_API_GROUP
           value: "susecloud.net"
-        {{- if .Values.global.azure.enabled }}  
-        - name: "CLIENT_ID"
-          value: "{{ .Values.global.azure.identity.clientId }}"
-        - name: "EXTENSION_RESOURCE_ID"
-          value: "{{ .Values.global.azure.extension.resourceId }}"
-        - name: "PLAN_ID"
-          value: "{{ .Values.global.azure.marketplace.planId }}"
-        {{- end }}
-        {{- if and .Values.global.aws.enabled .Values.global.aws.image.digest }}
-        image: "{{ .Values.registry }}/{{ .Values.global.aws.image.repository }}@{{ .Values.global.aws.image.digest }}"
-        {{- else if and .Values.global.aws.enabled .Values.global.aws.image.tag }}
-        image: "{{ .Values.registry }}/{{ .Values.global.aws.image.repository }}:{{ .Values.global.aws.image.tag }}"
-        {{- else if and .Values.global.azure.enabled }}
-        image: "{{ .Values.global.azure.images.neuvector_csp_pod.registry }}/{{ .Values.global.azure.images.neuvector_csp_pod.image }}@{{ .Values.global.azure.images.neuvector_csp_pod.digest }}"
-        {{- end }}
+        image: "{{ .Values.registry }}/{{ .Values.awsbilling.image.repository }}:{{ .Values.awsbilling.image.tag }}"
         name: neuvector-csp-pod
-        {{- if .Values.global.aws.enabled }}
-        imagePullPolicy: "{{ .Values.global.aws.image.imagePullPolicy }}"
-        {{- else if .Values.global.azure.enabled }}
-        imagePullPolicy: "{{ .Values.global.azure.images.neuvector_csp_pod.imagePullPolicy }}"
-        {{- end }}
-      {{- if .Values.global.aws.enabled }}
-      serviceAccountName: {{ .Values.global.aws.serviceAccount }}
-      serviceAccount: {{ .Values.global.aws.serviceAccount }}
-      {{- else if .Values.global.azure.enabled }}
-      serviceAccountName: {{ .Values.global.azure.serviceAccount }}
-      serviceAccount: {{ .Values.global.azure.serviceAccount }}
-      {{- end }}
+        imagePullPolicy: "{{ .Values.awsbilling.image.imagePullPoliicy }}"
+      serviceAccountName: {{ .Values.awsbilling.serviceAccount }}
+      serviceAccount: {{ .Values.awsbilling.serviceAccount }}
 {{- end }}

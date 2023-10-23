@@ -1,4 +1,4 @@
-{{- if or .Values.global.aws.enabled .Values.global.azure.enabled }}
+{{- if .Values.awsbilling.enabled }}
 {{- $oc4 := and .Values.openshift (semverCompare ">=1.12-0" (substr 1 -1 .Capabilities.KubeVersion.GitVersion)) -}}
 {{- $oc3 := and .Values.openshift (not $oc4) (semverCompare ">=1.9-0" (substr 1 -1 .Capabilities.KubeVersion.GitVersion)) -}}
 {{- if $oc3 }}
@@ -22,11 +22,6 @@ roleRef:
   name: neuvector-csp-adapter-role
 subjects:
   - kind: ServiceAccount
-    {{- if .Values.global.aws.enabled }}
-    name: {{ .Values.global.aws.serviceAccount }}
-    {{- end }}
-    {{- if .Values.global.azure.enabled }}
-    name: {{ .Values.global.azure.serviceAccount }}
-    {{- end }}
+    name: {{ .Values.awsbilling.serviceAccount }}
     namespace: {{ .Release.Namespace }}
 {{- end }}

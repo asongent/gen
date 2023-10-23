@@ -23,25 +23,7 @@ Parameter | Description | Default | Notes
 `psp` | NeuVector Pod Security Policy when psp policy is enabled | `false` |
 `serviceAccount` | Service account name for NeuVector components | `default` |
 `leastPrivilege` | Use least privileged service account | `false` |
-`autoGenerateCert` | Automatically generate certificate or not | `true` |
-`defaultValidityPeriod` | The default validity period used for certs automatically generated (days) | `365` |
 `global.cattle.url` | Set the Rancher Server URL | | Required for Rancher Authentication. `https://<Rancher_URL>/` |
-`global.aws.enabled` | If true, install AWS billing csp adapter | `false` | **Note**: default admin user is disabled when aws market place billing enabled, use secret to create admin-role user to manage NeuVector deployment.
-`global.aws.accountNumber` | AWS Account Number | `nil` | Follow AWS subscription instruction
-`global.aws.roleName` | AWS Role name for billing | `nil` | Follow AWS subscription instruction
-`global.aws.serviceAccount` | Service account name for csp adapter | `csp` | Follow AWS subscription instruction
-`global.aws.imagePullSecrets` | Pull secret for csp adapter image | `nil` | Follow AWS subscription instruction
-`global.aws.image.repository` | csp adapter image repository | `neuvector/neuvector-csp-adapter` | Follow AWS subscription instruction
-`global.aws.image.tag` | csp adapter image tag | `latest` | Follow AWS subscription instruction
-`global.aws.image.digest` | csp adapter image digest | `nil` | Follow AWS subscription instruction
-`global.aws.image.imagePullPolicy` | csp adapter image pull policy | `IfNotPresent` | Follow AWS subscription instruction
-`global.azure.enabled` | If true, install Azure billing csp adapter | `false` | **Note**: default admin user is disabled when azure market place billing enabled, use secret to create admin-role user to manage NeuVector deployment.
-`global.azure.serviceAccount` | Service account name for csp adapter | `csp` | Follow Azure subscription instruction
-`global.azure.imagePullSecrets` | Pull secret for csp adapter image | `nil` | Follow Azure subscription instruction
-`global.azure.images.neuvector_csp_pod.registry` | csp adapter image registry | `susellcforazuremarketplace.azurecr.io` | Follow Azure subscription instruction
-`global.azure.images.neuvector_csp_pod.image` | csp adapter image repository | `neuvector-billing-azure-by-suse-llc` | Follow Azure subscription instruction
-`global.azure.images.neuvector_csp_pod.digest` | csp adapter image digest | `nil` | Follow Azure subscription instruction
-`global.azure.images.neuvector_csp_pod.imagePullPolicy` | csp adapter image pull policy | `IfNotPresent` | Follow Azure subscription instruction
 `controller.enabled` | If true, create controller | `true` |
 `controller.image.repository` | controller image repository | `neuvector/controller` |
 `controller.image.hash` | controller image hash in the format of sha256:xxxx. If present it overwrites the image tag value. | |
@@ -205,8 +187,7 @@ Parameter | Description | Default | Notes
 `cve.adapter.nodeSelector` | Enable and specify nodeSelector labels | `{}` |
 `cve.adapter.runAsUser` | Specify the run as User ID | `nil` |
 `cve.updater.enabled` | If true, create cve updater | `true` |
-`cve.updater.secure` | If true, API server's certificate is validated  | `false` |
-`cve.updater.cacert` | If set, use this ca file to validate API server's certificate  | `/var/run/secrets/kubernetes.io/serviceaccount/ca.crt` |
+`cve.updater.secure` | If ture, API server's certificate is validated  | `false` |
 `cve.updater.image.registry` | cve updater image registry to overwrite global registry | |
 `cve.updater.image.repository` | cve updater image repository | `neuvector/updater` |
 `cve.updater.image.tag` | image tag for cve updater | `latest` |
@@ -245,6 +226,15 @@ Parameter | Description | Default | Notes
 `admissionwebhook.type` | admission webhook type | `ClusterIP` |
 `crdwebhook.enabled` | Enable crd service and create crd related resources | `true` |
 `crdwebhook.type` | crd webhook type | `ClusterIP` |
+`awsbilling.enabled` | If true, install AWS billing csp adapter | `false` |
+`awsbilling.accountNumber` | AWS Account Number | `nil` | Follow AWS subscription instruction
+`awsbilling.roleName` | AWS Role name for billing | `nil` | Follow AWS subscription instruction
+`awsbilling.serviceAccount` | Service account name for csp adapter | `csp` | Follow AWS subscription instruction
+`awsbilling.annotations` | Annotaion for csp adapter  | `nil` | Follow AWS subscription instruction
+`awsbilling.imagePullSecrets` | Pull secret for csp adapter image | `nil` | Follow AWS subscription instruction
+`awsbilling.image.repository` | csp adapter image repository | `neuvector/neuvector-csp-adapter` | Follow AWS subscription instruction
+`awsbilling.image.tag` | csp adapter image tag | `1.0.0` | Follow AWS subscription instruction
+`awsbilling.image.imagePullPolicy` | csp adapter image pull policy | `IfNotPresent` | Follow AWS subscription instruction
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,
 
