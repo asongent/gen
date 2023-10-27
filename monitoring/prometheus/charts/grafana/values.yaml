@@ -689,17 +689,17 @@ grafana.ini:
 
   auth.generic_oauth:
     enabled: true
-    name: Keycloak-OAuth
+    name: SSO
     allow_sign_up: true
-    client_id: YOUR_APP_CLIENT_ID
-    client_secret: YOUR_APP_CLIENT_SECRET
-    scopes: penid,email,profile,offline_access,roles
-    email_attribute_path: email
-    login_attribute_path: username
-    name_attribute_path: full_name
-    auth_url:  https://<PROVIDER_DOMAIN>/realms/<REALM_NAME>/protocol/openid-connect/auth
-    token_url: https://<PROVIDER_DOMAIN>/realms/<REALM_NAME>/protocol/openid-connect/token
-    api_url: https://<PROVIDER_DOMAIN>/realms/<REALM_NAME>/protocol/openid-connect/userinfo
+    client_id: grafana
+    client_secret: 8kkkdGZ9EQALnYM403Png2mxfGaKyzKM
+    scopes: email,profile,offline_access,roles
+    # email_attribute_path: asongentle@gmail.com
+    # login_attribute_path: username
+    # name_attribute_path: full_name
+    auth_url:  https://keycloak.stack.fredgentech.net/auth/realms/New%20Gen%20Tech/protocol/openid-connect/auth
+    token_url: https://keycloak.stack.fredgentech.net/auth/realms/New%20Gen%20Tech/protocol/openid-connect/token
+    api_url: https://keycloak.stack.fredgentech.net/auth/realms/New%20Gen%20Tech/protocol/openid-connect/userinfo
     role_attribute_path: contains(roles[*], 'admin') && 'Admin' || contains(roles[*], 'editor') && 'Editor' || 'Viewer'
 ## grafana Authentication can be enabled with the following values on grafana.ini
  # server:
