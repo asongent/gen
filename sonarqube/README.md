@@ -11,8 +11,7 @@ Trademarks: This software listing is packaged by Bitnami. The respective tradema
 ## TL;DR
 
 ```console
-helm repo add my-repo https://charts.bitnami.com/bitnami
-helm install my-release my-repo/sonarqube
+helm install my-release oci://registry-1.docker.io/bitnamicharts/sonarqube
 ```
 
 ## Introduction
@@ -21,18 +20,19 @@ This chart bootstraps an [SonarQube&trade;](https://github.com/bitnami/container
 
 Bitnami charts can be used with [Kubeapps](https://kubeapps.dev/) for deployment and management of Helm Charts in clusters.
 
+Looking to use SonarQube## Prerequisitestrade; in production? Try [VMware Application Catalog](https://bitnami.com/enterprise), the enterprise edition of Bitnami Application Catalog.
+
 ## Prerequisites
 
-- Kubernetes 1.19+
-- Helm 3.2.0+
+- Kubernetes 1.23+
+- Helm 3.8.0+
 
 ## Installing the Chart
 
 To install the chart with the release name `my-release`:
 
 ```console
-helm repo add my-repo https://charts.bitnami.com/bitnami
-helm install my-release my-repo/sonarqube
+helm install my-release oci://registry-1.docker.io/bitnamicharts/sonarqube
 ```
 
 The command deploys SonarQube&trade; on the Kubernetes cluster in the default configuration. The [Parameters](#parameters) section lists the parameters that can be configured during installation.
@@ -76,60 +76,60 @@ The command removes all the Kubernetes components associated with the chart and 
 
 ### SonarQube&trade; Image parameters
 
-| Name                | Description                                                                                                      | Value                |
-| ------------------- | ---------------------------------------------------------------------------------------------------------------- | -------------------- |
-| `image.registry`    | SonarQube&trade; image registry                                                                                  | `docker.io`          |
-| `image.repository`  | SonarQube&trade; image repository                                                                                | `bitnami/sonarqube`  |
-| `image.tag`         | SonarQube&trade; image tag (immutable tags are recommended)                                                      | `9.9.0-debian-11-r8` |
-| `image.digest`      | SonarQube&trade; image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag | `""`                 |
-| `image.pullPolicy`  | SonarQube&trade; image pull policy                                                                               | `IfNotPresent`       |
-| `image.pullSecrets` | SonarQube&trade; image pull secrets                                                                              | `[]`                 |
-| `image.debug`       | Enable SonarQube&trade; image debug mode                                                                         | `false`              |
+| Name                | Description                                                                                                      | Value                  |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------- | ---------------------- |
+| `image.registry`    | SonarQube&trade; image registry                                                                                  | `docker.io`            |
+| `image.repository`  | SonarQube&trade; image repository                                                                                | `bitnami/sonarqube`    |
+| `image.tag`         | SonarQube&trade; image tag (immutable tags are recommended)                                                      | `10.2.1-debian-11-r10` |
+| `image.digest`      | SonarQube&trade; image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag | `""`                   |
+| `image.pullPolicy`  | SonarQube&trade; image pull policy                                                                               | `IfNotPresent`         |
+| `image.pullSecrets` | SonarQube&trade; image pull secrets                                                                              | `[]`                   |
+| `image.debug`       | Enable SonarQube&trade; image debug mode                                                                         | `false`                |
 
 ### SonarQube&trade; Configuration parameters
 
-| Name                          | Description                                                                                                                                                               | Value                                                    |
-| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
-| `sonarqubeUsername`           | SonarQube&trade; username                                                                                                                                                 | `user`                                                   |
-| `sonarqubePassword`           | SonarQube&trade; user password                                                                                                                                            | `""`                                                     |
-| `provisioningFolder`          | Directory to use for provisioning content to Sonarqube                                                                                                                    | `/bitnami/sonarqube-provisioning`                        |
-| `existingSecret`              | Name of existing secret containing SonarQube&trade; credentials                                                                                                           | `""`                                                     |
-| `sonarqubeEmail`              | SonarQube&trade; user email                                                                                                                                               | `user@example.com`                                       |
-| `minHeapSize`                 | Minimum heap size for SonarQube&trade;                                                                                                                                    | `1024m`                                                  |
-| `maxHeapSize`                 | Maximum heap size for SonarQube&trade;                                                                                                                                    | `2048m`                                                  |
-| `jvmOpts`                     | Values to add to SONARQUBE_WEB_JVM_OPTS                                                                                                                                   | `""`                                                     |
-| `jvmCeOpts`                   | Values to add to SONAR_CE_JAVAOPTS                                                                                                                                        | `""`                                                     |
-| `startTimeout`                | Timeout for the application to start in seconds                                                                                                                           | `150`                                                    |
-| `extraProperties`             | List of extra properties to be set in the sonar.properties file (key=value format)                                                                                        | `[]`                                                     |
-| `sonarqubeSkipInstall`        | Skip wizard installation                                                                                                                                                  | `false`                                                  |
-| `sonarSecurityRealm`          | Set this to LDAP authenticate first against the external sytem. If the external system is not                                                                             | `""`                                                     |
-| `sonarAuthenticatorDowncase`  | Set to true when connecting to a LDAP server using a case-insensitive setup.                                                                                              | `""`                                                     |
-| `ldap.url`                    | URL of the LDAP server. If you are using ldaps, you should install the server certificate into the Java truststore                                                        | `""`                                                     |
-| `ldap.bindDn`                 | The username of an LDAP user to connect (or bind) with. Leave this blank for anonymous access to the LDAP directory.                                                      | `""`                                                     |
-| `ldap.bindPassword`           | The password of the user to connect with. Leave this blank for anonymous access to the LDAP directory.                                                                    | `""`                                                     |
-| `ldap.authentication`         | Possible values: simple, CRAM-MD5, DIGEST-MD5, GSSAPI. See the tutorial on authentication mechanisms (http://java.sun.com/products/jndi/tutorial/ldap/security/auth.html) | `simple`                                                 |
-| `ldap.realm`                  | See Digest-MD5 Authentication, CRAM-MD5 Authentication (http://java.sun.com/products/jndi/tutorial/ldap/security/digest.html)                                             | `""`                                                     |
-| `ldap.contextFactoryClass`    | Context factory class.                                                                                                                                                    | `com.sun.jndi.ldap.LdapCtxFactory`                       |
-| `ldap.StartTLS`               | Enable use of StartTLS                                                                                                                                                    | `false`                                                  |
-| `ldap.followReferrals`        | Follow referrals or not                                                                                                                                                   | `true`                                                   |
-| `ldap.user.baseDn`            | Distinguished Name (DN) of the root node in LDAP from which to search for users.                                                                                          | `""`                                                     |
-| `ldap.user.request`           | LDAP user request.                                                                                                                                                        | `(&(objectClass=inetOrgPerson)(uid={login}))`            |
-| `ldap.user.realNameAttribute` | in LDAP defining the user’s real name.                                                                                                                                    | `cn`                                                     |
-| `ldap.user.emailAttribute`    | Attribute in LDAP defining the user’s email.                                                                                                                              | `mail`                                                   |
-| `ldap.group.baseDn`           | Distinguished Name (DN) of the root node in LDAP from which to search for groups.                                                                                         | `""`                                                     |
-| `ldap.group.request`          | LDAP group request.                                                                                                                                                       | `(&(objectClass=groupOfUniqueNames)(uniqueMember={dn}))` |
-| `ldap.group.idAttribute`      | Attribute in LDAP defining the group’s real name.                                                                                                                         | `cn`                                                     |
-| `smtpHost`                    | SMTP server host                                                                                                                                                          | `""`                                                     |
-| `smtpPort`                    | SMTP server port                                                                                                                                                          | `""`                                                     |
-| `smtpUser`                    | SMTP username                                                                                                                                                             | `""`                                                     |
-| `smtpPassword`                | SMTP user password                                                                                                                                                        | `""`                                                     |
-| `smtpProtocol`                | SMTP protocol                                                                                                                                                             | `""`                                                     |
-| `smtpExistingSecret`          | The name of an existing secret with SMTP credentials                                                                                                                      | `""`                                                     |
-| `command`                     | Override default container command (useful when using custom images)                                                                                                      | `[]`                                                     |
-| `args`                        | Override default container args (useful when using custom images)                                                                                                         | `[]`                                                     |
-| `extraEnvVars`                | Array with extra environment variables to add to SonarQube&trade; nodes                                                                                                   | `[]`                                                     |
-| `extraEnvVarsCM`              | Name of existing ConfigMap containing extra env vars for SonarQube&trade; nodes                                                                                           | `""`                                                     |
-| `extraEnvVarsSecret`          | Name of existing Secret containing extra env vars for SonarQube&trade; nodes                                                                                              | `""`                                                     |
+| Name                          | Description                                                                                                                                                                 | Value                                                    |
+| ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| `sonarqubeUsername`           | SonarQube&trade; username                                                                                                                                                   | `user`                                                   |
+| `sonarqubePassword`           | SonarQube&trade; user password                                                                                                                                              | `""`                                                     |
+| `provisioningFolder`          | Directory to use for provisioning content to Sonarqube                                                                                                                      | `/bitnami/sonarqube-provisioning`                        |
+| `existingSecret`              | Name of existing secret containing SonarQube&trade; credentials                                                                                                             | `""`                                                     |
+| `sonarqubeEmail`              | SonarQube&trade; user email                                                                                                                                                 | `user@example.com`                                       |
+| `minHeapSize`                 | Minimum heap size for SonarQube&trade;                                                                                                                                      | `1024m`                                                  |
+| `maxHeapSize`                 | Maximum heap size for SonarQube&trade;                                                                                                                                      | `2048m`                                                  |
+| `jvmOpts`                     | Values to add to SONARQUBE_WEB_JAVA_ADD_OPTS                                                                                                                                | `""`                                                     |
+| `jvmCeOpts`                   | Values to add to SONAR_CE_JAVAADDITIONALOPTS                                                                                                                                | `""`                                                     |
+| `startTimeout`                | Timeout for the application to start in seconds                                                                                                                             | `150`                                                    |
+| `extraProperties`             | List of extra properties to be set in the sonar.properties file (key=value format)                                                                                          | `[]`                                                     |
+| `sonarqubeSkipInstall`        | Skip wizard installation                                                                                                                                                    | `false`                                                  |
+| `sonarSecurityRealm`          | Set this to LDAP authenticate first against the external sytem. If the external system is not                                                                               | `""`                                                     |
+| `sonarAuthenticatorDowncase`  | Set to true when connecting to a LDAP server using a case-insensitive setup.                                                                                                | `""`                                                     |
+| `ldap.url`                    | URL of the LDAP server. If you are using ldaps, you should install the server certificate into the Java truststore                                                          | `""`                                                     |
+| `ldap.bindDn`                 | The username of an LDAP user to connect (or bind) with. Leave this blank for anonymous access to the LDAP directory.                                                        | `""`                                                     |
+| `ldap.bindPassword`           | The password of the user to connect with. Leave this blank for anonymous access to the LDAP directory.                                                                      | `""`                                                     |
+| `ldap.authentication`         | Possible values: simple, CRAM-MD5, DIGEST-MD5, GSSAPI. See the tutorial on authentication mechanisms (<http://java.sun.com/products/jndi/tutorial/ldap/security/auth.html>) | `simple`                                                 |
+| `ldap.realm`                  | See Digest-MD5 Authentication, CRAM-MD5 Authentication (<http://java.sun.com/products/jndi/tutorial/ldap/security/digest.html>)                                             | `""`                                                     |
+| `ldap.contextFactoryClass`    | Context factory class.                                                                                                                                                      | `com.sun.jndi.ldap.LdapCtxFactory`                       |
+| `ldap.StartTLS`               | Enable use of StartTLS                                                                                                                                                      | `false`                                                  |
+| `ldap.followReferrals`        | Follow referrals or not                                                                                                                                                     | `true`                                                   |
+| `ldap.user.baseDn`            | Distinguished Name (DN) of the root node in LDAP from which to search for users.                                                                                            | `""`                                                     |
+| `ldap.user.request`           | LDAP user request.                                                                                                                                                          | `(&(objectClass=inetOrgPerson)(uid={login}))`            |
+| `ldap.user.realNameAttribute` | in LDAP defining the user’s real name.                                                                                                                                      | `cn`                                                     |
+| `ldap.user.emailAttribute`    | Attribute in LDAP defining the user’s email.                                                                                                                                | `mail`                                                   |
+| `ldap.group.baseDn`           | Distinguished Name (DN) of the root node in LDAP from which to search for groups.                                                                                           | `""`                                                     |
+| `ldap.group.request`          | LDAP group request.                                                                                                                                                         | `(&(objectClass=groupOfUniqueNames)(uniqueMember={dn}))` |
+| `ldap.group.idAttribute`      | Attribute in LDAP defining the group’s real name.                                                                                                                           | `cn`                                                     |
+| `smtpHost`                    | SMTP server host                                                                                                                                                            | `""`                                                     |
+| `smtpPort`                    | SMTP server port                                                                                                                                                            | `""`                                                     |
+| `smtpUser`                    | SMTP username                                                                                                                                                               | `""`                                                     |
+| `smtpPassword`                | SMTP user password                                                                                                                                                          | `""`                                                     |
+| `smtpProtocol`                | SMTP protocol                                                                                                                                                               | `""`                                                     |
+| `smtpExistingSecret`          | The name of an existing secret with SMTP credentials                                                                                                                        | `""`                                                     |
+| `command`                     | Override default container command (useful when using custom images)                                                                                                        | `[]`                                                     |
+| `args`                        | Override default container args (useful when using custom images)                                                                                                           | `[]`                                                     |
+| `extraEnvVars`                | Array with extra environment variables to add to SonarQube&trade; nodes                                                                                                     | `[]`                                                     |
+| `extraEnvVarsCM`              | Name of existing ConfigMap containing extra env vars for SonarQube&trade; nodes                                                                                             | `""`                                                     |
+| `extraEnvVarsSecret`          | Name of existing Secret containing extra env vars for SonarQube&trade; nodes                                                                                                | `""`                                                     |
 
 ### SonarQube&trade; deployment parameters
 
@@ -210,6 +210,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `ingress.hostname`                 | Default host for the ingress record                                                                                              | `sonarqube.local`        |
 | `ingress.path`                     | Default path for the ingress record                                                                                              | `/`                      |
 | `ingress.annotations`              | Additional annotations for the Ingress resource. To enable certificate autogeneration, place here your cert-manager annotations. | `{}`                     |
+| `ingress.labels`                   | Additional labels for the Ingress resource.                                                                                      | `{}`                     |
 | `ingress.tls`                      | Enable TLS configuration for the host defined at `ingress.hostname` parameter                                                    | `false`                  |
 | `ingress.selfSigned`               | Create a TLS secret for this ingress record using self-signed certificates generated by Helm                                     | `false`                  |
 | `ingress.extraHosts`               | An array with additional hostname(s) to be covered with the ingress record                                                       | `[]`                     |
@@ -220,72 +221,72 @@ The command removes all the Kubernetes components associated with the chart and 
 
 ### SonarQube caCerts provisioning parameters
 
-| Name                                         | Description                                                                                                   | Value                   |
-| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------- | ----------------------- |
-| `caCerts.enabled`                            | Enable the use of caCerts                                                                                     | `false`                 |
-| `caCerts.image.registry`                     | Bitnami Shell image registry                                                                                  | `docker.io`             |
-| `caCerts.image.repository`                   | Bitnami Shell image repository                                                                                | `bitnami/bitnami-shell` |
-| `caCerts.image.tag`                          | Bitnami Shell image tag (immutable tags are recommended)                                                      | `11-debian-11-r90`      |
-| `caCerts.image.digest`                       | Bitnami Shell image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag | `""`                    |
-| `caCerts.image.pullPolicy`                   | Bitnami Shell image pull policy                                                                               | `IfNotPresent`          |
-| `caCerts.image.pullSecrets`                  | Bitnami Shell image pull secrets                                                                              | `[]`                    |
-| `caCerts.secret`                             | Name of the secret containing the certificates                                                                | `ca-certs-secret`       |
-| `caCerts.resources.limits`                   | The resources limits for the init container                                                                   | `{}`                    |
-| `caCerts.resources.requests`                 | The requested resources for the init container                                                                | `{}`                    |
-| `caCerts.containerSecurityContext.runAsUser` | Set init container's Security Context runAsUser                                                               | `0`                     |
+| Name                                         | Description                                                                                                        | Value              |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ | ------------------ |
+| `caCerts.enabled`                            | Enable the use of caCerts                                                                                          | `false`            |
+| `caCerts.image.registry`                     | OS Shell + Utility image registry                                                                                  | `docker.io`        |
+| `caCerts.image.repository`                   | OS Shell + Utility image repository                                                                                | `bitnami/os-shell` |
+| `caCerts.image.tag`                          | OS Shell + Utility image tag (immutable tags are recommended)                                                      | `11-debian-11-r90` |
+| `caCerts.image.digest`                       | OS Shell + Utility image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag | `""`               |
+| `caCerts.image.pullPolicy`                   | OS Shell + Utility image pull policy                                                                               | `IfNotPresent`     |
+| `caCerts.image.pullSecrets`                  | OS Shell + Utility image pull secrets                                                                              | `[]`               |
+| `caCerts.secret`                             | Name of the secret containing the certificates                                                                     | `ca-certs-secret`  |
+| `caCerts.resources.limits`                   | The resources limits for the init container                                                                        | `{}`               |
+| `caCerts.resources.requests`                 | The requested resources for the init container                                                                     | `{}`               |
+| `caCerts.containerSecurityContext.runAsUser` | Set init container's Security Context runAsUser                                                                    | `0`                |
 
 ### SonarQube plugin provisioning parameters
 
-| Name                                         | Description                                                                                                   | Value                   |
-| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------- | ----------------------- |
-| `plugins.install`                            | List of plugin URLS to download and install                                                                   | `[]`                    |
-| `plugins.netrcCreds`                         | .netrc secret file with a key "netrc" to use basic auth while downloading plugins                             | `""`                    |
-| `plugins.noCheckCertificate`                 | Set to true to not validate the server's certificate to download plugin                                       | `true`                  |
-| `plugins.image.registry`                     | Bitnami Shell image registry                                                                                  | `docker.io`             |
-| `plugins.image.repository`                   | Bitnami Shell image repository                                                                                | `bitnami/bitnami-shell` |
-| `plugins.image.tag`                          | Bitnami Shell image tag (immutable tags are recommended)                                                      | `11-debian-11-r90`      |
-| `plugins.image.digest`                       | Bitnami Shell image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag | `""`                    |
-| `plugins.image.pullPolicy`                   | Bitnami Shell image pull policy                                                                               | `IfNotPresent`          |
-| `plugins.image.pullSecrets`                  | Bitnami Shell image pull secrets                                                                              | `[]`                    |
-| `plugins.resources.limits`                   | The resources limits for the init container                                                                   | `{}`                    |
-| `plugins.resources.requests`                 | The requested resources for the init container                                                                | `{}`                    |
-| `plugins.containerSecurityContext.runAsUser` | Set init container's Security Context runAsUser                                                               | `0`                     |
+| Name                                         | Description                                                                                                        | Value              |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ | ------------------ |
+| `plugins.install`                            | List of plugin URLS to download and install                                                                        | `[]`               |
+| `plugins.netrcCreds`                         | .netrc secret file with a key "netrc" to use basic auth while downloading plugins                                  | `""`               |
+| `plugins.noCheckCertificate`                 | Set to true to not validate the server's certificate to download plugin                                            | `true`             |
+| `plugins.image.registry`                     | OS Shell + Utility image registry                                                                                  | `docker.io`        |
+| `plugins.image.repository`                   | OS Shell + Utility image repository                                                                                | `bitnami/os-shell` |
+| `plugins.image.tag`                          | OS Shell + Utility image tag (immutable tags are recommended)                                                      | `11-debian-11-r90` |
+| `plugins.image.digest`                       | OS Shell + Utility image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag | `""`               |
+| `plugins.image.pullPolicy`                   | OS Shell + Utility image pull policy                                                                               | `IfNotPresent`     |
+| `plugins.image.pullSecrets`                  | OS Shell + Utility image pull secrets                                                                              | `[]`               |
+| `plugins.resources.limits`                   | The resources limits for the init container                                                                        | `{}`               |
+| `plugins.resources.requests`                 | The requested resources for the init container                                                                     | `{}`               |
+| `plugins.containerSecurityContext.runAsUser` | Set init container's Security Context runAsUser                                                                    | `0`                |
 
 ### Persistence Parameters
 
-| Name                                                   | Description                                                                                                   | Value                   |
-| ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------- | ----------------------- |
-| `persistence.enabled`                                  | Enable persistence using Persistent Volume Claims                                                             | `false`                 |
-| `persistence.storageClass`                             | Persistent Volume storage class                                                                               | `""`                    |
-| `persistence.accessModes`                              | Persistent Volume access modes                                                                                | `[]`                    |
-| `persistence.size`                                     | Persistent Volume size                                                                                        | `10Gi`                  |
-| `persistence.dataSource`                               | Custom PVC data source                                                                                        | `{}`                    |
-| `persistence.existingClaim`                            | The name of an existing PVC to use for persistence                                                            | `""`                    |
-| `persistence.annotations`                              | Persistent Volume Claim annotations                                                                           | `{}`                    |
-| `volumePermissions.enabled`                            | Enable init container that changes the owner/group of the PV mount point to `runAsUser:fsGroup`               | `false`                 |
-| `volumePermissions.image.registry`                     | Bitnami Shell image registry                                                                                  | `docker.io`             |
-| `volumePermissions.image.repository`                   | Bitnami Shell image repository                                                                                | `bitnami/bitnami-shell` |
-| `volumePermissions.image.tag`                          | Bitnami Shell image tag (immutable tags are recommended)                                                      | `11-debian-11-r90`      |
-| `volumePermissions.image.digest`                       | Bitnami Shell image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag | `""`                    |
-| `volumePermissions.image.pullPolicy`                   | Bitnami Shell image pull policy                                                                               | `IfNotPresent`          |
-| `volumePermissions.image.pullSecrets`                  | Bitnami Shell image pull secrets                                                                              | `[]`                    |
-| `volumePermissions.resources.limits`                   | The resources limits for the init container                                                                   | `{}`                    |
-| `volumePermissions.resources.requests`                 | The requested resources for the init container                                                                | `{}`                    |
-| `volumePermissions.containerSecurityContext.runAsUser` | Set init container's Security Context runAsUser                                                               | `0`                     |
+| Name                                                   | Description                                                                                                        | Value              |
+| ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------ | ------------------ |
+| `persistence.enabled`                                  | Enable persistence using Persistent Volume Claims                                                                  | `false`            |
+| `persistence.storageClass`                             | Persistent Volume storage class                                                                                    | `""`               |
+| `persistence.accessModes`                              | Persistent Volume access modes                                                                                     | `[]`               |
+| `persistence.size`                                     | Persistent Volume size                                                                                             | `10Gi`             |
+| `persistence.dataSource`                               | Custom PVC data source                                                                                             | `{}`               |
+| `persistence.existingClaim`                            | The name of an existing PVC to use for persistence                                                                 | `""`               |
+| `persistence.annotations`                              | Persistent Volume Claim annotations                                                                                | `{}`               |
+| `volumePermissions.enabled`                            | Enable init container that changes the owner/group of the PV mount point to `runAsUser:fsGroup`                    | `false`            |
+| `volumePermissions.image.registry`                     | OS Shell + Utility image registry                                                                                  | `docker.io`        |
+| `volumePermissions.image.repository`                   | OS Shell + Utility image repository                                                                                | `bitnami/os-shell` |
+| `volumePermissions.image.tag`                          | OS Shell + Utility image tag (immutable tags are recommended)                                                      | `11-debian-11-r90` |
+| `volumePermissions.image.digest`                       | OS Shell + Utility image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag | `""`               |
+| `volumePermissions.image.pullPolicy`                   | OS Shell + Utility image pull policy                                                                               | `IfNotPresent`     |
+| `volumePermissions.image.pullSecrets`                  | OS Shell + Utility image pull secrets                                                                              | `[]`               |
+| `volumePermissions.resources.limits`                   | The resources limits for the init container                                                                        | `{}`               |
+| `volumePermissions.resources.requests`                 | The requested resources for the init container                                                                     | `{}`               |
+| `volumePermissions.containerSecurityContext.runAsUser` | Set init container's Security Context runAsUser                                                                    | `0`                |
 
 ### Sysctl Image parameters
 
-| Name                        | Description                                                                                                   | Value                   |
-| --------------------------- | ------------------------------------------------------------------------------------------------------------- | ----------------------- |
-| `sysctl.enabled`            | Enable kernel settings modifier image                                                                         | `true`                  |
-| `sysctl.image.registry`     | Bitnami Shell image registry                                                                                  | `docker.io`             |
-| `sysctl.image.repository`   | Bitnami Shell image repository                                                                                | `bitnami/bitnami-shell` |
-| `sysctl.image.tag`          | Bitnami Shell image tag (immutable tags are recommended)                                                      | `11-debian-11-r90`      |
-| `sysctl.image.digest`       | Bitnami Shell image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag | `""`                    |
-| `sysctl.image.pullPolicy`   | Bitnami Shell image pull policy                                                                               | `IfNotPresent`          |
-| `sysctl.image.pullSecrets`  | Bitnami Shell image pull secrets                                                                              | `[]`                    |
-| `sysctl.resources.limits`   | The resources limits for the init container                                                                   | `{}`                    |
-| `sysctl.resources.requests` | The requested resources for the init container                                                                | `{}`                    |
+| Name                        | Description                                                                                                        | Value              |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------ | ------------------ |
+| `sysctl.enabled`            | Enable kernel settings modifier image                                                                              | `true`             |
+| `sysctl.image.registry`     | OS Shell + Utility image registry                                                                                  | `docker.io`        |
+| `sysctl.image.repository`   | OS Shell + Utility image repository                                                                                | `bitnami/os-shell` |
+| `sysctl.image.tag`          | OS Shell + Utility image tag (immutable tags are recommended)                                                      | `11-debian-11-r90` |
+| `sysctl.image.digest`       | OS Shell + Utility image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag | `""`               |
+| `sysctl.image.pullPolicy`   | OS Shell + Utility image pull policy                                                                               | `IfNotPresent`     |
+| `sysctl.image.pullSecrets`  | OS Shell + Utility image pull secrets                                                                              | `[]`               |
+| `sysctl.resources.limits`   | The resources limits for the init container                                                                        | `{}`               |
+| `sysctl.resources.requests` | The requested resources for the init container                                                                     | `{}`               |
 
 ### Other Parameters
 
@@ -309,7 +310,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `metrics.jmx.enabled`                               | Whether or not to expose JMX metrics to Prometheus                                                           | `false`                |
 | `metrics.jmx.image.registry`                        | JMX exporter image registry                                                                                  | `docker.io`            |
 | `metrics.jmx.image.repository`                      | JMX exporter image repository                                                                                | `bitnami/jmx-exporter` |
-| `metrics.jmx.image.tag`                             | JMX exporter image tag (immutable tags are recommended)                                                      | `0.17.2-debian-11-r53` |
+| `metrics.jmx.image.tag`                             | JMX exporter image tag (immutable tags are recommended)                                                      | `0.19.0-debian-11-r95` |
 | `metrics.jmx.image.digest`                          | JMX exporter image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag | `""`                   |
 | `metrics.jmx.image.pullPolicy`                      | JMX exporter image pull policy                                                                               | `IfNotPresent`         |
 | `metrics.jmx.image.pullSecrets`                     | Specify docker-registry secret names as an array                                                             | `[]`                   |
@@ -370,7 +371,7 @@ helm install my-release \
   --set sonarqubeUsername=admin \
   --set sonarqubePassword=password \
   --set postgresql.auth.password=secretpassword \
-    my-repo/sonarqube
+    oci://registry-1.docker.io/bitnamicharts/sonarqube
 ```
 
 The above command sets the sonarqube administrator account username and password to `admin` and `password` respectively. Additionally, it sets the PostgreSQL `postgres` user password to `secretpassword`.
@@ -380,7 +381,7 @@ The above command sets the sonarqube administrator account username and password
 Alternatively, a YAML file that specifies the values for the above parameters can be provided while installing the chart. For example,
 
 ```console
-helm install my-release -f values.yaml my-repo/sonarqube
+helm install my-release -f values.yaml oci://registry-1.docker.io/bitnamicharts/sonarqube
 ```
 
 > **Tip**: You can use the default [values.yaml](values.yaml)
@@ -459,6 +460,10 @@ Find more information about how to deal with common errors related to Bitnami's 
 
 ## Upgrading
 
+### To 4.0.0
+
+This major updates the PostgreSQL subchart to its newest major, 13.0.0. [Here](https://github.com/bitnami/charts/tree/master/bitnami/postgresql#to-1300) you can find more information about the changes introduced in that version.
+
 ### To 2.0.0
 
 This major updates the PostgreSQL subchart to its newest major, 12.0.0. [Here](https://github.com/bitnami/charts/tree/master/bitnami/postgresql#to-1200) you can find more information about the changes introduced in that version.
@@ -469,7 +474,7 @@ Refer to the [chart documentation for more information about how to upgrade from
 
 ## License
 
-Copyright &copy; 2023 Bitnami
+Copyright &copy; 2023 VMware, Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
