@@ -508,12 +508,8 @@ workers:
       maxUnavailable: "50%"
 
   # When not set, the values defined in the global securityContext will be used
-  securityContext: 
-    fsGroup: 10001
-    runAsGroup: 10001
-    runAsNonRoot: true
-    runAsUser: 10001
-    fsGroupChangePolicy: "OnRootMismatch"
+  securityContext: {}
+
 
   # Detailed default security context for worker deployments for container and pod level
   securityContexts:
@@ -784,14 +780,15 @@ scheduler:
 
   # When not set, the values defined in the global securityContext will be used
   # (deprecated, use `securityContexts` instead)
-  securityContext: 
+  securityContext: {}
+    
+  # Detailed default security context for scheduler deployments for container and pod level
+  securityContexts:
     fsGroup: 10001
     runAsGroup: 10001
     runAsNonRoot: true
     runAsUser: 10001
     fsGroupChangePolicy: "OnRootMismatch"
-  # Detailed default security context for scheduler deployments for container and pod level
-  securityContexts:
     pod: {}
     container: {}
 
@@ -907,6 +904,11 @@ scheduler:
     env: []
     # Detailed default security context for waitForMigrations for container level
     securityContexts:
+      fsGroup: 10001
+      runAsGroup: 10001
+      runAsNonRoot: true
+      runAsUser: 10001
+      fsGroupChangePolicy: "OnRootMismatch"
       container: {}
 
   env: []
@@ -955,6 +957,11 @@ createUserJob:
 
   # Detailed default security context for createUserJob for container and pod level
   securityContexts:
+    fsGroup: 10001
+    runAsGroup: 10001
+    runAsNonRoot: true
+    runAsUser: 10001
+    fsGroupChangePolicy: "OnRootMismatch"
     pod: {}
     container: {}
 
@@ -1043,6 +1050,11 @@ migrateDatabaseJob:
 
   # Detailed default security context for migrateDatabaseJob for container and pod level
   securityContexts:
+    fsGroup: 10001
+    runAsGroup: 10001
+    runAsNonRoot: true
+    runAsUser: 10001
+    fsGroupChangePolicy: "OnRootMismatch"
     pod: {}
     container: {}
 
@@ -1363,12 +1375,7 @@ triggerer:
     annotations: {}
 
   # When not set, the values defined in the global securityContext will be used
-  securityContext: 
-    fsGroup: 10001
-    runAsGroup: 10001
-    runAsNonRoot: true
-    runAsUser: 10001
-    fsGroupChangePolicy: "OnRootMismatch"
+  securityContext: {}
 
   # Detailed default security context for triggerer for container and pod level
   securityContexts:
