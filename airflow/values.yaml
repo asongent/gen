@@ -1362,6 +1362,11 @@ triggerer:
 
   # Detailed default security context for triggerer for container and pod level
   securityContexts:
+    fsGroup: 10001
+    runAsGroup: 10001
+    runAsNonRoot: true
+    runAsUser: 10001
+    fsGroupChangePolicy: "OnRootMismatch"
     pod: {}
     container: {}
 
