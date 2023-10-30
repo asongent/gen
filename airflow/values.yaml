@@ -1170,15 +1170,16 @@ webserver:
 
   # When not set, the values defined in the global securityContext will be used
   # (deprecated, use `securityContexts` instead)
-  securityContext:
+  securityContext: {}
+   
+
+  # Detailed default security contexts for webserver deployments for container and pod level
+  securityContexts:
     fsGroup: 10001
     runAsGroup: 10001
     runAsNonRoot: true
     runAsUser: 10001
     fsGroupChangePolicy: "OnRootMismatch"
-
-  # Detailed default security contexts for webserver deployments for container and pod level
-  securityContexts:
     pod: {}
     container: {}
 
@@ -1362,10 +1363,12 @@ triggerer:
     annotations: {}
 
   # When not set, the values defined in the global securityContext will be used
-  securityContext: {}
-  #  runAsUser: 50000
-  #  fsGroup: 0
-  #  runAsGroup: 0
+  securityContext: 
+    fsGroup: 10001
+    runAsGroup: 10001
+    runAsNonRoot: true
+    runAsUser: 10001
+    fsGroupChangePolicy: "OnRootMismatch"
 
   # Detailed default security context for triggerer for container and pod level
   securityContexts:
