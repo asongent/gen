@@ -1471,6 +1471,11 @@ triggerer:
     env: []
     # Detailed default security context for waitForMigrations for container level
     securityContexts:
+      fsGroup: 10001
+      runAsGroup: 10001
+      runAsNonRoot: true
+      runAsUser: 10001
+      fsGroupChangePolicy: "OnRootMismatch"
       container: {}
 
   env: []
