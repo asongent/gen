@@ -349,7 +349,7 @@ spec:
           startupProbe:
             httpGet:
               scheme: HTTP
-              path: {{ .Values.readinessProbe.sonarWebContext }} #api/system/status
+              path: {{ .Values.readinessProbe.sonarWebContext }}api/system/status
               port: http
             initialDelaySeconds: {{ .Values.startupProbe.initialDelaySeconds }}
             periodSeconds: {{ .Values.startupProbe.periodSeconds }}

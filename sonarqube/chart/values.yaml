@@ -167,8 +167,8 @@ readinessProbe:
   failureThreshold: 6
   # If an ingress *path* other than the root (/) is defined, it should be reflected here
   # A trailing "/" must be included
-  sonarWebContext: /
-  # sonarWebContext: /sonarqube/
+  # sonarWebContext: /
+  sonarWebContext: /sonarqube/
 
 livenessProbe:
   initialDelaySeconds: 60
@@ -176,8 +176,8 @@ livenessProbe:
   failureThreshold: 6
   # If an ingress *path* other than the root (/) is defined, it should be reflected here
   # A trailing "/" must be included
-  sonarWebContext: /
-  # sonarWebContext: /sonarqube/
+  # sonarWebContext: /
+  sonarWebContext: /sonarqube/
   # If an ingress *path* is defined, it should be reflected here
   # sonar.web.context: /sonarqube
 
@@ -187,8 +187,8 @@ startupProbe:
   failureThreshold: 24
   # If an ingress *path* other than the root (/) is defined, it should be reflected here
   # A trailing "/" must be included
-  sonarWebContext: /
-  # sonarWebContext: /sonarqube/
+  # sonarWebContext: /
+  sonarWebContext: /sonarqube/
 
 initContainers:
   image: registry1.dso.mil/ironbank/big-bang/base:2.0.0
