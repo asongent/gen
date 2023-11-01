@@ -45,7 +45,7 @@ containerSecurityContext:
 # Settings to configure elasticsearch host requirements
 elasticsearch:
   # DEPRECATED: Use initSysctl.enabled instead
-  configureNode: true
+  configureNode: false
   bootstrapChecks: true
 
 service:
@@ -157,7 +157,7 @@ hostAliases: []
 #   - "www.example.com"
 
 readinessProbe:
-  initialDelaySeconds: 180
+  initialDelaySeconds: 60
   periodSeconds: 30
   failureThreshold: 6
   # Note that timeoutSeconds was not respected before Kubernetes 1.20 for exec probes
@@ -165,10 +165,10 @@ readinessProbe:
   # If an ingress *path* other than the root (/) is defined, it should be reflected here
   # A trailing "/" must be included
   # deprecated please use sonarWebContext at the value top level
-  sonarWebContext: /sonarqube/
+  sonarWebContext: /
 
 livenessProbe:
-  initialDelaySeconds: 180
+  initialDelaySeconds: 60
   periodSeconds: 30
   failureThreshold: 6
   # Note that timeoutSeconds was not respected before Kubernetes 1.20 for exec probes
@@ -176,10 +176,10 @@ livenessProbe:
   # If an ingress *path* other than the root (/) is defined, it should be reflected here
   # A trailing "/" must be included
   # deprecated please use sonarWebContext at the value top level
-  sonarWebContext: /sonarqube/
+  sonarWebContext: /
 
 startupProbe:
-  initialDelaySeconds: 180
+  initialDelaySeconds: 60
   periodSeconds: 10
   failureThreshold: 24
   # Note that timeoutSeconds was not respected before Kubernetes 1.20 for exec probes
@@ -187,7 +187,7 @@ startupProbe:
   # If an ingress *path* other than the root (/) is defined, it should be reflected here
   # A trailing "/" must be included
   # deprecated please use sonarWebContext at the value top level
-  sonarWebContext: /sonarqube/
+  sonarWebContext: /
 
 initContainers:
   # image: busybox:1.32
@@ -227,10 +227,14 @@ initSysctl:
   # image: busybox:1.32
   securityContext:
     privileged: true
+    capabilities:
+      drop: 
+        - ALL
+
   # resources: {}
 
 initFs:
-  enabled: true
+  enabled: false
   # image: busybox:1.32
   securityContext:
     privileged: true
@@ -245,12 +249,12 @@ prometheusExporter:
   noCheckCertificate: false
 
   # Ports for the jmx prometheus agent to export metrics at
-  webBeanPort: 8000
-  ceBeanPort: 8001
+  # webBeanPort: 8000
+  # ceBeanPort: 8001
 
-  config:
-    rules:
-      - pattern: ".*"
+  # config:
+  #   rules:
+  #     - pattern: ".*"
   # Overrides config for the CE process Prometheus exporter (by default, the same rules are used for both the Web and CE processes).
   # ceConfig:
   #   rules:
@@ -261,9 +265,9 @@ prometheusExporter:
   # httpsProxy: ""
   # noProxy: ""
   # Setting the security context to the default sonarqube user 1000/1000
-  securityContext:
-    runAsUser: 1000
-    runAsGroup: 1000
+  # securityContext:
+  #   runAsUser: 1000
+  #   runAsGroup: 1000
 
 prometheusMonitoring:
   # Generate a Prometheus Pod Monitor (https://github.com/coreos/prometheus-operator)
