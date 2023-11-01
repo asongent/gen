@@ -1,389 +1,322 @@
-# SonarQube Chart Changelog
-All changes to this chart will be documented in this file.
-
-## [10.2.1]
-* Update SonarQube to 10.2.1
-* Update Chart's version to 10.2.1
-
-## [10.2.0]
-* Update SonarQube to 10.2.0
-* Update Chart's version to 10.2.0
-* Update curl image to 8.2.0
-* `readinessProbe.sonarWebContext`, `startupProbe.sonarWebContext`, `livenessProbe.sonarWebContext`, and `account.sonarWebContext` are deprecated, please use `sonarWebContext` at the value top level.
-* Updates ingress-nginx dependency to 4.7.1
-* Fixes broken table on README
-
-## [10.1.0]
-* Update SonarQube to 10.1.0
-* Support Kubernetes v1.27 while dropping v1.23
-* Changed default test process to wget, using sonarqube image as default
-* Update Chart's version to 10.1.0
-* Fix liveness probe to detect when a failure occurs.
-
-## [10.0.0]
-* Update SonarQube to 10.0.0
-* Helm chart versioning will now follow the SonarQube product versioning
-
-## [9.5.1]
-* Make `jvmOpts` and `jvmCeOpts` not override env vars and sonar properties
-
-## [9.5.0]
-* Add helm-chart-sonarqube as chart source
-
-## [9.4.2]
-* Fixed unsupported wget parameter `--proxy off` with `--no-proxy`
-
-## [9.4.1]
-* Fix install_plugins.sh not deleting previously installed plugins
-
-## [9.4.0]
-* Added support for `extraVolumes` and `extraVolumeMounts` in sonar pod.
-
-## [9.3.1]
-* Clarify doc for custom cacert secret
-
-## [9.3.0]
-* Refactor Deployment manifest to match the Statefulset manifest
-
-## [9.2.0]
-* Add a configurable Prometheus PodMonitor resource
-* Refactor Prometheus exporter's documentation and bump to version 0.17.2
-
-## [9.1.0]
-* Allow setting priorityClassName for StatefulSets
-
-## [9.0.1]
-* Adds timeoutSeconds parameter to probes
-
-## [9.0.0]
-* Update SonarQube logo
-* Bootstrap chart version 9.x.x dedicated to the future SonarQube 10.0
-## [8.0.0]
-* Update SonarQube to 9.9.0
-* Bootstrap chart version 8.x.x dedicated to SonarQube 9.9 LTS
-
-## [7.0.2]
-* Update the list of supported kubernetes versions
-
-## [7.0.1]
-* Set a new default (maximum) allowed size of the client request body on the ingress
-
-## [7.0.0]
-* Update SonarQube to 9.8.0
-
-## [6.2.1]
-* Update the postgresql chart's repository
-
-
-## [6.2.0]
-* Refactor Ingress to be compatible with static compatibitly test and 1.19 minimum requirement
-
-## [6.1.2]
-* Updated SonarQube to 9.7.1
-
-## [6.1.1]
-* Refactor templating of ConfigMap for sonar.properties
-* Fix the bug where sonarSecretKey was not applied without sonar.properties set
-
-## [6.1.0]
-* Fix the installation of plugins using the standard folder `extensions/plugins` instead of `extensions/downloads` and `lib/common`
-* Remove `plugins.lib` and other small edits in the documentation
-
-## [6.0.0]
-* Updated SonarQube to 9.7.0
-
-## [5.4.1]
-* Fix the right-dash curly brace issue with the additional network policy parameter
-
-## [5.4.0]
-* Allow `tests.image` to be configured and update README accordingly.
-* Allow `tests.initContainers.image` to be configured and update README accordingly.
-
-## [5.3.0]
-* Use the networkPolicy.prometheusNamespace value for the network policy namespace selector
-* Uncomment default value in values.yaml for backwards compatibility
-
-## [5.2.0]
-* Add support for monitoringPasscode passed as a secret and removal of livenessprobe httpheader defined in clear text
-
-## [5.1.0]
-* Bump apiVersion to v2
-* Set the number of allowed replicas to 0 and 1
-* Add documentation for ingress tls
-* Add documentation for sonarProperties and sonarSecretProperties
-* Add the possibility of using a secret for customizing the admin password
-
-## [5.0.6]
-* Updated SonarQube to 9.6.1
-
-## [5.0.0]
-* Updated SonarQube to 9.6.0
-
-## [4.0.3]
-* Add support for Openshift Route labels and annotations
-
-## [4.0.2]
-* Fix issue with Openshift route name to use use fullname instead of name
-
-## [4.0.1]
-* Add documentation for ingress annotations
-
-## [4.0.0]
-* updated SonarQube to 9.5.0
-
-## [3.0.4]
-* Fix issue with additional network policy
-
-## [3.0.3]
-* Add automount service account token flag
-
-## [3.0.2]
-* Add documentation to setup web context via environment variable
-
-## [3.0.1]
-* Fix for issue (#215)[https://github.com/SonarSource/helm-chart-sonarqube/issues/215], adding tolerations and affinity to change password hooks
-
-## [3.0.0]
-* updated SonarQube to 9.4.0
-
-## [2.0.7]
-* Specify location of .netrc file when downloading plugins that require auth
-
-## [2.0.6]
-* Specify service account name in change admin password hook
-
-## [2.0.5]
-* secure admin password in k8s secret
-
-## [2.0.4]
-* no longer automount service account token
-
-## [2.0.3]
-* changed description of dependency postgresql chart
-
-## [2.0.2]
-* changed links to get a better overview of sources
-
-## [2.0.1]
-* Updated all instances of the caCerts enabled check
-
-## [2.0.0]
-* updated SonarQube to 9.3.0
-
-## [1.6.5]
-* add securitycontext to wait-for-db and change-password hook
-
-## [1.6.4]
-* properties are now correctly set
-
-## [1.6.3]
-* `livenessProbe.failureThreshold` was never rendered
-
-## [1.6.2]
-* added missing logic for `caCerts.enabled`
-
-## [1.6.1]
-* fix missing `SONAR_WEB_SYSTEMPASSCODE` environment variable causing failed liveness checks
-
-## [1.5.1]
-* added possibility to define host of a route
-
-## [1.5.0]
-* detached sonarqube edition from version
-
-## [1.4.0]
-* added possibility to define the ingress pathType
-* added network policies
-* added possibility to define ressources for the change admin password hook
-* default permissions for prometheus injector now align with pod fs permissions
-* updated dependencies
-* admin hook now honors web context
-
-## [1.3.0]
-* added support for multiple image pull secrets
-  * added `image.pullSecrets`
-* deprecated support for singular image pull secret
-  * deprecated `image.pullSecret`
-* fixed missing image pull secret in admin hook job
-
-## [1.2.5]
-* updated SonarQube to 9.2.4
-
-## [1.2.4]
-* updated SonarQube to 9.2.3
-
-## [1.2.3]
-* updated SonarQube to 9.2.2
-
-## [1.2.2]
-* fix hardcoded reference to port 9000
-
-## [1.2.1]
-* updated SonarQube to 9.2.1
-
-## [1.2.0]
-* updated SonarQube to 9.2.0
-
-## [1.1.11]
-* fixed missing POD level security context for statefulset deployment
-
-## [1.1.10]
-* added link to community support forum
-* Use liveness endpoint instead of helth endpoint for liveness probe
-
-## [1.1.9]
-* fixed wrong scc user reference if name was explicitly set
-
-## [1.1.8]
-* fixed serviceaccount logic
-
-## [1.1.7]
-* fixed wrong artifact hub images annotation
-
-## [1.1.6]
-* updated sonarqube to 9.1.0
-
-## [1.1.5]
-* added resources to ui-test pod template
-
-## [1.1.4]
-* fixed artifacthub annotations
-
-## [1.1.3]
-* fixed `invalid: metadata.labels: Invalid value` error on the `chart` label of the pvc
-
-## [1.1.2]
-* fixed condition check to add new certificates
-
-## [1.1.1]
-* updated default application version to 9.0.1
-* release to helm repository
-
-## [1.1.0]
-* update jdbc overwrite values
-  * replace `jdbcUrlOverride` with `jdbcOverwrite.jdbcUrl`
-  * remove useless `jdbcDatabaseType` (was always postgres)
-* deprecate `postgresql.postgresqlServer`, `postgresql.existingSecret` and `postgresql.existingSecretPasswordKey` in favor of new `jdbcOverwrite` values
-* update dependency Charts
-  * `bitnami/postgresql` from 8.6.4 to 10.4.8
-  * `ingress-nginx/ingress-nginx` from 3.29.0 to 3.31.0
-
-## [1.0.19]
-* Add optional ingress parameter `ingressClassName`
-
-## [1.0.18]
-* added route support for OpenShift deployments
-
-## [1.0.17]
-* Add an additional configuration parameter `extraContainers` to allow an array of containers to run alongside the sonarqube container
-
-## [1.0.16]
-* fixed usage of `sonarSecretProperties`
-
-## [1.0.15]
-* bump jmx_exporter to 0.16.0
-
-## [1.0.14]
-* added hostAliases to deploymentType statefulset
-
-## [1.0.13]
-* made prometheus exporter port configurable and support prometheus PodMonitor
-
-## [1.0.12]
-* make sure SQ is restarted when the JMX Prometheus exporter agents configuration changes
-
-## [1.0.11]
-* JMX Prometheus exporter agent is now also enabled on the CE process
-* `prometheusExporter.ceConfig` allows specific config of the JMX Prometheus exporter agent for the CE process
-
-## [1.0.10]
-* added prometheusExporter.noCheckCertificate option
-
-## [1.0.9]
-* add missing imagePullSecrets in sts install type
-
-## [1.0.8]
-* fix typo in initfs
-* fix plugin installation init container permissions
-* fix duplicated mount point for conf when sonar.properties are defined
-
-## [1.0.7]
-* fix invalid yaml render in `secret.yaml` when using external postgresql
-
-## [1.0.6]
-* added `prometheusExporter.downloadURL` (custom download URL for the agent jar)
-
-## [1.0.5]
-* replace `rjkernick/alpine-wget` with `curlimages/curl`
-* update `install-plugins` script
-* fix possible issue with prometheus init container and `env` set in the `values.yaml`
-
-## [1.0.4]
-* fix for missing `serviceAccountName` in STS deployment kind
-
-## [1.0.3]
-* fixed prometheus config volume mount if disabled
-* switched from wget to curl image per default for downloading agent
-* added support for proxy envs
-
-## [1.0.2]
-* added option to configure CE java opts separately
-
-## [1.0.1]
-* fixed missing conditional that was introduced in 0.9.2.2 to sonarqube-sts.yaml
-* updated default application version to 8.9
-
-## [1.0.0]
-* changed default deployment from replica set to statefull set
-* added default support for prometheus jmx exporter
-* added init filesystem container
-* added nginx-ingress as optional dependency
-* updated application version to 8.8-community
-* improved readiness/startup and liveness probes
-* improved documentation
-
-## [0.9.6.2]
-* Change order of env variables to better support 7.9-lts
-
-## [0.9.6.1]
-* Add support for setting custom annotations in admin hook job.
-
-## [0.9.6.0]
-* Add the possibility of definining the secret key name of the postgres password.
-
-## [0.9.5.0]
-* Add Ingress default backend for GCE class
-
-## [0.9.2.3]
-* Added namespace to port-foward command in notes.
-
-## [0.9.2.2]
-* Added a condition to deployment.yaml so that `wait-for-db` initContainer is only created if `postgresql.enabled=true`
-
-## [0.9.2.1]
-* Updated the configuration table to include the additional keys added in release 9.2.0.
-
-## [0.9.2.0]
-* Added functionality for deployments to OpenShift clusters.
-    * .Values.OpenShift flag to signify if deploying to OpenShift.
-	* Ability to have chart generate an SCC allowing the init-sysctl container to run as privileged.
-	* Setting of a seperate securityContext section for the main SonarQube container to avoid running as root.
-	* Exposing additional `postreSQL` keys in values.yaml to support configuring postgres to run under standard "restricted" or "anyuid"/"nonroot" SCCs on OpenShift.
-* Added initContainer `wait-for-db` to await postgreSQL successful startup before starting SonarQube, to avoid race conditions.
-
-## [0.9.1.1]
-* Update SonarQube to 8.5.1.
-* **Fix:** Purge plugins directory before download.
-
-## [0.9.0.0]
-* Update SonarQube to 8.5.
-* **Breaking change:** Rework init containers.
-    * Move global defaults from `plugins` section to `initContainers`.
-    * Update container images.
-* **Deprecation:** `elasticsearch.configureNode` in favor of `initSysctl.enabled`.
-* Rework sysctl with support for custom values.
-* Rework plugins installation via `opt/sonarqube/extensions/downloads` folder that is handled by SonarQube itself.
-    * **Breaking change:** remove `plugins.deleteDefaultPlugins` as SonarQube stores bundled plugins out of `opt/sonarqube/extensions`.
-* Rename deprecated `SONARQUBE_` environment variables to `SONAR_` ones.
-* **Breaking change:** Rename `enabledTests` to `tests.enabled`.
-* Add `terminationGracePeriodSeconds`.
+# Changelog
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+---
+## [8.0.2-bb.1] - 2023-10-18
+### Changed
+- enabled creation of ServiceAccounts for Sonarqube and Postgres
+- hardened automountServiceAccountToken for Pods and ServiceAccounts
+
+## [8.0.1-bb.0] - 2023-10-16
+### Changed
+- Update release to sonarqube-8.0.2-sonarqube-dce-7.0.2
+- sonarqube from 9.9.1-community to 9.9.2-community
+- postgres-exporter from 0.13.2 to 0.14.0
+
+## [8.0.1-bb.6] - 2023-09-20
+### Changed
+- Updated to gluon 0.4.1 and cypress 13.x
+- Updated tests to work with cypress 13.x
+
+## [8.0.1-bb.5] - 2023-09-13
+### Changed
+- sonarqube to run as non root group
+
+## [8.0.1-bb.4] - 2023-08-18
+### Changed
+- postgres-exporter from 0.12.0 to 0.13.2
+- postgresql12 from 12.15 to 12.16
+
+## [8.0.1-bb.3] - 2023-08-14
+### Changed
+- Setting new variable for cypress test timeout
+- If no value is given it will use default timeout value.
+
+## [8.0.1-bb.2] - 2023-06-26
+### Changed
+- Set volumepermissions.enabled to false
+- Update change-admin-password-hook and postgresql to run as non root user
+
+## [8.0.1-bb.1] - 2023-05-26
+### Added
+- Added OpenShift support
+
+## [8.0.1-bb.0] - 2023-05-17
+### Changed
+- Update release to sonarqube-8.0.1-sonarqube-dce-7.0.1
+- sonarqube from 9.9.0-community to 9.9.1-community
+- postgres-exporter from 0.11.1 to 0.12.0
+- postgresql12 from 12.14 to 12.15
+
+## [8.0.0-bb.1] - 2023-02-27
+### Changed
+- upgraded postgresql dependency to `12.14`
+
+## [8.0.0-bb.0] - 2023-02-07
+### Changed
+- Chart version `8.0.0` sonarqube version `9.9.0` updates.
+
+## [1.0.31-bb.5] - 2023-01-25
+### Changed
+- Cleaned up servicemonitor and networkpolicies
+
+## [1.0.31-bb.4] - 2023-01-17
+### Changed
+- Update gluon to new registry1 location + latest version (0.3.2)
+
+## [1.0.31-bb.3] - 2022-12-08
+### Changes
+- Removed duplicate `nodeSelector`, `affinity`, and `tolerances` in the `deployment.yaml`
+
+## [1.0.31-bb.2] - 2022-12-01
+### Changes
+- upgraded postgresql dependency to `12.13`
+
+## [1.0.31-bb.1] - 2022-11-14
+### Added
+- Added (back) ability to override cacert command/args
+
+## [1.0.31-bb.0] - 2022-11-14
+### Updated
+- Updated to version `sonarqube-lts-1.0.31` of upstream helm chart and version 8.9.10 of sonarqube
+
+## [1.0.29-bb.5] - 2022-10-17
+### Updated
+- Updated postgres and postgres exporter images
+
+## [1.0.29-bb.4] - 2022-09-26
+### Changed
+- Added capabilities drop ALL
+
+## [1.0.29-bb.3] - 2022-09-21
+### Changed
+- Added default JDK arg to disable FIPS alignment - Sonarqube does not support running on FIPS nodes (https://docs.sonarqube.org/latest/requirements/requirements/)
+
+## [1.0.29-bb.2] - 2022-06-30
+### Changed
+- Changed install-plugin configmap to use curl instead of wget
+- Changed plugins.image to declare use of sonarqube image
+
+## [1.0.29-bb.1] - 2022-06-28
+### Changed
+- Updated bb base image to 2.0.0
+- Updated gluon to 0.2.10
+
+## [1.0.29-bb.0] - 2022-06-16
+### Changed
+- Updated Sonarqube image to 8.9.9
+- Updated Postgresql12 image to 12.11
+- Updated BB base image to 1.18.0
+
+## [1.0.26-bb.2] - 2022-06-16
+### Changed
+- Updated BB base image to 1.17.0
+
+## [1.0.26-bb.1] - 2022-05-19
+### Changed
+- Added JVM args to handle issues with FIPS clusters
+
+## [1.0.26-bb.0] - 2022-05-05
+### Changed
+- Updated chart to sync with upstream sonarqube-lts chart
+- Updated SonarQube image to `8.9.8-community`
+- Updated PostgreSQL image to `12.10`
+- Updated Big Bang Base image to `1.2.0`
+
+## [9.6.3-bb.25] - 2022-04-18
+### Changed
+- Updated `waitForDb` image to match postgresql dependency
+
+## [9.6.3-bb.24] - 2022-04-15
+### Added
+- Added runAsGroup 1000 to Sonarqube container
+
+## [9.6.3-bb.23] - 2022-04-04
+### Added
+- Added sidecar and sidecar termination to change password hook
+
+## [9.6.3-bb.22] - 2022-03-30
+### Added
+- Add default PeerAuthentication to enable STRICT mTLS
+
+## [9.6.3-bb.21] - 2022-03-18
+### Added
+- Add default PeerAuthentication to enable STRICT mTLS
+- Add `wait-for-db` initContainer compatibility check
+
+## [9.6.3-bb.20] - 2022-3-17
+### Changed
+- Added value for the previously hardcoded `wait-for-db` initContainer image
+
+## [9.6.3-bb.19] - 2022-3-9
+### Changed
+- Updated change password hook deletion policy
+
+## [9.6.3-bb.18] - 2022-3-9
+### Changed
+- Updated postgres exporter image to 0.10.1
+
+## [9.6.3-bb.17] - 2022-2-25
+### Changed
+- Updated `deploymentStrategy` in `values.yaml` to explicitly define the `Recreate` strategy
+
+## [9.6.3-bb.16] - 2022-2-15
+### Changed
+- Updated default-deny-all network policy to deny all.
+
+## [9.6.3-bb.15] - 2022-1-02
+### Added
+- Added renovate check to track postgresql and big-bang/base container images
+
+### Changed
+- Dev/CI Posgresql sub-chart version bump to `12.7.0` from `11.7.0`
+- CI big-bang/base image bump to version `1.0.0`
+
+## [9.6.3-bb.14] - 2022-1-31
+### Changed
+- Update Chart.yaml to follow new standardization for release automation
+- Added renovate check to update new standardization
+
+## [9.6.3-bb.13] - 2022-1-24
+### Changed
+- Moved bbtest default values into chart's values.yaml instead of test-values.yaml
+
+## [9.6.3-bb.12] - 2021-12-20
+### Changed
+- Changed Values.hostname to Values.domain for proper naming
+
+## [9.6.3-bb.11] - 2021-11-30
+### Changed
+- Changes to allow command and args on ca-certs init container to be set through value parameters
+
+## [9.6.3-bb.10] - 2021-11-18
+### Added
+- Added image pull policy for admin password hook job
+
+## [9.6.3-bb.9] - 2021-10-27
+### Added
+- Added networkpolicy for https egress with ability to enable/disable
+
+## [9.6.3-bb.8] - 2021-10-18
+### Changed
+- Modified change-admin-password-hook job sidecar connection timeout
+
+## [9.6.3-bb.7] - 2021-10-15
+### Changed
+- Modified change-admin-password-hook job sidecar termination
+
+## [9.6.3-bb.6] - 2021-10-14
+### Changed
+- Modified conditional around change-admin-password-hook job sidecar termination
+
+## [9.6.3-bb.5] - 2021-10-04
+### Changed
+- Reverted to use `until` in change-admin-password-hook job script.
+
+## [9.6.3-bb.4] - 2021-09-29
+### Added
+- NetworkPolicy template to allow istiod communication when istio-injection is enabled.
+### Changed
+- Updated change-admin-password-hook job to complete when istio-injection is enabled.
+
+## [9.6.3-bb.3] - 2021-09-28
+### Added
+- Added renovate support for the Sonarqube Iron Bank image
+
+## [9.6.3-bb.2] - 2021-09-22
+### Changed
+- Removed duplicate regions of pod spec in deployment.
+
+## [9.6.3-bb.1] - 2021-09-15
+### Changed
+- Moved to Ironbank image with plugins
+
+## [9.6.3-bb.0] - 2021-09-07
+### Changed
+- KPT'd latest tagged version from upstream
+
+## [9.2.6-bb.17] - 2021-09-06
+### Changed
+- Updated requests/limits based on nightly CI findings
+
+## [9.2.6-bb.16] - 2021-08-30
+### Changed
+- Update init containers resource limits and requests.
+
+## [9.2.6-bb.15] - 2021-08-19
+### Changed
+- Update resource limits and requests to guaranteed QoS
+
+## [9.2.6-bb.14] - 2021-08-19
+### Added
+- Resource limit and request for the deployment
+
+## [9.2.6-bb.13] - 2021-06-07
+### Upgrade
+- Upgraded Sonarqube to ironbank version 8.9.
+- Bigbang plugins have been upgraded to the latest versions:
+  - dependency-check-sonar-plugin version 2.0.8
+  - sonar-c-plugin version 1.3.3.2051
+  - sonar-cxx-plugin version 2.0.2.2734
+  - sonar-zap-plugin version 2.2.0
+
+## [9.2.6-bb.12] - 2021-06-02
+### Modified
+- Modified helm-test network policy to be more restrictive.
+
+## [9.2.6-bb.11] - 2021-05-27
+### Modified
+- Modified the bigbang monitoring network policy to be more restrictive.
+
+## [9.2.6-bb.10] - 2021-05-24
+### Added
+- Adding network policies.
+
+## [9.2.6-bb.9] - 2021-05-10
+### Changed
+- Moved cypress testing to the new helm test structure.
+
+## [9.2.6-bb.8] - 2021-04-06
+### Update
+- Updated sonarqube image version to 8.7.1-community
+
+## [9.2.6-bb.7] - 2021-03-31
+### Added
+- Adding Affinity documentation
+
+## [9.2.6-bb.6] - 2021-03-30
+### Changed
+- Modified initContainer logic
+
+## [9.2.6-bb.5] - 2021-03-22
+### Changed
+- Fixed initContainer logic
+
+## [9.2.6-bb.4] - 2021-03-22
+### Added
+- Adding ability to specify istio gateways and hosts in values file
+
+## [9.2.6-bb.3] - 2021-03-16
+### Added
+- Plugins have been preinstalled into the container and made available at registry.dso.mil.
+- InitContainers have also been pushed into registry.dso.mil until ironbank equivalents can be found.
+
+## [0.0.0-bb.2] - 2021-01-22
+### Added
+- Added SAML sso integration
+- Added istio virtual service
+### Changed
+- Modified images to use ironbank and repo1
+
+## [0.0.0-bb.1] - 2020-08-01
+### Added
+- Added enforced login/authentication
+
+## [0.0.0-bb.0] - 2020-06-15
+### Added
+- Initial release
+- upstream version 8.3-community [Version 8.3.1 (build 34397)]
+- Added logging instructions to docs 7/22/2020
+- Added auth-oidc plugin version 2.0.0
+- Added plugins for scanning C/C++ code 10/01/2020
