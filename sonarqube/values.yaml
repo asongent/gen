@@ -157,7 +157,7 @@ hostAliases: []
 #   - "www.example.com"
 
 readinessProbe:
-  initialDelaySeconds: 60
+  initialDelaySeconds: 180
   periodSeconds: 30
   failureThreshold: 6
   # Note that timeoutSeconds was not respected before Kubernetes 1.20 for exec probes
@@ -168,7 +168,7 @@ readinessProbe:
   sonarWebContext: /sonarqube/
 
 livenessProbe:
-  initialDelaySeconds: 60
+  initialDelaySeconds: 180
   periodSeconds: 30
   failureThreshold: 6
   # Note that timeoutSeconds was not respected before Kubernetes 1.20 for exec probes
@@ -179,7 +179,7 @@ livenessProbe:
   sonarWebContext: /sonarqube/
 
 startupProbe:
-  initialDelaySeconds: 30
+  initialDelaySeconds: 180
   periodSeconds: 10
   failureThreshold: 24
   # Note that timeoutSeconds was not respected before Kubernetes 1.20 for exec probes
