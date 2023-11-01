@@ -1,0 +1,10 @@
+account:
+  adminPassword: new_admin_password
+  currentAdminPassword: admin
+curlContainerImage: registry1.dso.mil/ironbank/big-bang/base:2.0.0
+
+bbtests:
+  enabled: true
+
+networkPolicies:
+  enabled: true

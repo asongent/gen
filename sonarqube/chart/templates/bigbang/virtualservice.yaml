@@ -1,0 +1,28 @@
+{{- if .Values.istio.enabled -}}
+{{- $serviceName := include "sonarqube.fullname" . -}}
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: {{ template "sonarqube.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    helm.sh/chart: {{ include "sonarqube.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/part-of: sonarqube
+spec:
+  gateways:
+  {{- range .Values.istio.sonarqube.gateways }}
+    - {{ . }}
+  {{- end }}
+  hosts:
+  {{- range .Values.istio.sonarqube.hosts }}
+    - {{ tpl . $}}
+  {{- end }}
+  http:
+    - route:
+        - destination:
+            port:
+              number: {{ .Values.service.externalPort }}
+            host: {{ $serviceName }}
+{{- end }}
