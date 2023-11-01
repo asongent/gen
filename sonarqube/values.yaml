@@ -165,7 +165,7 @@ readinessProbe:
   # If an ingress *path* other than the root (/) is defined, it should be reflected here
   # A trailing "/" must be included
   # deprecated please use sonarWebContext at the value top level
-  # sonarWebContext: /
+  sonarWebContext: /
 
 livenessProbe:
   initialDelaySeconds: 60
@@ -176,7 +176,7 @@ livenessProbe:
   # If an ingress *path* other than the root (/) is defined, it should be reflected here
   # A trailing "/" must be included
   # deprecated please use sonarWebContext at the value top level
-  # sonarWebContext: /
+  sonarWebContext: /
 
 startupProbe:
   initialDelaySeconds: 30
@@ -187,7 +187,7 @@ startupProbe:
   # If an ingress *path* other than the root (/) is defined, it should be reflected here
   # A trailing "/" must be included
   # deprecated please use sonarWebContext at the value top level
-  # sonarWebContext: /
+  sonarWebContext: /
 
 initContainers:
   # image: busybox:1.32
@@ -519,13 +519,13 @@ extraConfig:
   secrets: []
   configmaps: []
 
-# account:
+account:
 # The values can be set to define the current and the (new) custom admin passwords at the startup (the username will remain "admin")
 #   adminPassword: admin
 #   currentAdminPassword: admin
 # The above values can be also provided by a secret that contains "password" and "currentPassword" as keys. You can generate such a secret in your cluster
 # using "kubectl create secret generic admin-password-secret-name --from-literal=password=admin --from-literal=currentPassword=admin"
-#   adminPasswordSecretName: ""
+  adminPasswordSecretName: ""
 #   securityContext: {}
 #   resources:
 #     limits:
