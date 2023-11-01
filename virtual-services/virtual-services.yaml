@@ -192,60 +192,60 @@ spec:
         prefix: /
     route:
     - destination:
-        host: sonarqube
+        host: sonarqube-sonarqube
         port:
-          number: 80
+          number: 9000
 ---
 ## Gitlab config
 
-apiVersion: networking.istio.io/v1alpha3
-kind: VirtualService
-metadata:
-  labels:
-  name: gitlab
-  namespace: gitlab
-spec:
-  gateways:
-  - istio-system/general-gateway
-  hosts:
-  - 'gitlab.stack.fredgentech.net'
-  http:
-  - retries:
-      attempts: 3
-      perTryTimeout: 2s
-    match:
-    - uri:
-        prefix: /
-    route:
-    - destination:
-        host: gitlab-webservice-default
-        port:
-          number:  8181
+# apiVersion: networking.istio.io/v1alpha3
+# kind: VirtualService
+# metadata:
+#   labels:
+#   name: gitlab
+#   namespace: gitlab
+# spec:
+#   gateways:
+#   - istio-system/general-gateway
+#   hosts:
+#   - 'gitlab.stack.fredgentech.net'
+#   http:
+#   - retries:
+#       attempts: 3
+#       perTryTimeout: 2s
+#     match:
+#     - uri:
+#         prefix: /
+#     route:
+#     - destination:
+#         host: gitlab-webservice-default
+#         port:
+#           number:  8181
 
----
-apiVersion: networking.istio.io/v1alpha3
-kind: VirtualService
-metadata:
-  labels:
-  name: minio-vs
-  namespace: gitlab
-spec:
-  gateways:
-  - istio-system/general-gateway
-  hosts:
-  - 'minio.stack.fredgentech.net'
-  http:
-  - retries:
-      attempts: 3
-      perTryTimeout: 2s
-    match:
-    - uri:
-        prefix: /
-    route:
-    - destination:
-        host: gitlab-minio-svc
-        port:
-          number:  9000
+# ---
+# apiVersion: networking.istio.io/v1alpha3
+# kind: VirtualService
+# metadata:
+#   labels:
+#   name: minio-vs
+#   namespace: gitlab
+# spec:
+#   gateways:
+#   - istio-system/general-gateway
+#   hosts:
+#   - 'minio.stack.fredgentech.net'
+#   http:
+#   - retries:
+#       attempts: 3
+#       perTryTimeout: 2s
+#     match:
+#     - uri:
+#         prefix: /
+#     route:
+#     - destination:
+#         host: gitlab-minio-svc
+#         port:
+#           number:  9000
 
 
 # --- 
