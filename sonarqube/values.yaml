@@ -399,7 +399,7 @@ jdbcOverwrite:
   # The JDBC url of the external DB
   jdbcUrl: "jdbc:postgresql://dbms.fredgentech.net/sonarqubedb?socketTimeout=1500"
   # The DB user that should be used for the JDBC connection
-  # jdbcUsername: ""
+  jdbcUsername: "databaseadmin"
   # Use this if you don't mind the DB password getting stored in plain text within the values file
   # jdbcPassword: "sonarPass"
   ## Alternatively, use a pre-existing k8s secret containing the DB password
