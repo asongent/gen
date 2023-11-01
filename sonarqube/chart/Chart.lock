@@ -1,9 +1,0 @@
-dependencies:
-- name: postgresql
-  repository: file://./deps/postgresql
-  version: 8.6.4
-- name: gluon
-  repository: oci://registry1.dso.mil/bigbang
-  version: 0.4.1
-digest: sha256:482dcc177c562e035f9366b1c40ed13b327a25143231c06ceb97e2fe6a76d151
-generated: "2023-09-20T10:38:13.304138-05:00"
