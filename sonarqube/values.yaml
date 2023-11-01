@@ -165,7 +165,7 @@ readinessProbe:
   # If an ingress *path* other than the root (/) is defined, it should be reflected here
   # A trailing "/" must be included
   # deprecated please use sonarWebContext at the value top level
-  sonarWebContext: /
+  sonarWebContext: /sonarqube/
 
 livenessProbe:
   initialDelaySeconds: 60
@@ -176,7 +176,7 @@ livenessProbe:
   # If an ingress *path* other than the root (/) is defined, it should be reflected here
   # A trailing "/" must be included
   # deprecated please use sonarWebContext at the value top level
-  sonarWebContext: /
+  sonarWebContext: /sonarqube/
 
 startupProbe:
   initialDelaySeconds: 30
@@ -187,7 +187,7 @@ startupProbe:
   # If an ingress *path* other than the root (/) is defined, it should be reflected here
   # A trailing "/" must be included
   # deprecated please use sonarWebContext at the value top level
-  sonarWebContext: /
+  sonarWebContext: /sonarqube/
 
 initContainers:
   # image: busybox:1.32
