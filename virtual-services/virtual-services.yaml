@@ -196,31 +196,31 @@ spec:
         port:
           number: 9000
 ---
-## Gitlab config
+# Gitlab config
 
-# apiVersion: networking.istio.io/v1alpha3
-# kind: VirtualService
-# metadata:
-#   labels:
-#   name: gitlab
-#   namespace: gitlab
-# spec:
-#   gateways:
-#   - istio-system/general-gateway
-#   hosts:
-#   - 'gitlab.stack.fredgentech.net'
-#   http:
-#   - retries:
-#       attempts: 3
-#       perTryTimeout: 2s
-#     match:
-#     - uri:
-#         prefix: /
-#     route:
-#     - destination:
-#         host: gitlab-webservice-default
-#         port:
-#           number:  8181
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  labels:
+  name: gitlab
+  namespace: gitlab
+spec:
+  gateways:
+  - istio-system/general-gateway
+  hosts:
+  - 'gitlab.stack.fredgentech.net'
+  http:
+  - retries:
+      attempts: 3
+      perTryTimeout: 2s
+    match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: gitlab-webservice-default
+        port:
+          number:  8181
 
 # ---
 # apiVersion: networking.istio.io/v1alpha3

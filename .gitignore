@@ -9,7 +9,6 @@ keycloak-bitnami
 artifactory-secret-enc.yaml
 gitlab-testing
 argocd-iu-old
-gitlab-ironbank/
 gitlab-ce
 # secret-*
 # .sops

@@ -85,13 +85,13 @@ metadata:
   name: longhorn-system
 spec: {}
 status: {}
----
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: airflow
-spec: {}
-status: {}
+# ---
+# apiVersion: v1
+# kind: Namespace
+# metadata:
+#   name: airflow
+# spec: {}
+# status: {}
 # --- 
 # apiVersion: v1
 # kind: Namespace
@@ -99,13 +99,13 @@ status: {}
 #   name: kube-cost
 # spec: {}
 # status: {}
-# --- 
-# apiVersion: v1
-# kind: Namespace
-# metadata:
-#   name: gitlab
-# spec: {}
-# status: {}
+--- 
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: gitlab
+spec: {}
+status: {}
 
 # --- 
 # apiVersion: v1
