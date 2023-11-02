@@ -106,7 +106,13 @@ metadata:
   name: gitlab
 spec: {}
 status: {}
-
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: gitlab-runner
+spec: {}
+status: {}
 # --- 
 # apiVersion: v1
 # kind: Namespace
