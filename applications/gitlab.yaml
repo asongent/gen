@@ -10,8 +10,6 @@ spec:
   project: default
   source:
     path: gitlab-ironbank/chart
-    kustomize:
-      version: v4.5.7
     repoURL:  https://github.com/asongent/gen.git
     targetRevision: HEAD
   syncPolicy:

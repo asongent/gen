@@ -16,11 +16,7 @@ neuvector-ooo
 jf-pv-pvc.yaml
 jfrog-pvc.yaml
 jfrog-pv.*
-sonarqube-old-old
-sonarqube-new
+sonarqube-new-does-not-work
 neuvector-old
 neuvector-new
 aiflow-sso
-sonarqube-bitnami
-sonarqube-sonarqube
-sonarqube-ironbank
