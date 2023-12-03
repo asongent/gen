@@ -1,0 +1,24 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: devsecops
+  namespace: argocd
+  # annotations:
+  #  argocd-image-update.argoproj.io/image-list: docker.io/jmugu/devsecops:DevSecOps-v^
+  #  argocd-image-update.argoproj.io/write-back-method: git:secret:argocd/git-auth
+  #  argocd-image-update.argoproj.io/git-branch: master
+spec:
+  destination:
+    namespace: devsecops
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    path: production/manifests
+    kustomize:
+      version: v4.5.7
+    repoURL:  https://github.com/asongent/GitOps-CD.git
+    targetRevision: HEAD
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
