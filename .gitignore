@@ -20,3 +20,6 @@ sonarqube-new-does-not-work
 neuvector-old
 neuvector-new
 aiflow-sso
+ingressgateway-16  
+istio-base-16  
+istiod-16
