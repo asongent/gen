@@ -1,5 +1,25 @@
-
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
 ---
+# Default values for airflow.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Provide a name to substitute for the full names of resources
 fullnameOverride: ""
 
 # Provide a name to substitute for the name of the chart
@@ -34,11 +54,6 @@ securityContext: {}
 
 # Detailed default security context for airflow deployments
 securityContexts:
-  fsGroup: 10001
-  runAsGroup: 10001
-  runAsNonRoot: true
-  runAsUser: 10001
-  fsGroupChangePolicy: "OnRootMismatch"
   pod: {}
   containers: {}
 
@@ -373,7 +388,7 @@ data:
   # data:
   #   connection: base64_encoded_connection_string
 
-  metadataSecretName: ~
+  metadataSecretName: airflow-database
   # When providing secret names and using the same database for metadata and
   # result backend, for Airflow < 2.4.0 it is necessary to create a separate
   # secret for result backend but with a db+ scheme prefix.
@@ -383,14 +398,14 @@ data:
   brokerUrlSecretName: ~
 
   # Otherwise pass connection values in
-  metadataConnection:
-    user: postgres
-    pass: postgres
-    protocol: postgresql
-    host: ~
-    port: 5432
-    db: postgres
-    sslmode: disable
+  metadataConnection: ~
+    # user: postgres
+    # pass: postgres
+    # protocol: postgresql
+    # host: ~
+    # port: 5432
+    # db: postgres
+    # sslmode: disable
   # resultBackendConnection defaults to the same database as metadataConnection
   resultBackendConnection: ~
   # or, you can use a different database
@@ -412,7 +427,7 @@ fernetKeySecretName: ~
 
 # Flask secret key for Airflow Webserver: `[webserver] secret_key` in airflow.cfg
 webserverSecretKey: ~
-webserverSecretKeySecretName:  webserver-token
+webserverSecretKeySecretName: webserver-token
 
 # In order to use kerberos you need to create secret containing the keytab file
 # The secret name should follow naming convention of the application where resources are
@@ -509,15 +524,12 @@ workers:
 
   # When not set, the values defined in the global securityContext will be used
   securityContext: {}
-
+  #  runAsUser: 50000
+  #  fsGroup: 0
+  #  runAsGroup: 0
 
   # Detailed default security context for worker deployments for container and pod level
   securityContexts:
-    fsGroup: 10001
-    runAsGroup: 10001
-    runAsNonRoot: true
-    runAsUser: 10001
-    fsGroupChangePolicy: "OnRootMismatch"
     pod: {}
     container: {}
 
@@ -595,12 +607,6 @@ workers:
     annotations: {}
     # Detailed default security context for persistence for container level
     securityContexts:
-      fsGroup: 10001
-      runAsGroup: 10001
-      runAsNonRoot: true
-      runAsUser: 10001
-      fsGroupChangePolicy: "OnRootMismatch"
-      
       container: {}
     # container level lifecycle hooks
     containerLifecycleHooks: {}
@@ -617,11 +623,6 @@ workers:
     #   memory: 128Mi
     # Detailed default security context for kerberosSidecar for container level
     securityContexts:
-      fsGroup: 10001
-      runAsGroup: 10001
-      runAsNonRoot: true
-      runAsUser: 10001
-      fsGroupChangePolicy: "OnRootMismatch"
       container: {}
     # container level lifecycle hooks
     containerLifecycleHooks: {}
@@ -724,11 +725,6 @@ workers:
     env: []
     # Detailed default security context for waitForMigrations for container level
     securityContexts:
-      fsGroup: 10001
-      runAsGroup: 10001
-      runAsNonRoot: true
-      runAsUser: 10001
-      fsGroupChangePolicy: "OnRootMismatch"
       container: {}
 
   env: []
@@ -781,14 +777,12 @@ scheduler:
   # When not set, the values defined in the global securityContext will be used
   # (deprecated, use `securityContexts` instead)
   securityContext: {}
-    
+  #  runAsUser: 50000
+  #  fsGroup: 0
+  #  runAsGroup: 0
+
   # Detailed default security context for scheduler deployments for container and pod level
   securityContexts:
-    fsGroup: 10001
-    runAsGroup: 10001
-    runAsNonRoot: true
-    runAsUser: 10001
-    fsGroupChangePolicy: "OnRootMismatch"
     pod: {}
     container: {}
 
@@ -904,11 +898,6 @@ scheduler:
     env: []
     # Detailed default security context for waitForMigrations for container level
     securityContexts:
-      fsGroup: 10001
-      runAsGroup: 10001
-      runAsNonRoot: true
-      runAsUser: 10001
-      fsGroupChangePolicy: "OnRootMismatch"
       container: {}
 
   env: []
@@ -957,11 +946,6 @@ createUserJob:
 
   # Detailed default security context for createUserJob for container and pod level
   securityContexts:
-    fsGroup: 10001
-    runAsGroup: 10001
-    runAsNonRoot: true
-    runAsUser: 10001
-    fsGroupChangePolicy: "OnRootMismatch"
     pod: {}
     container: {}
 
@@ -1050,11 +1034,6 @@ migrateDatabaseJob:
 
   # Detailed default security context for migrateDatabaseJob for container and pod level
   securityContexts:
-    fsGroup: 10001
-    runAsGroup: 10001
-    runAsNonRoot: true
-    runAsUser: 10001
-    fsGroupChangePolicy: "OnRootMismatch"
     pod: {}
     container: {}
 
@@ -1183,15 +1162,12 @@ webserver:
   # When not set, the values defined in the global securityContext will be used
   # (deprecated, use `securityContexts` instead)
   securityContext: {}
-   
+  #  runAsUser: 50000
+  #  fsGroup: 0
+  #  runAsGroup: 0
 
   # Detailed default security contexts for webserver deployments for container and pod level
   securityContexts:
-    fsGroup: 10001
-    runAsGroup: 10001
-    runAsNonRoot: true
-    runAsUser: 10001
-    fsGroupChangePolicy: "OnRootMismatch"
     pod: {}
     container: {}
 
@@ -1220,10 +1196,10 @@ webserver:
   defaultUser:
     enabled: true
     role: Admin
-    username: fredgent
-    email: fredgentech@tech.com
-    firstName: Gent
-    lastName: Tech
+    username: admin
+    email: admin@example.com
+    firstName: admin
+    lastName: user
     password: admin
 
   # Launch additional containers into webserver.
@@ -1321,11 +1297,6 @@ webserver:
     env: []
     # Detailed default security context for waitForMigrations for container level
     securityContexts:
-      fsGroup: 10001
-      runAsGroup: 10001
-      runAsNonRoot: true
-      runAsUser: 10001
-      fsGroupChangePolicy: "OnRootMismatch"
       container: {}
 
   env: []
@@ -1376,14 +1347,12 @@ triggerer:
 
   # When not set, the values defined in the global securityContext will be used
   securityContext: {}
+  #  runAsUser: 50000
+  #  fsGroup: 0
+  #  runAsGroup: 0
 
   # Detailed default security context for triggerer for container and pod level
   securityContexts:
-    fsGroup: 10001
-    runAsGroup: 10001
-    runAsNonRoot: true
-    runAsUser: 10001
-    fsGroupChangePolicy: "OnRootMismatch"
     pod: {}
     container: {}
 
@@ -1493,11 +1462,6 @@ triggerer:
     env: []
     # Detailed default security context for waitForMigrations for container level
     securityContexts:
-      fsGroup: 10001
-      runAsGroup: 10001
-      runAsNonRoot: true
-      runAsUser: 10001
-      fsGroupChangePolicy: "OnRootMismatch"
       container: {}
 
   env: []
@@ -1718,11 +1682,6 @@ flower:
 
   # Detailed default security context for flower for container and pod level
   securityContexts:
-    fsGroup: 10001
-    runAsGroup: 10001
-    runAsNonRoot: true
-    runAsUser: 10001
-    fsGroupChangePolicy: "OnRootMismatch"
     pod: {}
     container: {}
 
@@ -1842,11 +1801,6 @@ statsd:
 
   # Detailed default security context for statsd deployments for container and pod level
   securityContexts:
-    fsGroup: 10001
-    runAsGroup: 10001
-    runAsNonRoot: true
-    runAsUser: 10001
-    fsGroupChangePolicy: "OnRootMismatch"
     pod: {}
     container: {}
 
@@ -1890,7 +1844,7 @@ statsd:
 # PgBouncer settings
 pgbouncer:
   # Enable PgBouncer
-  enabled: false
+  enabled: true
   # Number of PgBouncer replicas to run in Deployment
   replicas: 1
   # Max number of old replicasets to retain
@@ -2025,11 +1979,6 @@ pgbouncer:
 
   # Detailed default security context for pgbouncer for container level
   securityContexts:
-    fsGroup: 10001
-    runAsGroup: 10001
-    runAsNonRoot: true
-    runAsUser: 10001
-    fsGroupChangePolicy: "OnRootMismatch"
     pod: {}
     container: {}
 
@@ -2070,11 +2019,6 @@ pgbouncer:
 
     # Detailed default security context for metricsExporterSidecar for container level
     securityContexts:
-      fsGroup: 10001
-      runAsGroup: 10001
-      runAsNonRoot: true
-      runAsUser: 10001
-      fsGroupChangePolicy: "OnRootMismatch"
       container: {}
 
     # container level lifecycle hooks
@@ -2157,11 +2101,6 @@ redis:
 
   # Detailed default security context for redis for container and pod level
   securityContexts:
-    fsGroup: 10001
-    runAsGroup: 10001
-    runAsNonRoot: true
-    runAsUser: 10001
-    fsGroupChangePolicy: "OnRootMismatch"
     pod: {}
     container: {}
 
@@ -2274,11 +2213,6 @@ cleanup:
 
   # Detailed default security context for cleanup for container level
   securityContexts:
-    fsGroup: 10001
-    runAsGroup: 10001
-    runAsNonRoot: true
-    runAsUser: 10001
-    fsGroupChangePolicy: "OnRootMismatch"
     pod: {}
     container: {}
 
@@ -2293,7 +2227,7 @@ cleanup:
 # Configuration for postgresql subchart
 # Not recommended for production
 postgresql:
-  enabled: true
+  enabled: false
   image:
     tag: "11"
   auth:
@@ -2490,11 +2424,6 @@ dags:
     #  runAsGroup: 0
 
     securityContexts:
-      fsGroup: 10001
-      runAsGroup: 10001
-      runAsNonRoot: true
-      runAsUser: 10001
-      fsGroupChangePolicy: "OnRootMismatch"
       container: {}
 
     # container level lifecycle hooks
