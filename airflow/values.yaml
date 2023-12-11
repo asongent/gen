@@ -79,8 +79,8 @@ airflowVersion: "2.7.1"
 # Images
 images:
   airflow:
-    repository: ~
-    tag: ~
+    repository: jmugu/airlow-local
+    tag: 2.7.3
     # Specifying digest takes precedence over tag.
     digest: ~
     pullPolicy: IfNotPresent
