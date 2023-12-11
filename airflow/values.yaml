@@ -596,13 +596,13 @@ workers:
     # Enable persistent volumes
     enabled: true
     # Volume size for worker StatefulSet
-    size: 30Gi
+    size: 5Gi
     # If using a custom storageClass, pass name ref to all statefulSets here
-    storageClassName: airflow-sc
+    storageClassName: 
     # Execute init container to chown log directory.
     # This is currently only needed in kind, due to usage
     # of local-path provisioner.
-    fixPermissions: true
+    fixPermissions: false
     # Annotations to add to worker volumes
     annotations: {}
     # Detailed default security context for persistence for container level
@@ -1363,9 +1363,9 @@ triggerer:
     # Enable persistent volumes
     enabled: true
     # Volume size for triggerer StatefulSet
-    size: 30Gi
+    size: 5Gi
     # If using a custom storageClass, pass name ref to all statefulSets here
-    storageClassName: airflow-sc
+    storageClassName: 
     # Execute init container to chown log directory.
     # This is currently only needed in kind, due to usage
     # of local-path provisioner.
@@ -2062,7 +2062,7 @@ redis:
     # Volume size for worker StatefulSet
     size: 1Gi
     # If using a custom storageClass, pass name ref to all statefulSets here
-    storageClassName: airflow-sc
+    storageClassName: 
     # Annotations to add to redis volumes
     annotations: {}
 
