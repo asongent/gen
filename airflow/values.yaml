@@ -398,14 +398,14 @@ data:
   brokerUrlSecretName: ~
 
   # Otherwise pass connection values in
-  metadataConnection: ~
-    # user: postgres
-    # pass: postgres
-    # protocol: postgresql
-    # host: ~
-    # port: 5432
-    # db: postgres
-    # sslmode: disable
+  metadataConnection: 
+    user: postgres
+    pass: postgres
+    protocol: postgresql
+    host: ~
+    port: 5432
+    db: postgres
+    sslmode: disable
   # resultBackendConnection defaults to the same database as metadataConnection
   resultBackendConnection: ~
   # or, you can use a different database
