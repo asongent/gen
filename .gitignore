@@ -24,3 +24,4 @@ ingressgateway-16
 istio-base-16  
 istiod-16 kyverno-old
 kyverno-odd
+vault-secret-auth.yaml

@@ -3,7 +3,7 @@ kind: Kustomization
 namespace: argocd
 
 resources:
-- namespace.yaml
+# - namespace.yaml
 - install.yaml
 # - github-repo-secret.yaml
 # - github.com/argoproj/argo-cd/manifests/ha/cluster-install?ref=029be590bfd5003d65ddabb4d4cb8a31bff29c18 ##tag=stable.

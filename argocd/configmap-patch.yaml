@@ -35,3 +35,8 @@ data:
   #     sshPrivateKeySecret:
   #       name: private-repo 
   #       key: sshprivateKey
+  configManagementPlugins: |-
+    - name: argocd-vault-plugin
+      generate:
+        command: ["argocd-vault-plugin"]
+        args: ["generate", "./"]

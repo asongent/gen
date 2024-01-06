@@ -22,6 +22,7 @@ spec:
       volumes:
         - name: custom-tools
           emptyDir: {}
+        # - name: cmp-plugin
         ## Added this
         ## Add this when you are using age ONLY. Not need using AWS KMS key for encryption
         - name: sops-age
@@ -34,7 +35,22 @@ spec:
           command: [sh, -c]
           args:
             - wget -qO- https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv4.5.7/kustomize_v4.5.7_linux_amd64.tar.gz | tar -xvzf - &&
-              mv kustomize /custom-tools/kustomize_4_5_7 #kustomize_4_5_7 could be removed 
+              mv kustomize /custom-tools/kustomize_4_5_7  #kustomize_4_5_7 could be removed
+            
+          volumeMounts:
+            - mountPath: /custom-tools
+              name: custom-tools             
+        - name: download-vault-plugins
+          image: registry.access.redhat.com/ubi8
+          env:
+            - name: AVP_VERSION
+              value: 1.16.1
+          command: [sh, -c]
+          args:
+            - >-
+              curl -L https://github.com/argoproj-labs/argocd-vault-plugin/releases/download/v$(AVP_VERSION)/argocd-vault-plugin_$(AVP_VERSION)_linux_amd64 -o argocd-vault-plugin &&
+              chmod +x argocd-vault-plugin &&
+              mv argocd-vault-plugin /custom-tools/
           volumeMounts:
             - mountPath: /custom-tools
               name: custom-tools
@@ -50,10 +66,20 @@ spec:
           volumeMounts:
             - mountPath: /custom-tools
               name: custom-tools
+              readOnly: false
       # 3. Volume mount the custom-tools directory to the repo-server
+      
       containers:  
         - name: argocd-repo-server
+          envFrom:
+          - secretRef:
+              name: vault-configuration 
           volumeMounts:
+  
+            - name: custom-tools
+              mountPath: /usr/local/bin/argocd-vault-plugin
+              subPath: argocd-vault-plugin
+
             - mountPath: /custom-tools
               name: custom-tools
             - mountPath: /usr/local/bin/kustomize
@@ -75,6 +101,29 @@ spec:
             ## addefd this line for sops enc
             - name: SOPS_AGE_KEY_FILE
               value: /.config/sops/age/keys.so
+        # - name: avp
+        #   command: [/var/run/argocd/argocd-cmp-server]
+        #   image: registry.access.redhat.com/ubi8
+        #   securityContext:
+        #     runAsNonRoot: true
+        #     runAsUser: 999
+        #   volumeMounts:
+        #     - mountPath: /var/run/argocd
+        #       name: var-files
+        #     - mountPath: /home/argocd/cmp-server/plugins
+        #       name: plugins
+        #     - mountPath: /tmp
+        #       name: tmp
+
+        #     # Register plugins into sidecar
+        #     - mountPath: /home/argocd/cmp-server/config/
+        #       subPath: avp.yaml
+        #       name: cmp-plugin
+        #     # Important: Mount tools into $PATH
+        #     - name: custom-tools
+        #       subPath: argocd-vault-plugin
+        #       mountPath: /usr/local/bin/argocd-vault-plugin
+    
 
         
       
