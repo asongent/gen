@@ -9,6 +9,8 @@ spec:
     server: https://kubernetes.default.svc
   project: default
   source:
+    # plugin:
+    #   name: argocd-vault-plugin
     path: vault-secret
     repoURL:  https://github.com/asongent/gen.git
     targetRevision: HEAD
