@@ -77,7 +77,13 @@ metadata:
   name: velero
 spec: {}
 status: {}
-
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: semaphore
+spec: {}
+status: {}
 ---
 apiVersion: v1
 kind: Namespace

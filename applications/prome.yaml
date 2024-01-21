@@ -12,7 +12,7 @@ spec:
     helm:
       valueFiles:
       - values.yaml
-    path: monitoring/prometheus
+    path: monitoring/kube-prometheus-stack
     repoURL:  https://github.com/asongent/gen.git
     targetRevision: HEAD
   syncPolicy:

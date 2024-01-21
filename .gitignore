@@ -27,3 +27,5 @@ kyverno-odd
 vault-auth.yaml
 ne.yaml
 prometheus-old
+config.json
+semaphore-config.yaml

@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: semaphore
+  namespace: argocd
+spec:
+  destination:
+    namespace: semaphore
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    path: semaphore
+    kustomize:
+      version: v4.5.7
+    repoURL:  https://github.com/asongent/gen
+    targetRevision: HEAD
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
