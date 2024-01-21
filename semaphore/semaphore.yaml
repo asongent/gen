@@ -32,6 +32,12 @@ spec:
       storage: "10G"
 ---
 apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: semaphore-ansible-semaphore
+  namespace: semaphore
+---
+apiVersion: v1
 kind: Service
 metadata:
   name: semaphore-ansible-semaphore
