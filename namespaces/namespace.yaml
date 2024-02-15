@@ -69,7 +69,14 @@ metadata:
   name: kyverno
 spec: {}
 status: {}
-
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: elastic-system
+  labels:
+    name: elastic-system
+    stio-injection: enabled
 ---
 apiVersion: v1
 kind: Namespace
