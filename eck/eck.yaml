@@ -61,7 +61,7 @@ metadata:
   name: kibana
   namespace: eck
 spec:
-  version: 8.9.0
+  version: 8.12.1
   count: 1
   elasticsearchRef:
     name: elasticsearch
@@ -85,6 +85,8 @@ spec:
         env:
           - name: SERVER_BASEPATH
             value: "" 
+          - name: SERVER_PUBLIC_BASEURL
+            value: https://kibana.stack.fredgentech.net
 # ---
 # apiVersion: apm.k8s.elastic.co/v1
 # kind: ApmServer
