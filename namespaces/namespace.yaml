@@ -88,6 +88,13 @@ status: {}
 apiVersion: v1
 kind: Namespace
 metadata:
+  name: eck
+spec: {}
+status: {}
+---
+apiVersion: v1
+kind: Namespace
+metadata:
   name: semaphore
 spec: {}
 status: {}
