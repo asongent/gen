@@ -91,7 +91,7 @@ metadata:
   name: eck
   labels: 
     name: eck
-    istio-injection: enabled
+    # istio-injection: enabled
 spec: {}
 status: {}
 ---
