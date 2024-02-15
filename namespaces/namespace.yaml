@@ -76,7 +76,7 @@ metadata:
   name: elastic-system
   labels:
     name: elastic-system
-    stio-injection: enabled
+    istio-injection: enabled
 ---
 apiVersion: v1
 kind: Namespace
