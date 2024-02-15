@@ -89,6 +89,9 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: eck
+  labels: 
+    name: eck
+    istio-injection: enabled
 spec: {}
 status: {}
 ---

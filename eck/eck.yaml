@@ -49,8 +49,8 @@ spec:
     service:
       spec:
         ports:
-          - name: https
-            port: 443
+          - name: http
+            port: 9200
             protocol: TCP
             targetPort: 9200
 
@@ -147,7 +147,7 @@ spec:
         - destination:
             host: elasticsearch-es-http 
             port:
-              number: 443
+              number: 9200
 ---
 apiVersion: v1
 kind: Service
