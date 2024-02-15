@@ -85,27 +85,27 @@ spec:
         env:
           - name: SERVER_BASEPATH
             value: "" 
----
-apiVersion: apm.k8s.elastic.co/v1
-kind: ApmServer
-metadata:
-  name: apm-server
-  namespace: eck
-spec:
-  version: 8.12.1
-  count: 1
-  elasticsearchRef:
-    name: elasticsearch
-  http:
-    tls: 
-      selfSignedCertificate:
-        disabled: true
-  podTemplate:
-    metadata:
-      annotations:
-        sidecar.istio.io/rewriteAppHTTPProbers: "true" 
-    spec:
-      automountServiceAccountToken: true 
+# ---
+# apiVersion: apm.k8s.elastic.co/v1
+# kind: ApmServer
+# metadata:
+#   name: apm-server
+#   namespace: eck
+# spec:
+#   version: 8.12.1
+#   count: 1
+#   elasticsearchRef:
+#     name: elasticsearch
+#   http:
+#     tls: 
+#       selfSignedCertificate:
+#         disabled: true
+#   podTemplate:
+#     metadata:
+#       annotations:
+#         sidecar.istio.io/rewriteAppHTTPProbers: "true" 
+#     spec:
+#       automountServiceAccountToken: true 
 
 ---
 
