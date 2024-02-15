@@ -27,7 +27,7 @@ spec:
                   memory: 4Gi
                   cpu: 2
                 limits:
-                  memory: 8Gi
+                  memory: 4Gi
       volumeClaimTemplates:
         - metadata:
             name: elasticsearch-data
@@ -88,7 +88,7 @@ spec:
   gateways:
     - istio-system/general-gateway 
   hosts:
-    - kibana.fredgentech.net
+    - kibana.stack.fredgentech.net
   http:
     - match:
         - uri:
@@ -108,7 +108,7 @@ spec:
   gateways:
     - istio-system/general-gateway 
   hosts:
-    - elastic.fredgentech.net
+    - elastic.stack.fredgentech.net
   http:
     - match:
         - uri:
