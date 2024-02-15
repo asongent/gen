@@ -13,13 +13,13 @@ spec:
       config:
         node.store.allow_mmap: false
       podTemplate:
-       metadata:
-        annotations:
-          traffic.sidecar.istio.io/includeInboundPorts: "*"
-          traffic.sidecar.istio.io/excludeOutboundPorts: "9300" 
-          traffic.sidecar.istio.io/excludeInboundPorts: "9300"
+        metadata:
+          annotations:
+            traffic.sidecar.istio.io/includeInboundPorts: "*"
+            traffic.sidecar.istio.io/excludeOutboundPorts: "9300" 
+            traffic.sidecar.istio.io/excludeInboundPorts: "9300"
         spec:
-          automountServiceAccountToken: true 
+          automountServiceAccountToken: true
           containers:
             - name: elasticsearch
               resources:
