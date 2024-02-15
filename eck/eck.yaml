@@ -49,7 +49,7 @@ spec:
     service:
       spec:
         ports:
-          - name: http
+          - name: https
             port: 9200
             protocol: TCP
             targetPort: 9200
