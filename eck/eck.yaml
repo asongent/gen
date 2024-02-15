@@ -16,7 +16,7 @@ spec:
         metadata:
           annotations:
             traffic.sidecar.istio.io/includeInboundPorts: "*"
-            traffic.sidecar.istio.io/excludeOutboundPorts: "9300" 
+            traffic.sidecar.istio.io/excludeOutboundPorts: "9300,443" 
             traffic.sidecar.istio.io/excludeInboundPorts: "9300"
         spec:
           automountServiceAccountToken: true
@@ -28,6 +28,14 @@ spec:
                 #   cpu: 2
                 # limits:
                 #   memory: 4Gi
+          initContainers:
+          - name: install-plugins
+            command:
+              - sh
+              - -c
+              - |
+                bin/elasticsearch-plugin remove --purge analysis-icu
+                bin/elasticsearch-plugin install --batch analysis-icu
       volumeClaimTemplates:
         - metadata:
             name: elasticsearch-data
@@ -71,11 +79,33 @@ spec:
             targetPort: 5601
   podTemplate:
     spec:
+      automountServiceAccountToken: true
       containers:
       - name: kibana
         env:
           - name: SERVER_BASEPATH
             value: "" 
+---
+apiVersion: apm.k8s.elastic.co/v1
+kind: ApmServer
+metadata:
+  name: apm-server
+  namespace: eck
+spec:
+  version: 8.12.1
+  count: 1
+  elasticsearchRef:
+    name: elasticsearch
+  http:
+    tls: 
+      selfSignedCertificate:
+        disabled: true
+  podTemplate:
+    metadata:
+      annotations:
+        sidecar.istio.io/rewriteAppHTTPProbers: "true" 
+    spec:
+      automountServiceAccountToken: true 
 
 ---
 
@@ -138,3 +168,15 @@ spec:
     common.k8s.elastic.co/type: kibana
     kibana.k8s.elastic.co/name: kibana
   type: ClusterIP
+
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: elastic-destination-rule
+  namespace: eck
+spec:
+  host: "elasticsearch-es-http.eck.svc.cluster.local"
+  trafficPolicy:
+    tls:
+      mode: ISTIO_MUTUAL
