@@ -115,7 +115,7 @@ spec:
             prefix: /
       route:
         - destination:
-            host: elatsearch-es-http
+            host: elasticsearch-es-http 
             port:
               number: 443
 ---
