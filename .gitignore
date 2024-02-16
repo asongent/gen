@@ -5,7 +5,7 @@ tls-secret.yaml
 sonar.yaml
 keycloak-db-*
 keycloak-bitnami
-
+airflow-old
 artifactory-secret-enc.yaml
 gitlab-testing
 argocd-iu-old
@@ -29,3 +29,4 @@ ne.yaml
 prometheus-old
 config.json
 semaphore-config.yaml
+sso-argocd-cm.yaml

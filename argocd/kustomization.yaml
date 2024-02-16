@@ -12,6 +12,7 @@ resources:
 
 patchesStrategicMerge:
 - configmap-patch.yaml
+# - sso-argocd-cm.yaml
 # - testing-argocd.yaml
 - add-custom-kustomize-merged.yaml
 

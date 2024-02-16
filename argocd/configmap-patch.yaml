@@ -40,3 +40,4 @@ data:
       generate:
         command: ["argocd-vault-plugin"]
         args: ["generate", "./"]
+

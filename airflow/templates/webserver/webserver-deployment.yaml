@@ -20,6 +20,7 @@
 ################################
 ## Airflow Webserver Deployment
 #################################
+{{- if .Values.webserver.enabled }}
 {{- $nodeSelector := or .Values.webserver.nodeSelector .Values.nodeSelector }}
 {{- $affinity := or .Values.webserver.affinity .Values.affinity }}
 {{- $tolerations := or .Values.webserver.tolerations .Values.tolerations }}
@@ -274,7 +275,7 @@ spec:
             claimName: {{ template "airflow_dags_volume_claim" . }}
         {{- else if .Values.dags.gitSync.enabled }}
         - name: dags
-          emptyDir: {}
+          emptyDir: {{- toYaml (default (dict) .Values.dags.gitSync.emptyDirConfig) | nindent 12 }}
         {{- if  .Values.dags.gitSync.sshKeySecret }}
           {{- include "git_sync_ssh_key_volume" . | indent 8 }}
         {{- end }}
@@ -291,3 +292,4 @@ spec:
         {{- if .Values.webserver.extraVolumes }}
           {{- tpl (toYaml .Values.webserver.extraVolumes) . | nindent 8 }}
         {{- end }}
+{{- end }}

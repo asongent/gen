@@ -346,7 +346,7 @@ data:
   brokerUrlSecretName: ~
 
   # Otherwise pass connection values in
-  metadataConnection: ~
+  metadataConnection: 
     user: postgres
     pass: postgres
     protocol: postgresql

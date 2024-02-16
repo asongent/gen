@@ -18,35 +18,32 @@
 */}}
 
 ################################
-## Airflow StatsD ConfigMap
+## Airflow Worker HPA
 #################################
-{{- if and .Values.statsd.enabled }}
-apiVersion: v1
-kind: ConfigMap
+{{- if and (and (not .Values.workers.keda.enabled) .Values.workers.hpa.enabled) (has .Values.executor (list "CeleryExecutor" "CeleryKubernetesExecutor")) }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
 metadata:
-  name: {{ include "airflow.fullname" . }}-statsd
+  name: {{ include "airflow.fullname" . }}-worker
   labels:
     tier: airflow
-    component: config
+    component: worker-horizontalpodautoscaler
     release: {{ .Release.Name }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
     heritage: {{ .Release.Service }}
-    {{- with .Values.labels }}
-      {{- toYaml . | nindent 4 }}
+    deploymentName: {{ .Release.Name }}-worker
+    {{- if or (.Values.labels) (.Values.workers.labels) }}
+      {{- mustMerge .Values.workers.labels .Values.labels | toYaml | nindent 4 }}
     {{- end }}
-  {{- with .Values.statsd.configMapAnnotations }}
-  annotations:
-    {{- toYaml . | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: {{ ternary "StatefulSet" "Deployment" .Values.workers.persistence.enabled }}
+    name: {{ include "airflow.fullname" . }}-worker
+  minReplicas: {{ .Values.workers.hpa.minReplicaCount }}
+  maxReplicas: {{ .Values.workers.hpa.maxReplicaCount }}
+  metrics: {{- toYaml .Values.workers.hpa.metrics | nindent 4 }}
+  {{- with .Values.workers.hpa.behavior }}
+  behavior: {{- toYaml . | nindent 4 }}
   {{- end }}
-data:
-  mappings.yml: |-
-    {{- if .Values.statsd.overrideMappings }}
-    mappings:
-      {{- toYaml .Values.statsd.overrideMappings | nindent 6 }}
-    {{- else }}
-      {{- tpl (.Files.Get "files/statsd-mappings.yml") . | nindent 4 }}
-      {{- if .Values.statsd.extraMappings }}
-        {{- toYaml .Values.statsd.extraMappings | nindent 6 }}
-      {{- end }}
-    {{- end }}
 {{- end }}
