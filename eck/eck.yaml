@@ -66,6 +66,8 @@ spec:
   elasticsearchRef:
     name: elasticsearch
     namespace: eck
+  config:
+    server.publicBaseUrl: "https://kibana.stack.fredgentech.net"
   http:
     tls:
       selfSignedCertificate:
@@ -85,8 +87,7 @@ spec:
         env:
           - name: SERVER_BASEPATH
             value: "" 
-          - name: SERVER_PUBLIC_BASEURL
-            value: https://kibana.stack.fredgentech.net
+        
 # ---
 # apiVersion: apm.k8s.elastic.co/v1
 # kind: ApmServer
