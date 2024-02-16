@@ -377,18 +377,8 @@ extraEnvFrom: ~
 
 # Airflow database & redis config
 data:
-  # If secret names are provided, use those secrets
-  # These secrets must be created manually, eg:
-  #
-  # kind: Secret
-  # apiVersion: v1
-  # metadata:
-  #   name: custom-airflow-metadata-secret
-  # type: Opaque
-  # data:
-  #   connection: base64_encoded_connection_string
 
-  metadataSecretName: ~
+  metadataSecretName: airflow-database 
   # When providing secret names and using the same database for metadata and
   # result backend, for Airflow < 2.4.0 it is necessary to create a separate
   # secret for result backend but with a db+ scheme prefix.
@@ -1910,7 +1900,7 @@ statsd:
 # PgBouncer settings
 pgbouncer:
   # Enable PgBouncer
-  enabled: false
+  enabled: true
   # Number of PgBouncer replicas to run in Deployment
   replicas: 1
   # Max number of old replicasets to retain
@@ -2300,7 +2290,7 @@ cleanup:
 # Configuration for postgresql subchart
 # Not recommended for production
 postgresql:
-  enabled: true
+  enabled: false
   auth:
     enablePostgresUser: true
     postgresPassword: postgres
