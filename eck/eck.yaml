@@ -183,4 +183,4 @@ spec:
   host: "elasticsearch-es-http.eck.svc.cluster.local"
   trafficPolicy:
     tls:
-      mode: SIMPLE
+      mode: ISTIO_MUTUAL
