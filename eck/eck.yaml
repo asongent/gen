@@ -172,14 +172,14 @@ spec:
     kibana.k8s.elastic.co/name: kibana
   type: ClusterIP
 
----
-apiVersion: networking.istio.io/v1alpha3
-kind: DestinationRule
-metadata:
-  name: elastic-destination-rule
-  namespace: eck
-spec:
-  host: "elasticsearch-es-http.eck.svc.cluster.local"
-  trafficPolicy:
-    tls:
-      mode: ISTIO_MUTUAL
+# ---
+# apiVersion: networking.istio.io/v1alpha3
+# kind: DestinationRule
+# metadata:
+#   name: elastic-destination-rule
+#   namespace: eck
+# spec:
+#   host: "elasticsearch-es-http.eck.svc.cluster.local"
+#   trafficPolicy:
+#     tls:
+#       mode: ISTIO_MUTUAL
