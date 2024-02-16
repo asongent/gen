@@ -13,7 +13,7 @@ spec:
       config: 
         server.publicBaseUrl: "https://elastic.stack.fredgentech.net"
         server.host: "0.0.0.0"
-        # node.store.allow_mmap: false
+        node.store.allow_mmap: false
       podTemplate:
         metadata:
           annotations:
