@@ -10,8 +10,10 @@ spec:
   nodeSets:
     - name: default
       count: 1
-      config:
-        node.store.allow_mmap: false
+      config: 
+        server.publicBaseUrl: "https://elastic.stack.fredgentech.net"
+        server.host: "0.0.0.0"
+        # node.store.allow_mmap: false
       podTemplate:
         metadata:
           annotations:
@@ -68,6 +70,7 @@ spec:
     namespace: eck
   config:
     server.publicBaseUrl: "https://kibana.stack.fredgentech.net"
+    server.host: "0.0.0.0"
   http:
     tls:
       selfSignedCertificate:
@@ -182,4 +185,4 @@ spec:
   host: "elasticsearch-es-http.eck.svc.cluster.local"
   trafficPolicy:
     tls:
-      mode: ISTIO_MUTUAL
+      mode: SIMPLE
