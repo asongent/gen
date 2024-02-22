@@ -15,6 +15,13 @@ status: {}
 apiVersion: v1
 kind: Namespace
 metadata:
+  name: minio-operator
+spec: {}
+status: {}
+---
+apiVersion: v1
+kind: Namespace
+metadata:
   name: spark
 spec: {}
 status: {}
