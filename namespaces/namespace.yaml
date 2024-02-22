@@ -15,7 +15,7 @@ status: {}
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: minio-operator
+  name: minio
 spec: {}
 status: {}
 ---
