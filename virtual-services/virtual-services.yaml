@@ -358,6 +358,6 @@ spec:
         prefix: /
     route:
     - destination:
-        host: spark-master-svc
+        host: minio
         port:
           number: 9000
