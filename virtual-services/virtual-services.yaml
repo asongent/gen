@@ -337,6 +337,27 @@ spec:
         host: spark-master-svc
         port:
           number: 80
-
-
-
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  labels:
+  name: minio-vs
+  namespace: minio
+spec:
+  gateways:
+  - istio-system/general-gateway
+  hosts:
+  - 'minio.stack.fredgentech.net'
+  http:
+  - retries:
+      attempts: 3
+      perTryTimeout: 2s
+    match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: spark-master-svc
+        port:
+          number: 9000
