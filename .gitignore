@@ -6,6 +6,7 @@ sonar.yaml
 keycloak-db-*
 keycloak-bitnami
 airflow-old
+airflow-best
 artifactory-secret-enc.yaml
 gitlab-testing
 argocd-iu-old

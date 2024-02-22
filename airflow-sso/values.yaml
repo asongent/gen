@@ -1072,10 +1072,10 @@ webserver:
       "airflow_public": ["Public"],
     }
 
-    PROVIDER_NAME = 'keycloak'
+    PROVIDER_NAME = 'sso'
     CLIENT_ID = 'airflow'
     CLIENT_SECRET = ''
-    OIDC_ISSUER = 'https://kubeflow.fredgentech.net/auth/realms/airflow'
+    OIDC_ISSUER = 'https://keycloak.your-domain.anything/auth/realms/airflow'
     OIDC_BASE_URL = "{oidc_issuer}/protocol/openid-connect".format(oidc_issuer=OIDC_ISSUER)
     OIDC_TOKEN_URL = "{oidc_base_url}/token".format(oidc_base_url=OIDC_BASE_URL)
     OIDC_AUTH_URL = "{oidc_base_url}/auth".format(oidc_base_url=OIDC_BASE_URL)

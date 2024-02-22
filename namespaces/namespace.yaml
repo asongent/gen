@@ -4,6 +4,20 @@ metadata:
   name: keycloak
 spec: {}
 status: {}
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: spark-operator
+spec: {}
+status: {}
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: spark
+spec: {}
+status: {}
 --- 
 apiVersion: v1
 kind: Namespace
