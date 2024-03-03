@@ -274,7 +274,7 @@ spec:
   sessionAffinity: None
   ports:
     - protocol: TCP
-      port: 7474
+      port: 80
       targetPort: 7474
       name: http
     - protocol: TCP
