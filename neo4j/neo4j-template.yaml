@@ -1,0 +1,556 @@
+
+---
+# Source: neo4j/templates/neo4j-config.yaml
+# Neo4j config values that are required for neo4j to work correctly in Kubernetes, these are not overridden by user-provided values
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "neo4j-k8s-config"
+  namespace: "neo4j"
+  labels:
+    app: "neo4j"    
+data:
+  server.default_listen_address: "0.0.0.0"
+---
+# Source: neo4j/templates/neo4j-config.yaml
+# User-provided Neo4j config values
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "neo4j-user-config"
+  namespace: "neo4j"
+  labels:
+    app: "neo4j"    
+data:
+  server.config.strict_validation.enabled: "false"
+  server.jvm.additional: |-  
+    -XX:+UseG1GC
+    -XX:-OmitStackTraceInFastThrow
+    -XX:+AlwaysPreTouch
+    -XX:+UnlockExperimentalVMOptions
+    -XX:+TrustFinalNonStaticFields
+    -XX:+DisableExplicitGC
+    -Djdk.nio.maxCachedBufferSize=1024
+    -Dio.netty.tryReflectionSetAccessible=true
+    -Djdk.tls.ephemeralDHKeySize=2048
+    -Djdk.tls.rejectClientInitiatedRenegotiation=true
+    -XX:FlightRecorderOptions=stackdepth=256
+    -XX:+UnlockDiagnosticVMOptions
+    -XX:+DebugNonSafepoints
+    --add-opens=java.base/java.nio=ALL-UNNAMED
+    --add-opens=java.base/java.io=ALL-UNNAMED
+    --add-opens=java.base/sun.nio.ch=ALL-UNNAMED
+    -Dlog4j2.disable.jmx=true
+---
+# Source: neo4j/templates/neo4j-config.yaml
+# Default Neo4j config values, these are overridden by user-provided values in neo4j-user-config
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "neo4j-default-config"
+  namespace: "neo4j"
+  labels:
+    app: "neo4j"    
+data:
+
+  # Neo4j defaults
+  db.tx_log.rotation.retention_policy: 1 days
+  server.windows_service_name: neo4j
+  
+  server.logs.config: /config/server-logs.xml/server-logs.xml
+  server.logs.user.config: /config/user-logs.xml/user-logs.xml
+
+  # Helm defaults
+
+  # Bolt keep alive
+  # this helps to ensure that LoadBalancers do not close bolt connections that are in use but appear idle
+  server.bolt.connection_keep_alive: "30s"
+  server.bolt.connection_keep_alive_for_requests: "ALL"
+  server.bolt.connection_keep_alive_streaming_scheduling_interval: "30s"
+
+  # If we set default advertised address it over-rides the bolt address used to populate the browser in a really annoying way
+  # dbms.default_advertised_address: "$(bash -c 'echo ${SERVICE_DOMAIN}')"
+
+
+  # Other
+  internal.dbms.ssl.system.ignore_dot_files: "true"
+
+  # set the below configs in case of cluster or analytics
+  # Logging
+  server.directories.logs: "/logs"
+  # Import
+  server.directories.import: "/import"
+
+  # Use more reliable defaults SSL / TLS settings for K8s
+  dbms.ssl.policy.bolt.client_auth: "NONE"
+  dbms.ssl.policy.https.client_auth: "NONE"
+---
+# Source: neo4j/templates/neo4j-config.yaml
+# server-logs.xml as configmap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "neo4j-server-logs-config"
+  namespace: "neo4j"
+  labels:
+    app: "neo4j"    
+data:
+  server-logs.xml: |-
+    <?xml version="1.0" encoding="UTF-8"?>
+    <!--
+    
+        Copyright (c) "Neo4j"
+        Neo4j Sweden AB [http://neo4j.com]
+        This file is a commercial add-on to Neo4j Enterprise Edition.
+    
+    -->
+    <!--
+        This is a log4j 2 configuration file.
+    
+        It is highly recommended to keep the original "debug.log" as is, to make sure enough data is captured in case
+        of errors in a format that neo4j developers can work with.
+    
+        All configuration values can be queried with the lookup prefix "config:". You can for example, resolve
+        the path to your neo4j home directory with ${config:dbms.directories.neo4j_home}.
+    
+        Please consult https://logging.apache.org/log4j/2.x/manual/configuration.html for instructions and
+        available configuration options.
+    -->
+    <Configuration status="ERROR" monitorInterval="30" packages="org.neo4j.logging.log4j">
+        <Appenders>
+            <!-- Default debug.log, please keep -->
+            <RollingRandomAccessFile name="DebugLog" fileName="${config:server.directories.logs}/debug.log"
+                                     filePattern="$${config:server.directories.logs}/debug.log.%02i">
+                <Neo4jDebugLogLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSSZ}{GMT+0} %-5p [%c{1.}] %m%n"/>
+                <Policies>
+                    <SizeBasedTriggeringPolicy size="20 MB"/>
+                </Policies>
+                <DefaultRolloverStrategy fileIndex="min" max="7"/>
+            </RollingRandomAccessFile>
+    
+            <RollingRandomAccessFile name="HttpLog" fileName="${config:server.directories.logs}/http.log"
+                                     filePattern="$${config:server.directories.logs}/http.log.%02i">
+                <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSSZ}{GMT+0} %-5p %m%n"/>
+                <Policies>
+                    <SizeBasedTriggeringPolicy size="20 MB"/>
+                </Policies>
+                <DefaultRolloverStrategy fileIndex="min" max="5"/>
+            </RollingRandomAccessFile>
+    
+            <RollingRandomAccessFile name="QueryLog" fileName="${config:server.directories.logs}/query.log"
+                                     filePattern="$${config:server.directories.logs}/query.log.%02i">
+                <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSSZ}{GMT+0} %-5p %m%n"/>
+                <Policies>
+                    <SizeBasedTriggeringPolicy size="20 MB"/>
+                </Policies>
+                <DefaultRolloverStrategy fileIndex="min" max="7"/>
+            </RollingRandomAccessFile>
+    
+            <RollingRandomAccessFile name="SecurityLog" fileName="${config:server.directories.logs}/security.log"
+                                     filePattern="$${config:server.directories.logs}/security.log.%02i">
+                <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSSZ}{GMT+0} %-5p %m%n"/>
+                <Policies>
+                    <SizeBasedTriggeringPolicy size="20 MB"/>
+                </Policies>
+                <DefaultRolloverStrategy fileIndex="min" max="7"/>
+            </RollingRandomAccessFile>
+        </Appenders>
+    
+        <Loggers>
+            <!-- Log levels. One of DEBUG, INFO, WARN, ERROR or OFF -->
+    
+            <!-- The debug log is used as the root logger to catch everything -->
+            <Root level="INFO">
+                <AppenderRef ref="DebugLog"/> <!-- Keep this -->
+            </Root>
+    
+            <!-- The query log, must be named "QueryLogger" -->
+            <Logger name="QueryLogger" level="INFO" additivity="false">
+                <AppenderRef ref="QueryLog"/>
+            </Logger>
+    
+            <!-- The http request log, must be named "HttpLogger" -->
+            <Logger name="HttpLogger" level="INFO" additivity="false">
+                <AppenderRef ref="HttpLog"/>
+            </Logger>
+    
+            <!-- The security log, must be named "SecurityLogger" -->
+            <Logger name="SecurityLogger" level="INFO" additivity="false">
+                <AppenderRef ref="SecurityLog"/>
+            </Logger>
+        </Loggers>
+    </Configuration>
+---
+# Source: neo4j/templates/neo4j-config.yaml
+# user-logs.xml as configmap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "neo4j-user-logs-config"
+  namespace: "neo4j"
+  labels:
+    app: "neo4j"    
+data:
+  user-logs.xml: |-
+    <?xml version="1.0" encoding="UTF-8"?>
+    <!--
+    
+        Copyright (c) "Neo4j"
+        Neo4j Sweden AB [http://neo4j.com]
+        This file is a commercial add-on to Neo4j Enterprise Edition.
+    
+    -->
+    <!--
+        This is a log4j 2 configuration file that provides maximum flexibility.
+    
+        All configuration values can be queried with the lookup prefix "config:". You can for example, resolve
+        the path to your neo4j home directory with ${config:dbms.directories.neo4j_home}.
+    
+        Please consult https://logging.apache.org/log4j/2.x/manual/configuration.html for instructions and
+        available configuration options.
+    -->
+    <Configuration status="ERROR" monitorInterval="30" packages="org.neo4j.logging.log4j">
+    
+        <Appenders>
+            <RollingRandomAccessFile name="Neo4jLog" fileName="${config:server.directories.logs}/neo4j.log"
+                                     filePattern="$${config:server.directories.logs}/neo4j.log.%02i">
+                <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSSZ}{GMT+0} %-5p %m%n"/>
+                <Policies>
+                    <SizeBasedTriggeringPolicy size="20 MB"/>
+                </Policies>
+                <DefaultRolloverStrategy fileIndex="min" max="7"/>
+            </RollingRandomAccessFile>
+    
+            <!-- Only used by "neo4j console", will be ignored otherwise -->
+            <Console name="ConsoleAppender" target="SYSTEM_OUT">
+                <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSSZ}{GMT+0} %-5p %m%n"/>
+            </Console>
+        </Appenders>
+    
+        <Loggers>
+            <!-- Log level for the neo4j log. One of DEBUG, INFO, WARN, ERROR or OFF -->
+            <Root level="INFO">
+                <AppenderRef ref="Neo4jLog"/>
+                <AppenderRef ref="ConsoleAppender"/>
+            </Root>
+        </Loggers>
+    
+    </Configuration>
+---
+# Source: neo4j/templates/neo4j-env.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "neo4j-env"
+  namespace: "neo4j"
+  labels:
+    app: "neo4j"    
+data:
+  # It should not be necessary for neo4j users/administrators to modify this configMap
+  # Neo4j configuration is set in the neo4j-user-config ConfigMap
+  NEO4J_ACCEPT_LICENSE_AGREEMENT: "yes"
+  NEO4J_AUTH_PATH: "/config/neo4j-auth/NEO4J_AUTH"
+  NEO4J_EDITION: "COMMUNITY_K8S"
+  NEO4J_CONF: "/config/"
+  K8S_NEO4J_NAME: "neo4j"
+  EXTENDED_CONF: "yes"
+  dbms.allow_upgrade: "true"
+---
+# Source: neo4j/templates/neo4j-loadbalancer.yaml
+# Service for applications that need access to neo4j
+apiVersion: v1
+kind: Service
+metadata:
+  name: "neo4j-lb-neo4j"
+  namespace: "neo4j"
+  labels:
+    helm.neo4j.com/neo4j.name: "neo4j"
+    app: "neo4j"
+    helm.neo4j.com/service: "neo4j"    
+spec:
+  type: "ClusterIP"
+  
+  externalTrafficPolicy: Local
+  sessionAffinity: None
+  ports:
+    - protocol: TCP
+      port: 7474
+      targetPort: 7474
+      name: http
+    - protocol: TCP
+      port: 7473
+      targetPort: 7473
+      name: https
+    - protocol: TCP
+      port: 7687
+      targetPort: 7687
+      name: tcp-bolt 
+  selector:
+    app: "neo4j"
+    helm.neo4j.com/clustering: "false"
+    helm.neo4j.com/neo4j.loadbalancer: include
+---
+# Source: neo4j/templates/neo4j-svc.yaml
+# ClusterIP service for bolt / http connections
+apiVersion: v1
+kind: Service
+metadata:
+  name: "neo4j"
+  namespace: "neo4j"
+  labels:
+    helm.neo4j.com/neo4j.name: "neo4j"
+    app: "neo4j"
+    helm.neo4j.com/instance: "neo4j"
+    helm.neo4j.com/service: "default"    
+spec:
+  publishNotReadyAddresses: false
+  type: ClusterIP
+  selector:
+    app: "neo4j"
+    helm.neo4j.com/instance: "neo4j"
+  ports:
+    - protocol: TCP
+      port: 7687
+      targetPort: 7687
+      name: tcp-bolt
+    - protocol: TCP
+      port: 7474
+      targetPort: 7474
+      name: tcp-http
+---
+# Source: neo4j/templates/neo4j-svc.yaml
+# ClusterIP service for admin connections to Neo4j inside Kubernetes.
+apiVersion: v1
+kind: Service
+metadata:
+  name: "neo4j-admin"
+  namespace: "neo4j"
+  labels:
+    helm.neo4j.com/neo4j.name: "neo4j"
+    app: "neo4j"
+    helm.neo4j.com/instance: "neo4j"
+    helm.neo4j.com/service: "admin"    
+spec:
+  publishNotReadyAddresses: true
+  type: "ClusterIP"
+  selector:
+    app: "neo4j"
+    helm.neo4j.com/instance: "neo4j"
+  ports:
+    - protocol: TCP
+      port: 7687
+      targetPort: 7687
+      name: tcp-bolt
+    - protocol: TCP
+      port: 7474
+      targetPort: 7474
+      name: tcp-http
+---
+# Source: neo4j/templates/neo4j-statefulset.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    helm.neo4j.com/neo4j.name: "neo4j"
+    helm.neo4j.com/clustering: "false"
+    app: "neo4j"
+    helm.neo4j.com/instance: neo4j    
+  name: neo4j
+  namespace: "neo4j"
+spec:
+  serviceName: "neo4j"
+  podManagementPolicy: "Parallel" # This setting means that the StatefulSet controller doesn't block applying changes until the existing Pod is READY.
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "neo4j"
+      helm.neo4j.com/instance: "neo4j"
+  template:
+    metadata:
+      labels:
+        app: "neo4j"
+        helm.neo4j.com/neo4j.name: "neo4j"
+        helm.neo4j.com/clustering: "false"
+        helm.neo4j.com/pod_category: "neo4j-instance" # used for anti affinity rules
+        helm.neo4j.com/neo4j.loadbalancer: "include"
+        helm.neo4j.com/instance: "neo4j"        
+      annotations:
+        "checksum/neo4j-config": a8adc60e810c5346011df3d5f08a83a83d06f4509fee29c6da7fb5296faecd5a
+        "checksum/neo4j-env": fb27bab3192ea2ba57c35d2fa990b957d0db159b95a98f0d73f445cc95b1a656        
+    spec:      
+      affinity:
+          podAntiAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              - labelSelector:
+                  matchLabels:
+                    app: "neo4j"
+                    helm.neo4j.com/pod_category: "neo4j-instance"
+                topologyKey: kubernetes.io/hostname
+      dnsPolicy: ClusterFirst
+      securityContext: 
+        fsGroup: 7474
+        fsGroupChangePolicy: Always
+        runAsGroup: 7474
+        runAsNonRoot: true
+        runAsUser: 7474            
+      terminationGracePeriodSeconds: 3600            
+      containers:
+        - name: "neo4j"
+          image: "neo4j:5.17.0"
+          imagePullPolicy: "IfNotPresent"
+          envFrom:
+            - configMapRef:
+                name: "neo4j-env"
+          env:
+            - name: HELM_NEO4J_VERSION
+              value: "5.17.0"
+            - name: HELM_CHART_VERSION
+              value: "5.17.0"
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: SERVICE_NEO4J_ADMIN
+              value: "neo4j-admin.neo4j.svc.cluster.local"
+            - name: SERVICE_NEO4J_INTERNALS
+              value: "neo4j-internals.neo4j.svc.cluster.local"
+            - name: SERVICE_NEO4J
+              value: "neo4j.neo4j.svc.cluster.local"
+          ports:
+            - containerPort: 7474
+              name: http
+            - containerPort: 7687
+              name: bolt
+          resources:
+            limits:
+              cpu: "0.5"
+              memory: 2Gi
+            requests:
+              cpu: "0.5"
+              memory: 2Gi
+          securityContext: 
+              runAsGroup: 7474
+              runAsNonRoot: true
+              runAsUser: 7474
+          volumeMounts:
+            - mountPath: "/config/neo4j.conf"
+              name: neo4j-conf
+            - mountPath: "/config/server-logs.xml"
+              name: neo4j-server-logs
+            - mountPath: "/config/user-logs.xml"
+              name: neo4j-user-logs
+            - mountPath: "/config/neo4j-auth"
+              name: neo4j-auth
+                                                            
+            - mountPath: "/backups"
+              name: "data"
+              subPathExpr: "backups"
+            - mountPath: "/data"
+              name: "data"
+              subPathExpr: "data"
+            - mountPath: "/import"
+              name: "data"
+              subPathExpr: "import"
+            - mountPath: "/licenses"
+              name: "data"
+              subPathExpr: "licenses"
+            - mountPath: "/logs"
+              name: "data"
+              subPathExpr: "logs/$(POD_NAME)"
+            - mountPath: "/metrics"
+              name: "data"
+              subPathExpr: "metrics/$(POD_NAME)"            
+          readinessProbe:
+            tcpSocket:
+              port: 7687
+            failureThreshold: 20
+            timeoutSeconds: 10
+            periodSeconds: 5
+          livenessProbe:
+            tcpSocket:
+              port: 7687
+            failureThreshold: 40
+            timeoutSeconds: 10
+            periodSeconds: 5
+          startupProbe:
+            tcpSocket:
+              port: 7687
+            failureThreshold: 1000
+            periodSeconds: 5
+      volumes:
+        - name: neo4j-conf
+          projected:
+            defaultMode: 0440
+            sources:
+              - configMap:
+                  name: "neo4j-default-config"
+              - configMap:
+                  name: "neo4j-user-config"
+              - configMap:
+                  name: "neo4j-k8s-config"
+        - name: neo4j-server-logs
+          configMap:
+            name: "neo4j-server-logs-config"
+        - name: neo4j-user-logs
+          configMap:
+            name: "neo4j-user-logs-config"
+        - name: "neo4j-auth"
+          secret:
+            secretName: "neo4j-auth"                                
+  volumeClaimTemplates: 
+    - metadata:
+        name: "data"
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 10Gi
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  labels:
+  name: neo4j-vs
+  namespace: neo4j
+spec:
+  gateways:
+  - istio-system/general-gateway
+  hosts:
+  - 'neo4j.stack.fredgentech.net'
+  http:
+  - retries:
+      attempts: 3
+      perTryTimeout: 2s
+    match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: neo4j-lb-neo4j
+        port:
+          number: 7474
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  labels:
+  name: database-vs
+  namespace: neo4j
+spec:
+  gateways:
+  - istio-system/general-gateway
+  hosts:
+  - 'bolt.stack.fredgentech.net'
+  http:
+  - retries:
+      attempts: 3
+      perTryTimeout: 2s
+    match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: neo4j-lb-neo4j
+        port:
+          number: 7687

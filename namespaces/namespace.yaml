@@ -22,6 +22,13 @@ status: {}
 apiVersion: v1
 kind: Namespace
 metadata:
+  name: neo4j 
+spec: {}
+status: {}
+---
+apiVersion: v1
+kind: Namespace
+metadata:
   name: spark
 spec: {}
 status: {}
