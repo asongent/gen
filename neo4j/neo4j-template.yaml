@@ -529,7 +529,7 @@ spec:
     - destination:
         host: neo4j-lb-neo4j
         port:
-          number: 7474
+          number: 80
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
