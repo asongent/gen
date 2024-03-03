@@ -268,7 +268,7 @@ metadata:
     app: "neo4j"
     helm.neo4j.com/service: "neo4j"    
 spec:
-  type: "ClusterIP"
+  type: LoadBalancer
   
   externalTrafficPolicy: Local
   sessionAffinity: None
