@@ -5,4 +5,4 @@ resources:
 - psql-pv.yaml
 - psql-pvc.yaml
 - storage-class.yaml
-# - virtual-service.yaml
+- virtual-service.yaml
