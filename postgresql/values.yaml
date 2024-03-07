@@ -560,7 +560,7 @@ primary:
   ## @param primary.nodeSelector Node labels for PostgreSQL primary pods assignment
   ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/
   ##
-  nodeSelector: {}
+  nodeSelector: node-07
   ## @param primary.tolerations Tolerations for PostgreSQL primary pods assignment
   ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
   ##
