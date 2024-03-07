@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    app.kubernetes.io/component: primary
+    app.kubernetes.io/instance: postgresql
+    app.kubernetes.io/name: postgresql
+    type: local
+  name: data-postgresql-0
+  namespace: postgresql
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 8Gi
+  storageClassName: postgresql-storage
+  volumeMode: Filesystem
+status:
+  accessModes:
+    - ReadWriteOnce
+  capacity:
+    storage: 8Gi

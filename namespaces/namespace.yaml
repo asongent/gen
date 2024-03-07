@@ -143,13 +143,13 @@ status: {}
 #   name: airflow
 # spec: {}
 # status: {}
-# --- 
-# apiVersion: v1
-# kind: Namespace
-# metadata:
-#   name: kube-cost
-# spec: {}
-# status: {}
+--- 
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: postgresql
+spec: {}
+status: {}
 --- 
 apiVersion: v1
 kind: Namespace
