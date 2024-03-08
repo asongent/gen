@@ -30,8 +30,8 @@ global:
     auth:
       postgresPassword: "postgresPassword"
       username: "postgres"
-      password: "postgresPassword"
-      database: "postgres"
+      password: 
+      database: spark_db
       existingSecret: ""
       secretKeys:
         adminPasswordKey: ""
