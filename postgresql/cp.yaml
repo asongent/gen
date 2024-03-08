@@ -143,8 +143,8 @@ spec:
               name: data
       hostIPC: false
       hostNetwork: false
-      nodeSelector: 
-        name: node-07
+      # nodeSelector: 
+        # name: node-07
       securityContext:
         fsGroup: 1001
         fsGroupChangePolicy: Always
