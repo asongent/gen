@@ -28,9 +28,9 @@ global:
     ## @param global.postgresql.auth.secretKeys.replicationPasswordKey Name of key in existing secret to use for PostgreSQL credentials (overrides `auth.secretKeys.replicationPasswordKey`). Only used when `global.postgresql.auth.existingSecret` is set.
     ##
     auth:
-      postgresPassword: "postgresPassword"
-      username: "postgres"
-      password: 
+      postgresPassword: 'postgresPassword'
+      username: postgres
+      password: ""
       database: spark_db
       existingSecret: ""
       secretKeys:
