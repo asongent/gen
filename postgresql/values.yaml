@@ -30,7 +30,7 @@ global:
     auth:
       postgresPassword: "postgresPassword"
       username: "postgres"
-      password: ""
+      password: "postgresPassword"
       database: "postgres"
       existingSecret: ""
       secretKeys:
