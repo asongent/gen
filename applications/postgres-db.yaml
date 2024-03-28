@@ -1,0 +1,42 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: postgresql
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL:  https://github.com/asongent/gen.git
+    targetRevision: HEAD
+    path: postgresql
+    helm:
+      valueFiles:
+      - values.yaml
+  destination:
+    namespace: postgresql
+    server: https://kubernetes.default.svc
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: postgresql-storage
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/asongent/gen.git
+    targetRevision: HEAD
+    path: postgresql-storage
+    kustomize:
+      version: v4.5.7
+  destination:
+    namespace: postgresql
+    server: https://kubernetes.default.svc
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
