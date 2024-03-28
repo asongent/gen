@@ -134,18 +134,18 @@ affinity: |
               values:
                 - keycloak
         topologyKey: kubernetes.io/hostname
-    preferredDuringSchedulingIgnoredDuringExecution:
-      - weight: 100
-        podAffinityTerm:
-          labelSelector:
-            matchLabels:
-              {{- include "keycloak.selectorLabels" . | nindent 12 }}
-            matchExpressions:
-              - key: anti-nodes
-                operator: In
-                values:
-                  - keycloak
-          topologyKey: failure-domain.beta.kubernetes.io/zone
+# preferredDuringSchedulingIgnoredDuringExecution:
+#   - weight: 100
+#     podAffinityTerm:
+#       labelSelector:
+#         matchLabels:
+#           {{- include "keycloak.selectorLabels" . | nindent 12 }}
+#         matchExpressions:
+#           - key: anti-nodes
+#             operator: In
+#             values:
+#               - keycloak
+#       topologyKey: failure-domain.beta.kubernetes.io/zone
 
 # Topology spread constraints template
 topologySpreadConstraints:
