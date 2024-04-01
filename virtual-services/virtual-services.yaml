@@ -214,9 +214,9 @@ spec:
         prefix: /
     route:
     - destination:
-        host: sonarqube #sonarqube
+        host: sonarqube-sonarqube
         port:
-          number: 80
+          number: 9000
 ---
 # Gitlab config
 
