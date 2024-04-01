@@ -1,33 +1,56 @@
 annotations:
-  category: DeveloperTools
-  licenses: Apache-2.0
+  artifacthub.io/changes: |
+    - kind: changed
+      description: "Upgrade SonarQube to 10.4.1"
+    - kind: changed
+      description: "Update Chart's version to 10.4.1"
+  artifacthub.io/containsSecurityUpdates: "false"
+  artifacthub.io/images: |
+    - name: sonarqube
+      image: sonarqube:10.4.1-community
+  artifacthub.io/links: |
+    - name: support
+      url: https://community.sonarsource.com/
+    - name: Chart Source
+      url: https://github.com/SonarSource/helm-chart-sonarqube/tree/master/charts/sonarqube
 apiVersion: v2
-appVersion: 9.9.0
+appVersion: 10.4.1
 dependencies:
 - condition: postgresql.enabled
   name: postgresql
-  repository: https://charts.bitnami.com/bitnami
-  version: 12.x.x
-- name: common
-  repository: https://charts.bitnami.com/bitnami
-  tags:
-  - bitnami-common
-  version: 2.x.x
-description: SonarQube(TM) is an open source quality management platform that analyzes
-  and measures code's technical quality. It enables developers to detect code issues,
-  vulnerabilities, and bugs in early stages.
-home: https://github.com/bitnami/charts/tree/main/bitnami/sonarqube
-icon: https://bitnami.com/assets/stacks/sonarqube/img/sonarqube-stack-220x234.png
+  repository: https://raw.githubusercontent.com/bitnami/charts/pre-2022/bitnami
+  version: 10.15.0
+- condition: nginx.enabled
+  name: ingress-nginx
+  repository: https://kubernetes.github.io/ingress-nginx
+  version: 4.8.3
+description: SonarQube is a self-managed, automatic code review tool that systematically
+  helps you deliver clean code. As a core element of our Sonar solution, SonarQube
+  integrates into your existing workflow and detects issues in your code to help you
+  perform continuous code inspections of your projects. The tool analyses 30+ different
+  programming languages and integrates into your CI pipeline and DevOps platform to
+  ensure that your code meets high-quality standards.
+home: https://www.sonarqube.org/
+icon: https://raw.githubusercontent.com/SonarSource/sonarqube-static-resources/master/helm/SonarQubeLogo.svg
 keywords:
-- sonarqube
-- code-quality
-- code-review
-- static-analysis
+- coverage
+- security
+- code
+- quality
+kubeVersion: '>= 1.24.0-0'
 maintainers:
-- name: Bitnami
-  url: https://github.com/bitnami/charts
+- email: leo.geoffroy+helm@sonarsource.com
+  name: leo-geoffroy-sonarsource
+- email: carmine.vassallo@sonarsource.com
+  name: carminevassallo
+- email: jeremy.cotineau@sonarsource.com
+  name: jCOTINEAU
+- email: davi.koscianski-vidal@sonarsource.com
+  name: davividal
 name: sonarqube
 sources:
-- https://github.com/bitnami/containers/tree/main/bitnami/sonarqube
+- https://github.com/SonarSource/helm-chart-sonarqube
+- https://github.com/SonarSource/docker-sonarqube
 - https://github.com/SonarSource/sonarqube
-version: 2.1.3
+type: application
+version: 10.4.1+2389
