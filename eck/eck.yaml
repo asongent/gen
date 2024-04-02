@@ -121,7 +121,7 @@ spec:
         enabled: true
         order: 0
         realm: Analytics
-        description: “Keycloak”
+        description: Analytics
       basic.basic:
         enabled: true
         order: 1
