@@ -32,7 +32,7 @@ spec:
       xpack.ml.enabled: false
       xpack.security.authc.token.enabled: true
             
-      xpack.security.authc.realms.oidc.New%20Gen%20Tech:
+      xpack.security.authc.realms.oidc.Analytics:
         order: 2
         rp.client_id: kibana
         rp.response_type: code
@@ -40,14 +40,14 @@ spec:
           - "openid"
         rp.redirect_uri: "https://keycloak.stack.fredgentech.net/api/security/oidc/callback"
         rp.post_logout_redirect_uri: "https://keycloak.stack.fredgentech.net/logged_out"
-        op.issuer: https://kibana.stack.fredgentech.net/auth/realms/New%20Gen%20Tech
-        op.authorization_endpoint: https://kibana.stack.fredgentech.net/auth/realms/New%20Gen%20Tech/protocol/openid-connect/auth
-        op.token_endpoint: https://kibana.stack.fredgentech.net/auth/realms/New%20Gen%20Tech/protocol/openid-connect/token
-        op.userinfo_endpoint: https://kibana.stack.fredgentech.net/auth/realms/New%20Gen%20Tech/protocol/openid-connect/userinfo
-        op.jwkset_path: https://kibana.stack.fredgentech.net/auth/realms/New%20Gen%20Tech/protocol/openid-connect/certs
+        op.issuer: https://kibana.stack.fredgentech.net/auth/realms/Analytics
+        op.authorization_endpoint: https://kibana.stack.fredgentech.net/auth/realms/Analytics/protocol/openid-connect/auth
+        op.token_endpoint: https://kibana.stack.fredgentech.net/auth/realms/Analytics/protocol/openid-connect/token
+        op.userinfo_endpoint: https://kibana.stack.fredgentech.net/auth/realms/Analytics/protocol/openid-connect/userinfo
+        op.jwkset_path: https://kibana.stack.fredgentech.net/auth/realms/Analytics/protocol/openid-connect/certs
         claims.principal: preferred_username
         rp.signature_algorithm: RS256
-        op.endsession_endpoint: https://kibana.stack.fredgentech.net/auth/realms/New%20Gen%20Tech/protocol/openid-connect/logout
+        op.endsession_endpoint: https://kibana.stack.fredgentech.net/auth/realms/Analytics/protocol/openid-connect/logout
         claims.groups: groups
         claims.mail: email
 
@@ -110,8 +110,8 @@ metadata:
   name: kibana
   namespace: eck
 spec:
-  version: 8.12.1
-  count: 1
+  version: 8.12.2
+  count: 2
   elasticsearchRef:
     name: elasticsearch
     namespace: eck
@@ -120,7 +120,7 @@ spec:
       oidc.oidc1:
         enabled: true
         order: 0
-        realm: New%20Gen%20Tech
+        realm: Analytics
       basic.basic1:
         enabled: true
         order: 1
