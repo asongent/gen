@@ -1,17 +1,56 @@
 
-
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: kibana-sa
+  namespace: eck
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: elasticsearch-sa
+  namespace: eck
+---
 apiVersion: elasticsearch.k8s.elastic.co/v1
 kind: Elasticsearch
 metadata:
   name: elasticsearch
   namespace: eck
 spec:
-  version: 8.12.1
+  version: 8.12.2
+  secureSettings:
+    - secretName: sso-secret
   nodeSets:
     - name: default
       count: 1
       config: 
         node.store.allow_mmap: false
+        index.store.type: mmapfs
+      node.roles: ["data", "ingest"]
+      node.store.allow_mmap: true
+      xpack.ml.enabled: false
+      xpack.security.authc.token.enabled: true
+            
+      xpack.security.authc.realms.oidc.New%20Gen%20Tech:
+        order: 2
+        rp.client_id: kibana
+        rp.response_type: code
+        rp.requested_scopes:
+          - "openid"
+        rp.redirect_uri: "https://keycloak.stack.fredgentech.net/api/security/oidc/callback"
+        rp.post_logout_redirect_uri: "https://keycloak.stack.fredgentech.net/logged_out"
+        op.issuer: https://kibana.stack.fredgentech.net/auth/realms/New%20Gen%20Tech
+        op.authorization_endpoint: https://kibana.stack.fredgentech.net/auth/realms/New%20Gen%20Tech/protocol/openid-connect/auth
+        op.token_endpoint: https://kibana.stack.fredgentech.net/auth/realms/New%20Gen%20Tech/protocol/openid-connect/token
+        op.userinfo_endpoint: https://kibana.stack.fredgentech.net/auth/realms/New%20Gen%20Tech/protocol/openid-connect/userinfo
+        op.jwkset_path: https://kibana.stack.fredgentech.net/auth/realms/New%20Gen%20Tech/protocol/openid-connect/certs
+        claims.principal: preferred_username
+        rp.signature_algorithm: RS256
+        op.endsession_endpoint: https://kibana.stack.fredgentech.net/auth/realms/New%20Gen%20Tech/protocol/openid-connect/logout
+        claims.groups: groups
+        claims.mail: email
+
       podTemplate:
         metadata:
           annotations:
@@ -19,7 +58,17 @@ spec:
             traffic.sidecar.istio.io/excludeOutboundPorts: "9300,443" 
             traffic.sidecar.istio.io/excludeInboundPorts: "9300"
         spec:
+          securityContext:
+            fsGroup: 1000
+            runAsGroup: 1000
+            runAsUser: 1000
+          serviceAccountName: elasticsearch-sa
           automountServiceAccountToken: true
+          updateStrategy:
+            rollingUpdate:
+              maxUnavailable: 1
+            type: rollingUpdate
+         
           containers:
             - name: elasticsearch
               resources: {}
@@ -67,6 +116,14 @@ spec:
     name: elasticsearch
     namespace: eck
   config:
+    xpack.security.authc.providers:
+      oidc.oidc1:
+        enabled: true
+        order: 0
+        realm: New%20Gen%20Tech
+      basic.basic1:
+        enabled: true
+        order: 1
     server.publicBaseUrl: "https://kibana.stack.fredgentech.net"
     # server.host: "0.0.0.0"
   http:
@@ -83,6 +140,17 @@ spec:
   podTemplate:
     spec:
       automountServiceAccountToken: true
+      serviceAccountName: kibana-sa
+      securityContext:
+        fsGroup: 1000
+        runAsGroup: 1000
+        runAsUser: 1000
+      initContainers:
+        - name: elastic-internal-init-config
+          securityContext:
+            capabilities:
+              drop:
+                - ALL
       containers:
       - name: kibana
         env:
