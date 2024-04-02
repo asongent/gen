@@ -31,7 +31,7 @@ spec:
       node.store.allow_mmap: true
       xpack.ml.enabled: false
       xpack.security.authc.token.enabled: true
-            
+      xpack.reporting.roles.enabled: true
       xpack.security.authc.realms.oidc.Analytics:
         order: 2
         rp.client_id: kibana
@@ -121,7 +121,8 @@ spec:
         enabled: true
         order: 0
         realm: Analytics
-      basic.basic1:
+        description: “Keycloak”
+      basic.basic:
         enabled: true
         order: 1
     server.publicBaseUrl: "https://kibana.stack.fredgentech.net"
