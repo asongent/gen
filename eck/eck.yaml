@@ -25,30 +25,30 @@ spec:
   - name: master
     count: 1
     config: 
-      index.store.type: mmapfs
-      node.roles: ["master"]
-      node.store.allow_mmap: true
-      xpack.ml.enabled: false
-      xpack.security.authc.token.enabled: true
-      # xpack.reporting.roles.enabled: true
-      xpack.security.authc.realms.oidc.Analytics:
-        order: 2
-        rp.client_id: kibana
-        rp.response_type: code
-        rp.requested_scopes:
-          - "openid"
-        rp.redirect_uri: "https://keycloak.stack.fredgentech.net/api/security/oidc/callback"
-        rp.post_logout_redirect_uri: "https://keycloak.stack.fredgentech.net/logged_out"
-        op.issuer: https://keycloak.stack.fredgentech.net/auth/realms/Analytics
-        op.authorization_endpoint: https://keycloak.stack.fredgentech.net/auth/realms/Analytics/protocol/openid-connect/auth
-        op.token_endpoint: https://keycloak.stack.fredgentech.net/auth/realms/Analytics/protocol/openid-connect/token
-        op.userinfo_endpoint: https://keycloak.stack.fredgentech.net/auth/realms/Analytics/protocol/openid-connect/userinfo
-        op.jwkset_path: https://keycloak.stack.fredgentech.net/auth/realms/Analytics/protocol/openid-connect/certs
-        claims.principal: preferred_username
-        rp.signature_algorithm: RS256
-        op.endsession_endpoint: https://keycloak.stack.fredgentech.net/auth/realms/Analytics/protocol/openid-connect/logout
-        claims.groups: groups
-        claims.mail: email
+      # index.store.type: mmapfs
+      # node.roles: ["master"]
+      node.store.allow_mmap: false
+      # xpack.ml.enabled: false
+      # xpack.security.authc.token.enabled: true
+      ## xpack.reporting.roles.enabled: true
+      # xpack.security.authc.realms.oidc.Analytics:
+      #   order: 2
+      #   rp.client_id: kibana
+      #   rp.response_type: code
+      #   rp.requested_scopes:
+      #     - "openid"
+      #   rp.redirect_uri: "https://keycloak.stack.fredgentech.net/api/security/oidc/callback"
+      #   rp.post_logout_redirect_uri: "https://keycloak.stack.fredgentech.net/logged_out"
+      #   op.issuer: https://keycloak.stack.fredgentech.net/auth/realms/Analytics
+      #   op.authorization_endpoint: https://keycloak.stack.fredgentech.net/auth/realms/Analytics/protocol/openid-connect/auth
+      #   op.token_endpoint: https://keycloak.stack.fredgentech.net/auth/realms/Analytics/protocol/openid-connect/token
+      #   op.userinfo_endpoint: https://keycloak.stack.fredgentech.net/auth/realms/Analytics/protocol/openid-connect/userinfo
+      #   op.jwkset_path: https://keycloak.stack.fredgentech.net/auth/realms/Analytics/protocol/openid-connect/certs
+      #   claims.principal: preferred_username
+      #   rp.signature_algorithm: RS256
+      #   op.endsession_endpoint: https://keycloak.stack.fredgentech.net/auth/realms/Analytics/protocol/openid-connect/logout
+      #   claims.groups: groups
+      #   claims.mail: email
 
       podTemplate:
         metadata:
@@ -91,30 +91,30 @@ spec:
   - name: data
     count: 1
     config: 
-      index.store.type: mmapfs
-      node.roles: ["data", "ingest"]
+      # index.store.type: mmapfs
+      # node.roles: ["data", "ingest"]
       node.store.allow_mmap: true
-      xpack.ml.enabled: false
-      xpack.security.authc.token.enabled: true
-      # xpack.reporting.roles.enabled: true
-      xpack.security.authc.realms.oidc.Analytics:
-        order: 2
-        rp.client_id: kibana
-        rp.response_type: code
-        rp.requested_scopes:
-          - "openid"
-        rp.redirect_uri: "https://keycloak.stack.fredgentech.net/api/security/oidc/callback"
-        rp.post_logout_redirect_uri: "https://keycloak.stack.fredgentech.net/logged_out"
-        op.issuer: https://keycloak.stack.fredgentech.net/auth/realms/Analytics
-        op.authorization_endpoint: https://keycloak.stack.fredgentech.net/auth/realms/Analytics/protocol/openid-connect/auth
-        op.token_endpoint: https://keycloak.stack.fredgentech.net/auth/realms/Analytics/protocol/openid-connect/token
-        op.userinfo_endpoint: https://keycloak.stack.fredgentech.net/auth/realms/Analytics/protocol/openid-connect/userinfo
-        op.jwkset_path: https://keycloak.stack.fredgentech.net/auth/realms/Analytics/protocol/openid-connect/certs
-        claims.principal: preferred_username
-        rp.signature_algorithm: RS256
-        op.endsession_endpoint: https://keycloak.stack.fredgentech.net/auth/realms/Analytics/protocol/openid-connect/logout
-        claims.groups: groups
-        claims.mail: email
+      # xpack.ml.enabled: false
+      # xpack.security.authc.token.enabled: true
+      ## xpack.reporting.roles.enabled: true
+      # xpack.security.authc.realms.oidc.Analytics:
+      #   order: 2
+      #   rp.client_id: kibana
+      #   rp.response_type: code
+      #   rp.requested_scopes:
+      #     - "openid"
+      #   rp.redirect_uri: "https://keycloak.stack.fredgentech.net/api/security/oidc/callback"
+      #   rp.post_logout_redirect_uri: "https://keycloak.stack.fredgentech.net/logged_out"
+      #   op.issuer: https://keycloak.stack.fredgentech.net/auth/realms/Analytics
+      #   op.authorization_endpoint: https://keycloak.stack.fredgentech.net/auth/realms/Analytics/protocol/openid-connect/auth
+      #   op.token_endpoint: https://keycloak.stack.fredgentech.net/auth/realms/Analytics/protocol/openid-connect/token
+      #   op.userinfo_endpoint: https://keycloak.stack.fredgentech.net/auth/realms/Analytics/protocol/openid-connect/userinfo
+      #   op.jwkset_path: https://keycloak.stack.fredgentech.net/auth/realms/Analytics/protocol/openid-connect/certs
+      #   claims.principal: preferred_username
+      #   rp.signature_algorithm: RS256
+      #   op.endsession_endpoint: https://keycloak.stack.fredgentech.net/auth/realms/Analytics/protocol/openid-connect/logout
+      #   claims.groups: groups
+      #   claims.mail: email
 
     podTemplate:
       metadata:
