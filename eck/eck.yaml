@@ -88,7 +88,7 @@ spec:
   #           resources:
   #             requests:
   #               storage: 10Gi
-  - name: data
+  - name: defautl
     count: 1
     config: 
       # index.store.type: mmapfs
