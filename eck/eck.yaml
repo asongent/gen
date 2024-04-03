@@ -63,11 +63,6 @@ spec:
             runAsUser: 1000
           serviceAccountName: elasticsearch-sa
           automountServiceAccountToken: true
-          updateStrategy:
-            rollingUpdate:
-              maxUnavailable: 1
-            type: rollingUpdate
-         
           containers:
             - name: elasticsearch
               resources: {}
@@ -134,11 +129,6 @@ spec:
           runAsUser: 1000
         serviceAccountName: elasticsearch-sa
         automountServiceAccountToken: true
-        updateStrategy:
-          rollingUpdate:
-            maxUnavailable: 1
-          type: rollingUpdate
-        
         containers:
           - name: elasticsearch
             resources: {}
