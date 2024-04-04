@@ -19,8 +19,8 @@ metadata:
   namespace: eck
 spec:
   version: 8.12.1
-  secureSettings:
-    - secretName: sso-secret
+  # secureSettings:
+  #   - secretName: sso-secret
   nodeSets:
   # - name: master
   #   count: 1
