@@ -123,6 +123,15 @@ spec:
           traffic.sidecar.istio.io/excludeOutboundPorts: "9300,443" 
           traffic.sidecar.istio.io/excludeInboundPorts: "9300"
       spec:
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+              - matchExpressions:
+                - key: environment
+                  operator: In
+                  values:
+                  - production
         securityContext:
           fsGroup: 1000
           runAsGroup: 1000
@@ -149,6 +158,7 @@ spec:
       - metadata:
           name: elasticsearch-data
         spec:
+          storageClassName: local-storage
           accessModes:
             - ReadWriteOnce
           resources:
