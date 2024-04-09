@@ -168,9 +168,9 @@ spec:
       - metadata:
           name: elasticsearch-data
         spec:
-          storageClassName: local-storage
           accessModes:
             - ReadWriteOnce
+          storageClassName: local-storage
           resources:
             requests:
               storage: 10Gi
