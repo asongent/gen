@@ -90,6 +90,10 @@ spec:
       volumeClaimTemplates:
         - metadata:
             name: elasticsearch-data
+            env:
+            - name: ES_JAVA_OPTS
+              value: "-Xms2g -Xmx2g"
+
           spec:
             accessModes:
               - ReadWriteOnce
@@ -166,6 +170,9 @@ spec:
     volumeClaimTemplates:
       - metadata:
           name: elasticsearch-data
+          env:
+          - name: ES_JAVA_OPTS
+            value: "-Xms2g -Xmx2g"
         spec:
           accessModes:
             - ReadWriteOnce
