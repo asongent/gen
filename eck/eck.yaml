@@ -61,10 +61,10 @@ spec:
             requiredDuringSchedulingIgnoredDuringExecution:
               nodeSelectorTerms:
               - matchExpressions:
-                - key: environment
+                - key: reserve
                   operator: In
                   values:
-                  - production
+                  - elastic-master
           securityContext:
             fsGroup: 1000
             runAsGroup: 1000
@@ -140,10 +140,10 @@ spec:
             requiredDuringSchedulingIgnoredDuringExecution:
               nodeSelectorTerms:
               - matchExpressions:
-                - key: environment
+                - key: reserve
                   operator: In
                   values:
-                  - production
+                  - elastic-data
         securityContext:
           fsGroup: 1000
           runAsGroup: 1000
