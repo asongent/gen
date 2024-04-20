@@ -73,6 +73,9 @@ spec:
           automountServiceAccountToken: true
           containers:
             - name: elasticsearch
+              env:
+              - name: ES_JAVA_OPTS
+                value: "-Xms2g -Xmx2g"
               resources: {}
                 # requests:
                 #   memory: 4Gi
@@ -90,10 +93,6 @@ spec:
       volumeClaimTemplates:
         - metadata:
             name: elasticsearch-data
-            env:
-            - name: ES_JAVA_OPTS
-              value: "-Xms2g -Xmx2g"
-
           spec:
             accessModes:
               - ReadWriteOnce
@@ -153,6 +152,10 @@ spec:
         automountServiceAccountToken: true
         containers:
           - name: elasticsearch
+            env:
+            - name: ES_JAVA_OPTS
+              value: "-Xms2g -Xmx2g"
+        spec:
             resources: {}
               # requests:
               #   memory: 4Gi
@@ -170,10 +173,7 @@ spec:
     volumeClaimTemplates:
       - metadata:
           name: elasticsearch-data
-          env:
-          - name: ES_JAVA_OPTS
-            value: "-Xms2g -Xmx2g"
-        spec:
+          
           accessModes:
             - ReadWriteOnce
           storageClassName: local-storage
