@@ -22,110 +22,111 @@ spec:
   secureSettings:
     - secretName: sso-secret
   nodeSets:
-  - name: master
-    count: 2
-    config: 
-      index.store.type: mmapfs
-      node.roles: ["master"]
-      node.store.allow_mmap: true #turn this to false when NOT implementing sso as well
-      xpack.ml.enabled: false
-      xpack.security.authc.token.enabled: true
-      # xpack.reporting.roles.enabled: true
-      xpack.security.authc.realms.oidc.Analytics:
-        order: 2
-        rp.client_id: kibana
-        rp.response_type: code
-        rp.requested_scopes: [openid, profile, email]
-        rp.redirect_uri: "https://keycloak.stack.fredgentech.net/api/security/oidc/callback"
-        rp.post_logout_redirect_uri: "https://keycloak.stack.fredgentech.net/logged_out"
-        op.issuer: https://keycloak.stack.fredgentech.net/auth/realms/Analytics
-        op.authorization_endpoint: https://keycloak.stack.fredgentech.net/auth/realms/Analytics/protocol/openid-connect/auth
-        op.token_endpoint: https://keycloak.stack.fredgentech.net/auth/realms/Analytics/protocol/openid-connect/token
-        op.userinfo_endpoint: https://keycloak.stack.fredgentech.net/auth/realms/Analytics/protocol/openid-connect/userinfo
-        op.jwkset_path: https://keycloak.stack.fredgentech.net/auth/realms/Analytics/protocol/openid-connect/certs
-        rp.signature_algorithm: RS256
-        op.endsession_endpoint: https://keycloak.stack.fredgentech.net/auth/realms/Analytics/protocol/openid-connect/logout
-        claims.name: preferred_username
-        claims.principal: sub
-        ssl.verification_mode: none
+  # - name: master
+  #   count: 2
+  #   config: 
+  #     es.enforce.bootstrap.checks: true
+  #     index.store.type: mmapfs
+  #     node.roles: ["master"]
+  #     node.store.allow_mmap: true #turn this to false when NOT implementing sso as well
+  #     xpack.ml.enabled: false
+  #     xpack.security.authc.token.enabled: true
+  #     # xpack.reporting.roles.enabled: true
+  #     xpack.security.authc.realms.oidc.Analytics:
+  #       order: 2
+  #       rp.client_id: kibana
+  #       rp.response_type: code
+  #       rp.requested_scopes: [openid, profile, email]
+  #       rp.redirect_uri: "https://keycloak.stack.fredgentech.net/api/security/oidc/callback"
+  #       rp.post_logout_redirect_uri: "https://keycloak.stack.fredgentech.net/logged_out"
+  #       op.issuer: https://keycloak.stack.fredgentech.net/auth/realms/Analytics
+  #       op.authorization_endpoint: https://keycloak.stack.fredgentech.net/auth/realms/Analytics/protocol/openid-connect/auth
+  #       op.token_endpoint: https://keycloak.stack.fredgentech.net/auth/realms/Analytics/protocol/openid-connect/token
+  #       op.userinfo_endpoint: https://keycloak.stack.fredgentech.net/auth/realms/Analytics/protocol/openid-connect/userinfo
+  #       op.jwkset_path: https://keycloak.stack.fredgentech.net/auth/realms/Analytics/protocol/openid-connect/certs
+  #       rp.signature_algorithm: RS256
+  #       op.endsession_endpoint: https://keycloak.stack.fredgentech.net/auth/realms/Analytics/protocol/openid-connect/logout
+  #       claims.name: preferred_username
+  #       claims.principal: sub
+  #       ssl.verification_mode: none
 
-      podTemplate:
-        metadata:
-          annotations:
-            traffic.sidecar.istio.io/includeInboundPorts: "*"
-            traffic.sidecar.istio.io/excludeOutboundPorts: "9300,443" 
-            traffic.sidecar.istio.io/excludeInboundPorts: "9300"
-        spec:
-          affinity:
-          nodeAffinity:
-            requiredDuringSchedulingIgnoredDuringExecution:
-              nodeSelectorTerms:
-              - matchExpressions:
-                - key: reserve
-                  operator: In
-                  values:
-                  - elastic-master
-          securityContext:
-            fsGroup: 1000
-            runAsGroup: 1000
-            runAsUser: 1000
-          serviceAccountName: elasticsearch-sa
-          automountServiceAccountToken: true
-          containers:
-            - name: elasticsearch
-              # env:
-              # - name: ES_JAVA_OPTS
-              #   value: "-Xms2g -Xmx2g"
-              resources: {}
-                # requests:
-                #   memory: 4Gi
-                #   cpu: 2
-                # limits:
-                #   memory: 4Gi
-          initContainers:
-          - name: install-plugins
-            command:
-              - sh
-              - -c
-              - |
-                bin/elasticsearch-plugin remove --purge analysis-icu
-                bin/elasticsearch-plugin install --batch analysis-icu
-      volumeClaimTemplates:
-        - metadata:
-            name: elasticsearch-data
-          spec:
-            accessModes:
-              - ReadWriteOnce
-            storageClassName: local-storage
-            resources:
-              requests:
-                storage: 10Gi
+  #     podTemplate:
+  #       metadata:
+  #         annotations:
+  #           traffic.sidecar.istio.io/includeInboundPorts: "*"
+  #           traffic.sidecar.istio.io/excludeOutboundPorts: "9300,443" 
+  #           traffic.sidecar.istio.io/excludeInboundPorts: "9300"
+  #       spec:
+  #         affinity:
+  #         nodeAffinity:
+  #           requiredDuringSchedulingIgnoredDuringExecution:
+  #             nodeSelectorTerms:
+  #             - matchExpressions:
+  #               - key: reserve
+  #                 operator: In
+  #                 values:
+  #                 - elastic-master
+  #         securityContext:
+  #           fsGroup: 1000
+  #           runAsGroup: 1000
+  #           runAsUser: 1000
+  #         serviceAccountName: elasticsearch-sa
+  #         automountServiceAccountToken: true
+  #         containers:
+  #           - name: elasticsearch
+  #             # env:
+  #             # - name: ES_JAVA_OPTS
+  #             #   value: "-Xms2g -Xmx2g"
+  #             resources: {}
+  #               # requests:
+  #               #   memory: 4Gi
+  #               #   cpu: 2
+  #               # limits:
+  #               #   memory: 4Gi
+  #         initContainers:
+  #         - name: install-plugins
+  #           command:
+  #             - sh
+  #             - -c
+  #             - |
+  #               bin/elasticsearch-plugin remove --purge analysis-icu
+  #               bin/elasticsearch-plugin install --batch analysis-icu
+  #     volumeClaimTemplates:
+  #       - metadata:
+  #           name: elasticsearch-data
+  #         spec:
+  #           accessModes:
+  #             - ReadWriteOnce
+  #           storageClassName: local-storage
+  #           resources:
+  #             requests:
+  #               storage: 10Gi
   - name: data
     count: 2
     config: 
-      index.store.type: mmapfs
-      node.roles: ["data", "ingest"]
-      node.store.allow_mmap: true #Turn this to false when NOT implementing SSO
-      xpack.ml.enabled: false
-      xpack.security.authc.token.enabled: true
-      # xpack.reporting.roles.enabled: true
-      xpack.security.authc.realms.oidc.Analytics:
-        order: 2
-        rp.client_id: kibana
-        rp.response_type: code
-        rp.requested_scopes: [openid, profile, email]
-        rp.redirect_uri: "https://keycloak.stack.fredgentech.net/api/security/oidc/callback"
-        rp.post_logout_redirect_uri: "https://keycloak.stack.fredgentech.net/logged_out"
-        op.issuer: https://keycloak.stack.fredgentech.net/auth/realms/Analytics
-        op.authorization_endpoint: https://keycloak.stack.fredgentech.net/auth/realms/Analytics/protocol/openid-connect/auth
-        op.token_endpoint: https://keycloak.stack.fredgentech.net/auth/realms/Analytics/protocol/openid-connect/token
-        op.userinfo_endpoint: https://keycloak.stack.fredgentech.net/auth/realms/Analytics/protocol/openid-connect/userinfo
-        op.jwkset_path: https://keycloak.stack.fredgentech.net/auth/realms/Analytics/protocol/openid-connect/certs
-        rp.signature_algorithm: RS256
-        op.endsession_endpoint: https://keycloak.stack.fredgentech.net/auth/realms/Analytics/protocol/openid-connect/logout
-        claims.name: preferred_username
-        claims.principal: sub
-        ssl.verification_mode: none
+      # index.store.type: mmapfs
+      # node.roles: ["data", "ingest"]
+      node.store.allow_mmap: false #Turn this to false when NOT implementing SSO
+      # xpack.ml.enabled: false
+      # xpack.security.authc.token.enabled: true
+      # # xpack.reporting.roles.enabled: true
+      # xpack.security.authc.realms.oidc.Analytics:
+      #   order: 2
+      #   rp.client_id: kibana
+      #   rp.response_type: code
+      #   rp.requested_scopes: [openid, profile, email]
+      #   rp.redirect_uri: "https://keycloak.stack.fredgentech.net/api/security/oidc/callback"
+      #   rp.post_logout_redirect_uri: "https://keycloak.stack.fredgentech.net/logged_out"
+      #   op.issuer: https://keycloak.stack.fredgentech.net/auth/realms/Analytics
+      #   op.authorization_endpoint: https://keycloak.stack.fredgentech.net/auth/realms/Analytics/protocol/openid-connect/auth
+      #   op.token_endpoint: https://keycloak.stack.fredgentech.net/auth/realms/Analytics/protocol/openid-connect/token
+      #   op.userinfo_endpoint: https://keycloak.stack.fredgentech.net/auth/realms/Analytics/protocol/openid-connect/userinfo
+      #   op.jwkset_path: https://keycloak.stack.fredgentech.net/auth/realms/Analytics/protocol/openid-connect/certs
+      #   rp.signature_algorithm: RS256
+      #   op.endsession_endpoint: https://keycloak.stack.fredgentech.net/auth/realms/Analytics/protocol/openid-connect/logout
+      #   claims.name: preferred_username
+      #   claims.principal: sub
+      #   ssl.verification_mode: none
       
 
     podTemplate:
@@ -190,14 +191,14 @@ metadata:
   namespace: eck
 spec:
   version: 8.13.1
-  count: 2
+  count: 1
   elasticsearchRef:
     name: elasticsearch
     namespace: eck
   config:
     xpack.security.authc.providers:
       oidc.Analytics:
-        enabled: true
+        enabled: false
         order: 0
         realm: Analytics
         description: Analytics
