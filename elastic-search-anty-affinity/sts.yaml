@@ -31,49 +31,53 @@ spec:
         - containerPort: 80
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: Statef
 metadata:
   name: web-server
 spec:
   selector:
     matchLabels:
-      anti-nodes: keycloak
+      common.k8s.elastic.co/type: elasticsearch
   replicas: 5
   template:
     metadata:
       labels:
-        anti-nodes: keycloak
+        common.k8s.elastic.co/type: elasticsearch
     spec:
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
+              #Here, a pod must be placed  on a node that has any of these labels. The lables must match
               - key: anti-nodes
                 operator: In
                 values:
                 - us-west-2a
                 - us-west-2b
                 - us-west-2c
+                - us-west-2d
             
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
           - labelSelector:
               matchExpressions:
-              - key: anti-nodes
+              #Here, the schedule will not schedule a pod on node that already has a pod with a label `common.k8s.elastic.co/type: elasticsearch`
+              - key: common.k8s.elastic.co/type
                 operator: In
                 values:
-                - keycloak
+                - elasticsearch
             
             topologyKey: "kubernetes.io/hostname"
         podAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
           - labelSelector:
               matchExpressions:
+              #Here, the schedule must schedule a pod on a node that ahas a pod with  `app=starter`
               - key: app
                 operator: In
                 values:
-                - nginx
+                - starter
             topologyKey: "kubernetes.io/hostname"
       containers:
       - name: web-app
