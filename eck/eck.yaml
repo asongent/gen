@@ -23,7 +23,7 @@ spec:
     - secretName: sso-secret
   nodeSets:
   - name: master
-    count: 2
+    count: 1
     config: 
       index.store.type: mmapfs
       node.roles: ["master"]
@@ -101,7 +101,7 @@ spec:
               requests:
                 storage: 10Gi
   - name: data
-    count: 2
+    count: 1
     config: 
       index.store.type: mmapfs
       node.roles: ["data", "ingest"]
