@@ -988,7 +988,7 @@ grafana:
       enabled: true
       client_id: grafana    #this is a sample client_id, review docs/KEYCLOAK.md
       client_secret: 8kkkdGZ9EQALnYM403Png2mxfGaKyzKM #this is a sample secret, review docs/KEYCLOAK.md
-      scopes: Grafana       #this is a sample client scope, review docs/KEYCLOAK.md
+      scopes: openid email profile offline_access roles     #this is a sample client scope, review docs/KEYCLOAK.md
       auth_url: https://keycloak.stack.fredgentech.net/auth/realms/New%20Gen%20Tech/protocol/openid-connect/auth
       token_url: https://keycloak.stack.fredgentech.net/auth/realms/New%20Gen%20Tech/protocol/openid-connect/token
       api_url: https://keycloak.stack.fredgentech.net/auth/realms/New%20Gen%20Tech/protocol/openid-connect/userinfo
