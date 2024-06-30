@@ -995,18 +995,21 @@ grafana:
       api_url: https://keycloak.stack.fredgentech.net/auth/realms/New%20Gen%20Tech/protocol/openid-connect/userinfo
       allow_sign_up: true
       role_attribute_path: Viewer
+      email_attribute_path: email
+      login_attribute_path: username
+      name_attribute_path: full_name
       # tls_skip_verify_insecure: false
       # tls_client_cert: ""
       # tls_client_key: ""
       # tls_client_ca : /etc/oidc/ca.pem
       # allowed_domains: mycompany.com mycompany.org
       # empty_scopes: false
-    plugin.grafana-piechart-panel:
-      path: /var/lib/bb-plugins/piechart-panel
-    plugin.grafana-polystat-panel:
-      path: /var/lib/bb-plugins/polystat-panel
-    plugin.redis-datasource:
-      path: /var/lib/bb-plugins/redis-datasource
+    # plugin.grafana-piechart-panel:
+    #   path: /var/lib/bb-plugins/piechart-panel
+    # plugin.grafana-polystat-panel:
+    #   path: /var/lib/bb-plugins/polystat-panel
+    # plugin.redis-datasource:
+    #   path: /var/lib/bb-plugins/redis-datasource
 
   
   rbac:
