@@ -4,7 +4,7 @@
 
 ## Provide a name in place of kube-prometheus-stack for `app:` labels
 ##
-domain: stack.fredgentech.net
+
 nameOverride: ""
 
 ## Override the deployment namespace
@@ -982,7 +982,8 @@ grafana:
   grafana.ini:
     # Required if enabling SSO
     server:
-      root_url: https://grafana.{{ .Values.domain }}/login/generic_oauth
+      domain: grafana.stack.fredgentech.net
+      root_url: https://grafana.stack.fredgentech.net
       #Block is auto-set when using Umbrella
     auth.generic_oauth:
       enabled: true
