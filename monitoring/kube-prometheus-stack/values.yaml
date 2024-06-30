@@ -994,9 +994,9 @@ grafana:
       token_url: https://keycloak.stack.fredgentech.net/auth/realms/New%20Gen%20Tech/protocol/openid-connect/token
       api_url: https://keycloak.stack.fredgentech.net/auth/realms/New%20Gen%20Tech/protocol/openid-connect/userinfo
       allow_sign_up: true
-      allow_assign_grafana_admin: true #Adding this grants user admin privileges
-      role_attribute_path: contains(roles[*], 'admin') && 'Admin' || contains(roles[*], 'editor') && 'Editor' || 'Admin'
-      groups_attribute_path: groups
+      allow_assign_grafana_admin: true #Adding this grants user admin privileges.  This does not work. You have to manually add user to admin group in your desire Org
+      role_attribute_path: contains(roles[*], 'admin') && 'Admin' || contains(roles[*], 'editor') && 'Editor' || 'Viewer'
+      # groups_attribute_path: groups
       email_attribute_path: email
       login_attribute_path: username
       name_attribute_path: full_name
@@ -1059,13 +1059,13 @@ grafana:
 
   # # To make Grafana persistent (Using Statefulset)
   # #
-  # persistence:
-  #   enabled: true
-  #   type: sts
-  #   storageClassName: "storageClassName"
-  #   accessModes:
-  #     - ReadWriteOnce
-  #   size: 20Gi
+  persistence:
+    enabled: true
+    type: sts
+    storageClassName: "longhorn"
+    accessModes:
+      - ReadWriteOnce
+    size: 10Gi
   #   finalizers:
   #     - kubernetes.io/pvc-protection
 
