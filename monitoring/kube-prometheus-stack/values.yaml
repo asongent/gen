@@ -951,7 +951,7 @@ alertmanager:
 grafana:
   enabled: true
   namespaceOverride: ""
-  
+
   assertNoLeakedSecrets: false
 
   ## ForceDeployDatasources Create datasource configmap even if grafana deployment has been disabled
@@ -980,11 +980,13 @@ grafana:
   ## Setting up SSO 
   grafana.ini:
     # Required if enabling SSO
-    #server:
+    server:
+      domain: monitoring.picluster.ricsanfre.com
+      root_url: "https://%(domain)s/grafana/"
       #root_url: https://grafana.{{ .Values.domain }}/
       #Block is auto-set when using Umbrella
     auth.generic_oauth:
-      enabled: false
+      enabled: true
       client_id: grafana    #this is a sample client_id, review docs/KEYCLOAK.md
       client_secret: secret #this is a sample secret, review docs/KEYCLOAK.md
       scopes: Grafana       #this is a sample client scope, review docs/KEYCLOAK.md
