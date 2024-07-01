@@ -993,7 +993,7 @@ grafana:
       auth_url: https://keycloak.stack.fredgentech.net/auth/realms/New%20Gen%20Tech/protocol/openid-connect/auth
       token_url: https://keycloak.stack.fredgentech.net/auth/realms/New%20Gen%20Tech/protocol/openid-connect/token
       api_url: https://keycloak.stack.fredgentech.net/auth/realms/New%20Gen%20Tech/protocol/openid-connect/userinfo
-      signout_redirect_url: https://keycloak.stack.fredgentech.net/auth/realms/New%20Gen%20Tech/protocol/openid-connect/logout
+      # signout_redirect_url: https://keycloak.stack.fredgentech.net/auth/realms/New%20Gen%20Tech/protocol/openid-connect/logout
       allow_sign_up: true
       allow_assign_grafana_admin: true #Adding this grants user admin privileges.  This does not work. You have to manually add user to admin group in your desire Org
       role_attribute_strict: true
