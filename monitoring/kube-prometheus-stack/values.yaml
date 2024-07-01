@@ -1014,19 +1014,19 @@ grafana:
     #   path: /var/lib/bb-plugins/polystat-panel
     # plugin.redis-datasource:
     #   path: /var/lib/bb-plugins/redis-datasource
-  auth:
-    disable_login_form: false 
-    oauth_auto_login: false 
-    oauth_skip_org_role_update_sync: false  
-    skip_org_role_sync: false  
-  users:
-    auto_assign_org: true
-    auto_assign_org_role: Admin  #Viewer default org_role
-    auto_assign_org_id: 1
-  security:
-    disable_initial_admin_creation: true
-    allow_embedding: true
-    cookie_secure: fals
+  # auth:
+  #   disable_login_form: false 
+  #   oauth_auto_login: false 
+  #   oauth_skip_org_role_update_sync: false  
+  #   skip_org_role_sync: false  
+  # users:
+  #   auto_assign_org: true
+  #   auto_assign_org_role: Admin  #Viewer default org_role
+  #   auto_assign_org_id: 1
+  # security:
+  #   disable_initial_admin_creation: true
+  #   allow_embedding: true
+  #   cookie_secure: fals
   
   rbac:
     ## If true, Grafana PSPs will be created
