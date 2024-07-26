@@ -196,15 +196,15 @@ spec:
     name: elasticsearch
     namespace: eck
   config:
-    xpack.security.authc.providers:
-      oidc.Analytics:
-        enabled: false
-        order: 0
-        realm: Analytics
-        description: Analytics
-      basic.basic:
-        enabled: true
-        order: 1
+    # xpack.security.authc.providers:
+    #   oidc.Analytics:
+    #     enabled: false
+    #     order: 0
+    #     realm: Analytics
+    #     description: Analytics
+    #   basic.basic:
+    #     enabled: true
+    #     order: 1
     server.publicBaseUrl: "https://kibana.stack.fredgentech.net"
     # server.host: "0.0.0.0"
   http:
