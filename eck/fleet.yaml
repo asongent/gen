@@ -6,7 +6,7 @@ metadata:
   name: fleet-server
   namespace: eck
 spec:
-  version: 8.13.1
+  version: 8.14.3
   kibanaRef:
     name: kibana
   elasticsearchRefs:
@@ -29,7 +29,7 @@ metadata:
   name: elastic-agent
   namespace: eck
 spec:
-  version: 8.13.1
+  version: 8.14.3
   kibanaRef:
     name: kibana
   fleetServerRef:

@@ -18,7 +18,7 @@ metadata:
   name: elasticsearch
   namespace: eck
 spec:
-  version: 8.13.1
+  version: 8.14.3
   # secureSettings:
   #   - secretName: sso-secret
   nodeSets:
@@ -190,7 +190,7 @@ metadata:
   name: kibana
   namespace: eck
 spec:
-  version: 8.13.1
+  version: 8.14.3
   count: 1
   elasticsearchRef:
     name: elasticsearch
