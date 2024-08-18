@@ -4,8 +4,8 @@ fullnameOverride: ""
 # Optionally override the name
 nameOverride: ""
 
-# The number of replicas to create (has no effect if autoscaling enabled)
-replicas: 1
+#### The number of replicas to create (has no effect if autoscaling enabled)
+replicas: 2
 
 image:
   # The Keycloak image repository
