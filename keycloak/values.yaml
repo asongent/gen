@@ -16,8 +16,8 @@ image:
   pullPolicy: IfNotPresent
 
 # Image pull secrets for the Pod
-imagePullSecrets: []
-# - name: myRegistrKeySecretName
+imagePullSecrets:
+- name: private-registry
 
 # Mapping between IPs and hostnames that will be injected as entries in the Pod's hosts files
 hostAliases: []
@@ -441,9 +441,9 @@ route:
 pgchecker:
   image:
     # Docker image used to check Postgresql readiness at startup
-    repository: docker.io/busybox
+    repository: ghcr.io/asongent/keycloak-custom #docker.io/busybox
     # Image tag for the pgchecker image
-    tag: 1.32
+    tag: 1.00 #1.32
     # Image pull policy for the pgchecker image
     pullPolicy: IfNotPresent
   # SecurityContext for the pgchecker container
