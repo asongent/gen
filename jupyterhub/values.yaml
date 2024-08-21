@@ -33,6 +33,8 @@ imagePullSecrets: []
 hub:
   revisionHistoryLimit:
   config:
+    Authenticator:
+      enable_auth_state: true
     GenericOAuthenticator:
       client_id: hub
       client_secret: F7ftyaSMuB8vIzhop16EQzRGAStjXZwj
@@ -692,7 +694,7 @@ cull:
   maxAge: 0 # --max-age
 
 debug:
-  enabled: false
+  enabled: true
 
 global:
   safeToShowValues: false
