@@ -44,11 +44,11 @@ hub:
       username_claim: preferred_username
       userdata_params:
         state: state
-      # claim_groups_key: roles
-      # allowed_groups:
-      #   - user
-      # admin_groups:
-      #   - admin
+      claim_groups_key: roles
+      allowed_groups:
+        - user
+      admin_groups:
+        - admin
     JupyterHub:
       authenticator_class: generic-oauth
       admin_access: true
@@ -206,7 +206,7 @@ proxy:
     rollingUpdate:
   # service relates to the proxy-public service
   service:
-    type: LoadBalancer
+    type: ClusterIP
     labels: {}
     annotations: {}
     nodePorts:
