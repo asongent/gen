@@ -31,7 +31,6 @@ imagePullSecrets: []
 # ConfigurableHTTPProxy speaks with the actual ConfigurableHTTPProxy server in
 # the proxy pod.
 hub:
-  revisionHistoryLimit:
   config:
     Authenticator:
       enable_auth_state: true
