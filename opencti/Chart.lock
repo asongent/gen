@@ -1,0 +1,18 @@
+dependencies:
+- name: elasticsearch
+  repository: oci://registry-1.docker.io/bitnamicharts
+  version: 21.3.8
+- name: minio
+  repository: oci://registry-1.docker.io/bitnamicharts
+  version: 14.7.1
+- name: opensearch
+  repository: https://opensearch-project.github.io/helm-charts/
+  version: 2.22.1
+- name: rabbitmq
+  repository: oci://registry-1.docker.io/bitnamicharts
+  version: 14.6.6
+- name: redis
+  repository: oci://registry-1.docker.io/bitnamicharts
+  version: 19.6.4
+digest: sha256:43d34318d234071343c2f2e184266fcb56fd9ed01172bea4b96c3f2e0e01683f
+generated: "2024-08-21T07:21:39.466420541Z"
