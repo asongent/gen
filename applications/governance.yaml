@@ -9,8 +9,6 @@ spec:
     repoURL:  https://github.com/asongent/gen.git
     targetRevision: HEAD
     path: governance
-    kustomize:
-      version: v4.5.7
   destination: 
     server: https://kubernetes.default.svc
   syncPolicy:
