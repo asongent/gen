@@ -389,7 +389,7 @@ opensearch:
 # Ref: https://github.com/bitnami/charts/blob/main/bitnami/elasticsearch/values.yaml
 elasticsearch:
   # -- Enable or disable ElasticSearch subchart
-  enabled: true
+  enabled: false
 
   ## Kernel settings modifier image
   ##
@@ -494,7 +494,7 @@ rabbitmq:
 # Ref: https://github.com/bitnami/charts/blob/main/bitnami/redis/values.yaml
 redis:
   # -- Enable or disable Redis subchart
-  enabled: true
+  enabled: false
 
   # -- Redis architecture. Allowed values: `standalone` or `replication`
   architecture: standalone
