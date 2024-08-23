@@ -58,7 +58,7 @@ env:
   # MINIO:
   MINIO__ENDPOINT: minio.minio.svc.cluster.local:9000
   # ELASTICSEARCH
-  ELASTICSEARCH__URL: https://eck.elasticsearch-es-http.svc.cluster:9200
+  ELASTICSEARCH__URL: http://eck.elasticsearch-es-http.svc.cluster:9200
   # RABBITMQ
   RABBITMQ__HOSTNAME: rabbitmq-system.rabbitmq.svc.cluster
   RABBITMQ__PORT_MANAGEMENT: 15672
