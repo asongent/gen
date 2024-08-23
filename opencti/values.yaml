@@ -465,7 +465,7 @@ minio:
 # Ref: https://github.com/bitnami/charts/blob/main/bitnami/rabbitmq/values.yaml
 rabbitmq:
     # -- Enable or disable RabbitMQ subchart
-  enabled: true
+  enabled: false
 
   # -- Number of RabbitMQ replicas to deploy
   replicaCount: 1
