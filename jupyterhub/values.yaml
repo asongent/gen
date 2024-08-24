@@ -34,6 +34,15 @@ hub:
   config:
     Authenticator:
       enable_auth_state: true
+
+      ## This will allow all users to create notebook
+      allow_all: true
+      ### Setting this config below will allow only users listed to create notebook
+      # allowed_users:  
+      # - john
+      # - peter
+      # - paul
+
     GenericOAuthenticator:
       client_id: hub
       client_secret: F7ftyaSMuB8vIzhop16EQzRGAStjXZwj
@@ -42,14 +51,14 @@ hub:
       token_url: https://keycloak.stack.fredgentech.net/auth/realms/New%20Gen%20Tech/protocol/openid-connect/token
       userdata_url: https://keycloak.stack.fredgentech.net/auth/realms/New%20Gen%20Tech/protocol/openid-connect/userinfo
       login_service: keycloak
-      username_claim: preferred_username
-      userdata_params:
-        state: state
-      claim_groups_key: roles
-      allowed_groups:
-        - user
-      admin_groups:
-        - admin
+      username_claim: preferred_username 
+      # userdata_params:
+      #   state: state
+      # claim_groups_key: roles
+      # allowed_groups:
+      #   - user
+      # admin_groups:
+      #   - admin
     JupyterHub:
       authenticator_class: generic-oauth
       admin_access: true
