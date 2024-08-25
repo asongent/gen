@@ -405,7 +405,15 @@ singleuser:
   extraAnnotations: {}
   extraLabels:
     hub.jupyter.org/network-access-hub: "true"
-  extraFiles: {}
+  extraFiles:
+    jupyter_notebook_config.json:
+      mountPath: /etc/jupyter/jupyter_notebook_config.json
+      data:
+        MappingKernelManager:
+          cull_idle_timeout: 1200
+          cull_interval: 120
+          cull_connected: true 
+          cull_busy: false 
   extraEnv: {}
   lifecycleHooks: {}
   initContainers: []
