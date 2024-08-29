@@ -71,7 +71,7 @@ env:
   REDIS__MODE: single
   # METRICS AND HEALTHCHECK
   APP__TELEMETRY__METRICS__ENABLED: true
-  APP__HEALTH_ACCESS_KEY: ChangeMe
+  APP__HEALTH_ACCESS_KEY: eXRjdGdjanZtY2dmeGdmZXRzCg==
 
 # -- Secrets from variables
 envFromSecrets: {}
