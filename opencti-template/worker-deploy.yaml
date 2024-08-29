@@ -1,0 +1,81 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/instance: opencti
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: opencti
+    app.kubernetes.io/version: 6.2.14
+    helm.sh/chart: opencti-1.2.15
+    opencti.component: worker
+  name: opencti-worker
+  namespace: opencti
+spec:
+  ports:
+    - name: metrics
+      port: 14269
+      protocol: TCP
+      targetPort: 14269
+  selector:
+    app.kubernetes.io/instance: opencti
+    app.kubernetes.io/name: opencti
+    opencti.component: worker
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/instance: opencti
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: opencti
+    app.kubernetes.io/version: 6.2.14
+    helm.sh/chart: opencti-1.2.15
+    opencti.component: worker
+  name: opencti-worker
+  namespace: opencti
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: opencti
+      app.kubernetes.io/name: opencti
+      opencti.component: worker
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: opencti
+        app.kubernetes.io/name: opencti
+        opencti.component: worker
+    spec:
+      containers:
+        - env:
+            - name: OPENCTI_URL
+              value: 'http://opencti-server:80'
+            - name: OPENCTI_TOKEN
+              value: UGFzc3dvcmRAMTIzCg==
+            - name: WORKER_LOG_LEVEL
+              value: info
+            - name: WORKER_TELEMETRY_ENABLED
+              value: 'true'
+          image: 'opencti/worker:6.2.14'
+          imagePullPolicy: IfNotPresent
+          name: opencti-worker
+          ports:
+            - containerPort: 14269
+              name: metrics
+              protocol: TCP
+          resources: {}
+          securityContext: null
+      initContainers:
+        - command:
+            - sh
+            - '-c'
+            - >-
+              RETRY=0; until [ $RETRY -eq 30 ]; do nc -zv opencti-server 80 &&
+              break; echo "[$RETRY/30] waiting service opencti-server:80 is
+              ready"; sleep 5; RETRY=$(($RETRY + 1)); done
+          image: busybox
+          name: ready-checker-server
+      securityContext: null
+      serviceAccountName: opencti

@@ -1,0 +1,186 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/instance: opencti
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: opencti
+    app.kubernetes.io/version: 6.2.14
+    helm.sh/chart: opencti-1.2.15
+    opencti.component: server
+  name: opencti-server
+  namespace: opencti
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: opencti
+      app.kubernetes.io/name: opencti
+      opencti.component: server
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: opencti
+        app.kubernetes.io/name: opencti
+        opencti.component: server
+    spec:
+      containers:
+        - env:
+            - name: NODE_OPTIONS
+              value: '--max-old-space-size=8096'
+            - name: PROVIDERS__LOCAL__STRATEGY
+              value: LocalStrategy
+            - name: APP__ADMIN__EMAIL
+              value: asongentle@tech.net
+            - name: APP__ADMIN__PASSWORD
+              value: UGFzc3dvcmRAMTIzCg==
+            - name: APP__ADMIN__TOKEN
+              value: UGFzc3dvcmRAMTIzCg==
+            - name: APP__BASE_PATH
+              value: /
+            - name: APP__GRAPHQL__PLAYGROUND__ENABLED
+              value: 'false'
+            - name: APP__GRAPHQL__PLAYGROUND__FORCE_DISABLED_INTROSPECTION
+              value: 'false'
+            - name: APP__HEALTH_ACCESS_KEY
+              value: ChangeMe
+            - name: APP__TELEMETRY__METRICS__ENABLED
+              value: 'true'
+            - name: ELASTICSEARCH__URL
+              value: 'http://eck.elasticsearch-es-http.svc.cluster:9200'
+            - name: MINIO__ENDPOINT
+              value: 'minio.minio.svc.cluster.local:9000'
+            - name: RABBITMQ__HOSTNAME
+              value: rabbitmq-system.rabbitmq.svc.cluster
+            - name: RABBITMQ__PASSWORD
+              value: Password@123
+            - name: RABBITMQ__PORT
+              value: '5672'
+            - name: RABBITMQ__PORT_MANAGEMENT
+              value: '15672'
+            - name: RABBITMQ__USERNAME
+              value: admin
+            - name: REDIS__HOSTNAME
+              value: airflow.airflow-redis.svc.cluster
+            - name: REDIS__MODE
+              value: single
+            - name: REDIS__PORT
+              value: '6379'
+          image: 'opencti/platform:6.2.14'
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /health?health_access_key=eXRjdGdjanZtY2dmeGdmZXRzCg==
+              port: 4000
+            initialDelaySeconds: 180
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+          name: opencti-server
+          ports:
+            - containerPort: 4000
+              name: http
+              protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /health?health_access_key=eXRjdGdjanZtY2dmeGdmZXRzCg==
+              port: 4000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources: {}
+          securityContext: null
+          startupProbe:
+            failureThreshold: 30
+            httpGet:
+              path: /health?health_access_key=eXRjdGdjanZtY2dmeGdmZXRzCg==e
+              port: 4000
+            initialDelaySeconds: 180
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+      initContainers:
+        - command:
+            - sh
+            - '-c'
+            - >-
+              RETRY=0; until [ $RETRY -eq 30 ]; do nc -zv eck.elasticsearch-es-http.svc.cluster
+              9200 && break; echo "[$RETRY/30] waiting service
+              eck.elasticsearch-es-http.svc.cluster:9200:9200 is ready"; sleep 5; RETRY=$(($RETRY +
+              1)); done
+          image: busybox
+          name: ready-checker-elasticsearch
+        - command:
+            - sh
+            - '-c'
+            - >-
+              RETRY=0; until [ $RETRY -eq 30 ]; do nc -zv minio.minio.svc.cluster.local 9000 &&
+              break; echo "[$RETRY/30] waiting service minio.minio.svc.cluster.local:9000 is
+              ready"; sleep 5; RETRY=$(($RETRY + 1)); done
+          image: busybox
+          name: ready-checker-minio
+        - command:
+            - sh
+            - '-c'
+            - >-
+              RETRY=0; until [ $RETRY -eq 30 ]; do nc -zv  rabbitmq-system.rabbitmq.svc.cluster 5672
+              && break; echo "[$RETRY/30] waiting service  rabbitmq-system.rabbitmq.svc.cluster:5672
+              is ready"; sleep 5; RETRY=$(($RETRY + 1)); done
+          image: busybox
+          name: ready-checker-rabbitmq
+        - command:
+            - sh
+            - '-c'
+            - >-
+              RETRY=0; until [ $RETRY -eq 30 ]; do nc -zv airflow.airflow-redis.svc.cluster
+              6379 && break; echo "[$RETRY/30] waiting service
+              airflow.airflow-redis.svc.cluster:6379 is ready"; sleep 5; RETRY=$(($RETRY +
+              1)); done
+          image: busybox
+          name: ready-checker-redis-master
+      securityContext: null
+      serviceAccountName: opencti
+---
+apiVersion: v1
+automountServiceAccountToken: false
+kind: ServiceAccount
+metadata:
+  labels:
+    app.kubernetes.io/instance: opencti
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: opencti
+    app.kubernetes.io/version: 6.2.14
+    helm.sh/chart: opencti-1.2.15
+  name: opencti
+  namespace: opencti
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/instance: opencti
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: opencti
+    app.kubernetes.io/version: 6.2.14
+    helm.sh/chart: opencti-1.2.15
+    opencti.component: server
+  name: opencti-server
+  namespace: opencti
+spec:
+  ports:
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: 4000
+    - name: metrics
+      port: 14269
+      protocol: TCP
+      targetPort: 14269
+  selector:
+    app.kubernetes.io/instance: opencti
+    app.kubernetes.io/name: opencti
+    opencti.component: server
+  type: ClusterIP
