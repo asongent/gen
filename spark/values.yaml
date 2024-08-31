@@ -122,6 +122,15 @@ hostNetwork: false
 ## Spark master specific configuration
 ##
 master:
+  configOptions:
+   -Dspark.ui.reverseProxy=true
+   -Dspark.ui.reverseProxyUrl=https://spark.stack.fredgentech.net
+  ## @param worker.extraEnvVars An array to add extra env vars
+  ## For example:
+  ## extraEnvVars:
+  ##  - name: SPARK_DAEMON_JAVA_OPTS
+  ##    value: -Dx=y
+
   ## @param master.existingConfigmap The name of an existing ConfigMap with your custom configuration for master
   ##
   existingConfigmap: ""
@@ -152,14 +161,6 @@ master:
   ##
   daemonMemoryLimit: ""
   ## @param master.configOptions Use a string to set the config options for in the form "-Dx=y"
-  ##
-  configOptions: ""
-  ## @param master.extraEnvVars Extra environment variables to pass to the master container
-  ## For example:
-  ## extraEnvVars:
-  ##  - name: SPARK_DAEMON_JAVA_OPTS
-  ##    value: -Dx=y
-  ##
   extraEnvVars: []
   ## @param master.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for master nodes
   ##
@@ -461,6 +462,14 @@ master:
 ## Spark worker specific configuration
 ##
 worker:
+  configOptions:
+   -Dspark.ui.reverseProxy=true
+   -Dspark.ui.reverseProxyUrl=https://spark.stack.fredgentech.net
+  ## @param worker.extraEnvVars An array to add extra env vars
+  ## For example:
+  ## extraEnvVars:
+  ##  - name: SPARK_DAEMON_JAVA_OPTS
+  ##    value: -Dx=y
   ## @param worker.existingConfigmap The name of an existing ConfigMap with your custom configuration for workers
   ##
   existingConfigmap: ""
@@ -503,13 +512,7 @@ worker:
   ##
   javaOptions: ""
   ## @param worker.configOptions Set extra options to configure the worker in the form `-Dx=y`
-  ##
-  configOptions: ""
-  ## @param worker.extraEnvVars An array to add extra env vars
-  ## For example:
-  ## extraEnvVars:
-  ##  - name: SPARK_DAEMON_JAVA_OPTS
-  ##    value: -Dx=y
+  
   ##
   extraEnvVars: []
   ## @param worker.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for worker nodes
