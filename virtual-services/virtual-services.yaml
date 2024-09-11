@@ -360,7 +360,7 @@ spec:
     - destination:
         host: keycloak-http
         port:
-          number: 80
+          number: 8443
 
 ---
 apiVersion: networking.istio.io/v1alpha3
