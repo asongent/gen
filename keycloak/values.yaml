@@ -174,7 +174,7 @@ extraEnv: |-
 #### Updated for Big Bang ####
 extraEnvFrom: |
   - secretRef:
-      name: 'keyclook-env'
+      name: 'keycloak-env'
 
 #  Pod priority class name
 priorityClassName: ""
@@ -256,15 +256,17 @@ readinessProbe: |
 #   timeoutSeconds: 1
 
 # Startup probe configuration
+
 startupProbe: |
   httpGet:
-    path: /auth/realms/master
+    path: /auth/
     port: http
+    scheme: HTTP
   initialDelaySeconds: 90
-  timeoutSeconds: 2
-  failureThreshold: 60
   periodSeconds: 5
-
+  successThreshold: 1
+  failureThreshold: 60
+  timeoutSeconds: 2
 # Revisit after enabling management port
 # startupProbe: |
 #   httpGet:
@@ -579,7 +581,7 @@ health:
 
 http:
   # For backwards compatibility reasons we set this to the value used by previous Keycloak versions.
-  relativePath: "/"
+  relativePath: "/auth"
   internalPort: http-internal
 
 serviceMonitor:
