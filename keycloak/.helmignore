@@ -10,8 +10,6 @@
 .hg/
 .hgignore
 .svn/
-ci/
-examples/
 # Common backup files
 *.swp
 *.bak

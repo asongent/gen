@@ -21,9 +21,6 @@
         },
         "tag": {
           "type": ["string", "integer"]
-        },
-        "digest": {
-          "type": "string"
         }
       }
     },
@@ -81,9 +78,6 @@
     },
     "hostAliases": {
       "type": "array"
-    },
-    "http": {
-      "relativePath": "string"
     },
     "image": {
       "$ref": "#/definitions/image"
@@ -170,12 +164,9 @@
       "nodeSelector": {
         "type": "object"
       },
-      "dbchecker": {
+      "pgchecker": {
         "type": "object",
         "properties": {
-          "enabled": {
-            "type": "boolean"
-          },
           "image": {
             "$ref": "#/definitions/image"
           },
@@ -229,66 +220,8 @@
       "podSecurityContext": {
         "type": "object"
       },
-      "cache": {
-        "type": "object",
-        "properties": {
-          "stack": {
-            "type": "string"
-          }
-        }
-      },
-      "proxy": {
-        "type": "object",
-        "properties": {
-          "enabled": {
-            "type": "boolean"
-          },
-          "mode": {
-            "type": "string"
-          }
-        }
-      },
-      "metrics": {
-        "type": "object",
-        "properties": {
-          "enabled": {
-            "type": "boolean"
-          }
-        }
-      },
-      "health": {
-        "type": "object",
-        "properties": {
-          "enabled": {
-            "type": "boolean"
-          }
-        }
-      },
-      "database": {
-        "type": "object",
-        "properties": {
-          "vendor": {
-            "type": "string"
-          },
-          "hostname": {
-            "type": "string"
-          },
-          "port": {
-            "type": "integer"
-          },
-          "username": {
-            "type": "string"
-          },
-          "password": {
-            "type": "string"
-          },
-          "database": {
-            "type": "string"
-          },
-          "existingSecret": {
-            "type": "string"
-          }
-        }
+      "postgresql": {
+        "type": "object"
       },
       "priorityClassName": {
         "type": "string"
@@ -381,6 +314,19 @@
           "httpsPort": {
             "type": "integer"
           },
+          "httpManagementNodePort": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "httpManagementPort": {
+            "type": "integer"
+          },
           "labels": {
             "type": "object"
           },
@@ -408,14 +354,6 @@
           }
         }
       },
-      "serviceHeadless": {
-        "type": "object",
-        "properties": {
-          "annotations": {
-            "type": "object"
-          }
-        }
-      },
       "serviceAccount": {
         "type": "object",
         "properties": {
@@ -423,9 +361,6 @@
             "type": "object"
           },
           "create": {
-            "type": "boolean"
-          },
-          "allowReadPods": {
             "type": "boolean"
           },
           "imagePullSecrets": {
@@ -436,9 +371,6 @@
           },
           "name": {
             "type": "string"
-          },
-          "automountServiceAccountToken": {
-            "type": "boolean"
           }
         }
       },
@@ -452,6 +384,9 @@
             "type": "array"
           }
         }
+      },
+      "startupScripts": {
+        "type": "object"
       },
       "statefulsetAnnotations": {
         "type": "object"

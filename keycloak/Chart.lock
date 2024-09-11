@@ -1,9 +1,6 @@
 dependencies:
 - name: postgresql
-  repository: file://./deps/postgresql
-  version: 10.3.13
-- name: gluon
-  repository: oci://registry1.dso.mil/bigbang
-  version: 0.5.0
-digest: sha256:82aebedeec6793ca7742db0ae1a7b800e06b6bd7ee8b7cb6b1d71550fe2e623a
-generated: "2024-05-21T07:38:32.330867-06:00"
+  repository: https://charts.bitnami.com/bitnami
+  version: 10.16.2
+digest: sha256:e09e206d81074a6540102fb62b8b12cf943c934c2af21e58ff8caa259690e87a
+generated: "2022-07-13T10:22:59.711349+02:00"

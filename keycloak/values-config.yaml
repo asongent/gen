@@ -1,0 +1,86 @@
+addons:
+  keycloak:
+    ingress:
+      gateway: "general"
+    values:
+      postgresql:
+        enabled: false
+      args:
+        - "start"
+      extraEnv: |-
+        - name: DB_VENDOR
+          value: postgres
+        - name: DB_ADDR
+          value: "db.exovera-dev.com"
+        - name: DB_PORT
+          value: "5432"
+        - name: DB_DATABASE
+          value: keycloak
+        - name: DB_USER_FILE
+          value: /secrets/db-creds/user
+        - name: DB_PASSWORD_FILE
+          value: /secrets/db-creds/password
+        - name: KC_HTTPS_CERTIFICATE_FILE
+          value: /opt/keycloak/conf/tls.crt
+        - name: KC_HTTPS_CERTIFICATE_KEY_FILE
+          value: /opt/keycloak/conf/tls.key
+        - name: KC_HOSTNAME
+          value: keycloak.fredgentech.net
+        - name: KC_PROXY
+          value: passthrough
+        - name: KC_HOSTNAME_STRICT_HTTPS
+          value: "true"
+        - name: KC_HOSTNAME_STRICT
+          value: "true"
+        - name: KC_HTTP_ENABLED
+          value: "true"
+        - name: KEYCLOAK_USER
+          value: admin
+        - name: KEYCLOAK_PASSWORD
+          value: password
+        - name: KC_HTTP_RELATIVE_PATH
+          value: /
+
+      replicas: 1
+
+      livenessProbe: |
+        httpGet:
+          path: /realms/master
+          port: http
+          scheme: HTTP
+        failureThreshold: 15
+        timeoutSeconds: 2
+        periodSeconds: 15
+
+      readinessProbe: |
+        httpGet:
+          path: /realms/master
+          port: http
+          scheme: HTTP
+        failureThreshold: 15
+        timeoutSeconds: 2
+
+      startupProbe: |
+        httpGet:
+          path: /realms/master
+          port: http
+        initialDelaySeconds: 90
+        timeoutSeconds: 2
+        failureThreshold: 60
+        periodSeconds: 5
+
+      extraVolumeMounts: |
+        - name: db-creds
+          mountPath: /secrets/db-creds
+          readOnly: true
+        - name: kc-http-certificate-file
+          mountPath: /opt/keycloak/conf
+          readOnly: true
+
+      extraVolumes: |
+        - name: db-creds
+          secret:
+            secretName: keycloak-database
+        - name: kc-http-certificate-file
+          secret:
+            secretName: keycloak-tls

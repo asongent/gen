@@ -47,11 +47,11 @@ spec:
             - name: APP__TELEMETRY__METRICS__ENABLED
               value: 'true'
             - name: ELASTICSEARCH__URL
-              value: 'http://eck.elasticsearch-es-http.svc.cluster:9200'
+              value:  'http://10.105.29.155:9200' #'http://eck.elasticsearch-es-http.svc.cluster.local:9200'
             - name: MINIO__ENDPOINT
               value: 'minio.minio.svc.cluster.local:9000'
             - name: RABBITMQ__HOSTNAME
-              value: rabbitmq-system.rabbitmq.svc.cluster
+              value: rabbitmq-system.rabbitmq.svc.cluster.local
             - name: RABBITMQ__PASSWORD
               value: Password@123
             - name: RABBITMQ__PORT
@@ -61,7 +61,7 @@ spec:
             - name: RABBITMQ__USERNAME
               value: admin
             - name: REDIS__HOSTNAME
-              value: airflow.airflow-redis.svc.cluster
+              value: airflow.airflow-redis.svc.cluster.local
             - name: REDIS__MODE
               value: single
             - name: REDIS__PORT
@@ -107,9 +107,9 @@ spec:
             - sh
             - '-c'
             - >-
-              RETRY=0; until [ $RETRY -eq 30 ]; do nc -zv eck.elasticsearch-es-http.svc.cluster
+              RETRY=0; until [ $RETRY -eq 30 ]; do nc -zv eck.elasticsearch-es-http.svc.cluster.local
               9200 && break; echo "[$RETRY/30] waiting service
-              eck.elasticsearch-es-http.svc.cluster:9200:9200 is ready"; sleep 5; RETRY=$(($RETRY +
+              eck.elasticsearch-es-http.svc.cluster.local:9200 is ready"; sleep 5; RETRY=$(($RETRY +
               1)); done
           image: busybox
           name: ready-checker-elasticsearch
@@ -126,8 +126,8 @@ spec:
             - sh
             - '-c'
             - >-
-              RETRY=0; until [ $RETRY -eq 30 ]; do nc -zv  rabbitmq-system.rabbitmq.svc.cluster 5672
-              && break; echo "[$RETRY/30] waiting service  rabbitmq-system.rabbitmq.svc.cluster:5672
+              RETRY=0; until [ $RETRY -eq 30 ]; do nc -zv  rabbitmq-system.rabbitmq.svc.cluster.local 5672
+              && break; echo "[$RETRY/30] waiting service  rabbitmq-system.rabbitmq.svc.cluster.local:5672
               is ready"; sleep 5; RETRY=$(($RETRY + 1)); done
           image: busybox
           name: ready-checker-rabbitmq
@@ -135,9 +135,9 @@ spec:
             - sh
             - '-c'
             - >-
-              RETRY=0; until [ $RETRY -eq 30 ]; do nc -zv airflow.airflow-redis.svc.cluster
+              RETRY=0; until [ $RETRY -eq 30 ]; do nc -zv airflow.airflow-redis.svc.cluster.local
               6379 && break; echo "[$RETRY/30] waiting service
-              airflow.airflow-redis.svc.cluster:6379 is ready"; sleep 5; RETRY=$(($RETRY +
+              airflow.airflow-redis.svc.cluster.local:6379 is ready"; sleep 5; RETRY=$(($RETRY +
               1)); done
           image: busybox
           name: ready-checker-redis-master
