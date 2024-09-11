@@ -15,6 +15,7 @@ gitlab-ce
 neo4j-helm
 # secret-*
 # .sops
+keycloak-cc
 rabb-tem.yaml 
 rabb-tem-op.yaml
 neuvector-ooo
