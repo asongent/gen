@@ -139,7 +139,10 @@ extraEnv: |-
     value: "true"  
   - name: PROXY_ADDRESS_FORWARDING
     value: "true"
-
+  - name: KC_CACHE
+    value: ispn
+  - name: KC_LOG_LEVEL
+    value: "org.keycloak.events:DEBUG,org.infinispan:INFO,org.jgroups:INFO"
 
 # extraEnv: |-
 #   - name: KEYCLOAK_USER
