@@ -241,7 +241,7 @@ metadata:
   namespace: eck
 spec:
   version: 8.14.3
-  image: ghcr.io/asongent/kibana-costum:8.14.3
+  # image: ghcr.io/asongent/kibana-costum:8.14.3
   count: 1
   elasticsearchRef:
     name: elasticsearch
