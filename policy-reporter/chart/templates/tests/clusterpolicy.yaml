@@ -1,0 +1,51 @@
+{{- if dig "bbtests" "enabled" false (merge .Values dict) }}
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: {{ include "policyreporter.fullname" . }}-bbtest
+  annotations:
+    pod-policies.kyverno.io/autogen-controllers: none
+    policies.kyverno.io/title: BBTest
+    policies.kyverno.io/category: Test
+    policies.kyverno.io/severity: low
+    helm.sh/hook: test
+    helm.sh/hook-weight: "-5"
+    helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
+spec:
+  validationFailureAction: audit
+  rules:
+  - name: namespace-pass
+    match:
+      resources:
+        kinds:
+        - Pod
+    validate:
+      pattern:
+        kind: Pod
+  - name: namespace-fail
+    match:
+      resources:
+        kinds:
+        - Service
+    validate:
+      message: "This was a test"
+      pattern:
+        kind: Pod
+  - name: cluster-pass
+    match:
+      resources:
+        kinds:
+        - ClusterRole
+    validate:
+      pattern:
+        kind: ClusterRole
+  - name: cluster-fail
+    match:
+      resources:
+        kinds:
+        - ClusterRoleBinding
+    validate:
+      message: "This was a test"
+      pattern:
+        kind: ClusterRole
+{{- end }}

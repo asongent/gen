@@ -1,0 +1,15 @@
+dependencies:
+- name: monitoring
+  repository: ""
+  version: 2.8.2
+- name: ui
+  repository: ""
+  version: 2.10.5
+- name: kyvernoPlugin
+  repository: ""
+  version: 1.6.5
+- name: gluon
+  repository: oci://registry1.dso.mil/bigbang
+  version: 0.5.3
+digest: sha256:85484aeb17c50584b023b22eed47f0235c11039910209f744a99cb437f4f877a
+generated: "2024-08-09T06:14:20.344723068Z"

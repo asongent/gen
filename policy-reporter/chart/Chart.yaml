@@ -1,0 +1,36 @@
+apiVersion: v2
+name: kyverno-reporter
+description: |
+  Policy Reporter watches for PolicyReport Resources.
+  It creates Prometheus Metrics and can send rule validation events to different targets like Loki, Elasticsearch, Slack or Discord
+type: application
+version: 2.24.1-bb.1
+appVersion: 2.20.1
+icon: https://github.com/kyverno/kyverno/raw/main/img/logo.png
+home: https://kyverno.github.io/policy-reporter
+sources:
+  - https://github.com/kyverno/policy-reporter
+maintainers:
+  - name: Frank Jogeleit
+dependencies:
+  - name: monitoring
+    condition: monitoring.enabled
+    version: "2.8.2"
+  - name: ui
+    condition: ui.enabled
+    version: "2.10.5"
+  - name: kyvernoPlugin
+    condition: kyvernoPlugin.enabled
+    version: "1.6.5"
+  - name: gluon
+    version: 0.5.3
+    repository: oci://registry1.dso.mil/bigbang
+annotations:
+  bigbang.dev/applicationVersions: |
+    - Kyverno Reporter: 2.20.1
+  helm.sh/images: |
+    - name: policy-reporter
+      image: registry1.dso.mil/ironbank/opensource/kyverno/policy-reporter:2.20.1
+  bigbang.dev/upstreamReleaseNotesMarkdown: |
+    - [Find our upstream chart's CHANGELOG here](https://github.com/kyverno/policy-reporter/blob/main/CHANGELOG.md)
+    - [and our upstream application release notes here](https://github.com/kyverno/kyverno/releases)

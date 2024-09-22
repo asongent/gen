@@ -1,0 +1,20 @@
+imagePullSecrets:
+- name: private-registry
+kyvernoPlugin:
+  imagePullSecrets:
+  - name: private-registry
+ui:
+  imagePullSecrets:
+  - name: private-registry
+
+bbtests:
+  enabled: true
+
+networkPolicies:
+  enabled: true
+  controlPlaneCidr: 172.16.0.0/12
+
+monitoring:
+  enabled: true
+  grafana:
+    namespace: monitoring

@@ -1,0 +1,27 @@
+# Until the image is in Iron Bank, we need an exception to the policies
+gatekeeper:
+  values:
+    violations:
+      allowedDockerRegistries:
+        parameters:
+          repos:
+          - ghcr.io
+kyvernopolicies:
+  enabled: true
+  values:
+    policies:
+      restrict-image-registries:
+        parameters:
+          allow:
+          - ghcr.io
+
+kyverno:
+  enabled: true
+
+kyvernoreporter:
+  enabled: true
+  git:
+    repo: https://repo1.dso.mil/platform-one/big-bang/apps/sandbox/kyverno-reporter
+    branch: main
+    path: chart
+  flux: {}

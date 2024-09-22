@@ -1,0 +1,19 @@
+{{- if .Values.networkPolicies.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: ingress-egress-ns
+  namespace: {{ .Release.Namespace }}
+  labels: {{ include "policyreporter.labels" . | nindent 4 }}
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress
+  egress:
+  - to:
+    - podSelector: {}
+  ingress:
+  - from:
+    - podSelector: {}
+{{- end }}
