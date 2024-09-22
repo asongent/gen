@@ -42,7 +42,7 @@ spec:
         prefix: /
     route:
     - destination:
-        host: policy-reporter-kyverno-reporter
+        host: policy-reporter-ui
         port:
           number: 8080
 ---
