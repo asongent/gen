@@ -1,0 +1,49 @@
+
+
+# ---
+# apiVersion: kyverno.io/v1
+# kind: ClusterPolicy
+# metadata:
+#   name: restrict-service-types
+# spec:
+#   background: true
+#   rules:
+#   - kind: Service
+#     match:
+#       resources:
+#       - kind: Service
+#     validate: 
+#       message: "Services must not have NodePod and LoadBalancer Type"
+#       deny:
+#         conditions:
+#         - key: spec.type
+#           operator: In
+#           values:
+#           - NodePort
+#           - LoadBalancer
+#         - key: metadata.namespace
+#           operator: NotIn
+#           values:
+#           - istio-system
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: deny-nodeport-loadbalancer-services
+spec:
+  validationFailureAction: enforce
+  rules:
+    - name: deny-nodeport-and-loadbalancer
+      match:
+        resources:
+          kinds:
+            - Service
+      exclude:
+        resources:
+          namespaces:
+            - istio-system
+      validate:
+        message: "NodePort and LoadBalancer services are not allowed"
+        pattern:
+          spec:
+            type: "!NodePort|!LoadBalancer"
