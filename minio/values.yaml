@@ -1121,10 +1121,10 @@ metrics:
   serviceMonitor:
     ## @param metrics.serviceMonitor.enabled If the operator is installed in your cluster, set to true to create a Service Monitor Entry
     ##
-    enabled: false
+    enabled: true
     ## @param metrics.serviceMonitor.namespace Namespace which Prometheus is running in
     ##
-    namespace: ""
+    namespace: "monitoring"
     ## @param metrics.serviceMonitor.labels Extra labels for the ServiceMonitor
     ##
     labels: {}
