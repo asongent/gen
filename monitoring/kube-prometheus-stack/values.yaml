@@ -2,10 +2,144 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-## Provide a name in place of kube-prometheus-stack for `app:` labels
-##
+# These values are for the BigBang overrides
+domain: dev.bigbang.mil
+flux:
+  enabled: false
+  namespace: flux-system
 
-nameOverride: ""
+networkPolicies:
+  enabled: false
+  controlPlaneCidr: 0.0.0.0/0
+  ingressLabels:
+    app: istio-ingressgateway
+    istio: ingressgateway
+  # -- This toggle enables a NetworkPolicy that will allow external egress providing the ability to send alerts to external resources like MM/Slack/etc.
+  alertmanager:
+    enableEgress: false
+  additionalPolicies: []
+
+# Toggles networkpolicy needed for openshift
+openshift: false
+
+bbtests:
+  enabled: false
+  cypress:
+    artifacts: true
+    envs:
+      cypress_prometheus_url: 'http://monitoring-kube-prometheus-prometheus:9090'
+      cypress_alertmanager_url: 'http://monitoring-kube-prometheus-alertmanager:9093'
+  
+istio:
+  enabled: false
+  hardened:
+    enabled: false
+    outboundTrafficPolicyMode: "REGISTRY_ONLY"
+    customServiceEntries: []
+      # - name: "allow-google"
+      #   enabled: true
+      #   spec:
+      #     hosts:
+      #       - google.com
+      #     location: MESH_EXTERNAL
+      #     ports:
+      #       - number: 443
+      #         protocol: TLS
+      #         name: https
+      #     resolution: DNS
+    customAuthorizationPolicies: []
+    # - name: "allow-nothing"
+    #   enabled: true
+    #   spec: {}
+    clusterWideHardenedEnabled: false
+    tempo:
+        enabled: false
+        namespaces:
+        - tempo
+        principals:
+        - cluster.local/ns/tempo/sa/tempo-tempo
+  namespace: istio-system
+  prometheus:
+    # Toggle vs creation
+    enabled: true
+    annotations: {}
+    labels: {}
+    gateways:
+      - istio-system/main
+    hosts:
+      - prometheus.{{ .Values.domain }}
+    service: ""
+    port: ""
+    namespace: ""
+  # Toggle to disable all rules via the enabled: false
+  prometheusRule:
+    IstioSidecarMemModerate: true
+    IstioSidecarMemHigh: true
+    IstioConfigValidationFailed: true
+    Istio5XXResponseCode: true
+    IstioSidecarEndpointError: true
+    IstioSidecarListenerConflict: true
+
+  alertmanager:
+    # Toggle vs creation
+    enabled: true
+    annotations: {}
+    labels: {}
+    gateways:
+      - istio-system/main
+    hosts:
+      - alertmanager.{{ .Values.domain }}
+    service: ""
+    port: ""
+    namespace: ""
+  injection: disabled
+  mtls:
+    # Note that setting this to STRICT requires additional configuration for Prometheus and monitors.
+    # Review `./docs/istio-mtls-metrics.md` for additional information.
+    mode: STRICT
+  console:
+    enabled: false
+
+sso:
+  enabled: false
+  selector:
+    key: protect
+    value: keycloak
+
+tempo:
+  # Toggle tempo AuthorizationPolicy creation 
+  enabled: false
+
+# Deletes previous kube-state-metrics deployment/statefulset before attempting an upgrade
+# May be required on some monitoring chart updates due to upstream breaking changes
+# REQUIRED for Chart v23.x upgrade
+cleanUpgrade:
+  enabled: false
+  image:
+    registry: registry1.dso.mil
+    repository: ironbank/big-bang/base
+    tag: 2.1.0
+    sha: ""
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 100m
+    limits:
+      memory: 256Mi
+      cpu: 100m
+  securityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    runAsNonRoot: true
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    capabilities:
+      drop:
+      - ALL
+
+## Provide a name in place of monitoring for `app:` labels
+##
+nameOverride: "kube-prometheus-stack"
 
 ## Override the deployment namespace
 ##
@@ -175,6 +309,10 @@ defaultRules:
   ## Prefix for runbook URLs. Use this to override the first part of the runbookURLs that is common to all rules.
   runbookUrl: "https://runbooks.prometheus-operator.dev/runbooks"
 
+  node:
+    fsSelector: 'fstype!=""'
+    # fsSelector: 'fstype=~"ext[234]|btrfs|xfs|zfs"'
+
   ## Disabled PrometheusRule alerts
   disabled: {}
   # KubeAPIDown: true
@@ -226,10 +364,8 @@ global:
   ## Reference to one or more secrets to be used when pulling images
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
   ##
-  imagePullSecrets: []
-  # - name: "image-pull-secret"
-  # or
-  # - "image-pull-secret"
+  imagePullSecrets:
+  - name: private-registry
 
 windowsMonitoring:
   ## Deploys the windows-exporter and Windows-specific dashboards and rules (job name must be 'windows-exporter')
@@ -287,7 +423,7 @@ alertmanager:
     create: true
     name: ""
     annotations: {}
-    automountServiceAccountToken: true
+    automountServiceAccountToken: false
 
   ## Configure pod disruption budgets for Alertmanager
   ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/#specifying-a-poddisruptionbudget
@@ -652,9 +788,10 @@ alertmanager:
 
     ## Image of Alertmanager
     ##
+    # use IronBank image
     image:
-      registry: quay.io
-      repository: prometheus/alertmanager
+      registry: registry1.dso.mil
+      repository: ironbank/opensource/prometheus/alertmanager
       tag: v0.27.0
       sha: ""
 
@@ -769,7 +906,7 @@ alertmanager:
 
     ## The external URL the Alertmanager instances will be available under. This is necessary to generate correct URLs. This is necessary if Alertmanager is not served from root of a DNS name. string  false
     ##
-    externalUrl:
+    externalUrl: "https://alertmanager.{{ .Values.domain }}"
 
     ## The route prefix Alertmanager registers HTTP handlers for. This is useful, if using ExternalURL and a proxy is rewriting HTTP routes of a request, and the actual ExternalURL is still true,
     ## but the server serves requests under a different route prefix. For example for use with kubectl proxy.
@@ -795,9 +932,13 @@ alertmanager:
     ## Define resources requests and limits for single Pods.
     ## ref: https://kubernetes.io/docs/user-guide/compute-resources/
     ##
-    resources: {}
-    # requests:
-    #   memory: 400Mi
+    resources:
+      limits:
+        cpu: 100m
+        memory: 100Mi
+      requests:
+        cpu: 100m
+        memory: 100Mi
 
     ## Pod anti-affinity can prevent the scheduler from placing Prometheus replicas on the same node.
     ## The default value "soft" means that the scheduler should *prefer* to not schedule two replica pods onto the same node but no guarantee is provided.
@@ -950,10 +1091,51 @@ alertmanager:
 ## Using default values from https://github.com/grafana/helm-charts/blob/main/charts/grafana/values.yaml
 ##
 grafana:
-  enabled: true
+  enabled: false
   namespaceOverride: ""
 
-  assertNoLeakedSecrets: false
+  # use IronBank image
+  image:
+    registry: registry1.dso.mil
+    repository: ironbank/big-bang/grafana/grafana-plugins
+    tag: 11.1.0
+    pullSecrets:
+    - private-registry
+  
+  containerSecurityContext:
+    capabilities:
+      drop:
+        - ALL
+    
+
+  # add plugins to be installed (only works in non-airgap, pulls directly from the internet)
+  #plugins:
+  #    # grafana-piechart-panel is required for the loki dashboard
+  #  - grafana-piechart-panel
+  #    # grafana-polystat-panel is required for the Gitlab CI pipelines dashboard
+  #  - grafana-polystat-panel
+  #    # redis-datasource is required for the Redis Dasboards
+  #  - redis-datasource
+
+  resources: 
+    limits:
+      cpu: 100m
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 256Mi
+
+  testFramework:
+    registry: registry1.dso.mil
+    repository: ironbank/opensource/bats/bats
+    tag: v1.11.0
+    pullSecrets:
+    - private-registry
+    imagePullPolicy: IfNotPresent
+    securityContext:
+      capabilites:
+        drop:
+          - ALL
 
   ## ForceDeployDatasources Create datasource configmap even if grafana deployment has been disabled
   ##
@@ -975,58 +1157,38 @@ grafana:
   ## Editable flag for the default dashboards
   ##
   defaultDashboardsEditable: true
+  
+  ## Use the Big Bang Grafana values.yaml to set adminPassword for Grafana- https://repo1.dso.mil/big-bang/product/packages/grafana/-/blob/main/chart/values.yaml
+  adminPassword: prom-operator 
 
-  adminPassword: prom-operator
-
-  ## Setting up SSO 
   grafana.ini:
     # Required if enabling SSO
-    server:
-      domain: grafana.stack.fredgentech.net
-      root_url: https://grafana.stack.fredgentech.net
+    #server:
+      #root_url: https://grafana.{{ .Values.domain }}/
       #Block is auto-set when using Umbrella
     auth.generic_oauth:
-      enabled: true
+      enabled: false
       client_id: grafana    #this is a sample client_id, review docs/KEYCLOAK.md
-      client_secret: 8kkkdGZ9EQALnYM403Png2mxfGaKyzKM #this is a sample secret, review docs/KEYCLOAK.md
-      scopes: openid email profile offline_access roles     #this is a sample client scope, review docs/KEYCLOAK.md
-      auth_url: https://keycloak.stack.fredgentech.net/auth/realms/New%20Gen%20Tech/protocol/openid-connect/auth
-      token_url: https://keycloak.stack.fredgentech.net/auth/realms/New%20Gen%20Tech/protocol/openid-connect/token
-      api_url: https://keycloak.stack.fredgentech.net/auth/realms/New%20Gen%20Tech/protocol/openid-connect/userinfo
-      # signout_redirect_url: https://keycloak.stack.fredgentech.net/auth/realms/New%20Gen%20Tech/protocol/openid-connect/logout
+      client_secret: secret #this is a sample secret, review docs/KEYCLOAK.md
+      scopes: Grafana       #this is a sample client scope, review docs/KEYCLOAK.md
+      auth_url: https://login.dso.mil/auth/realms/baby-yoda/protocol/openid-connect/auth
+      token_url: https://login.dso.mil/auth/realms/baby-yoda/protocol/openid-connect/token
+      api_url: https://login.dso.mil/auth/realms/baby-yoda/protocol/openid-connect/userinfo
       allow_sign_up: true
-      #allow_assign_grafana_admin: true #Adding this grants user admin privileges.  This does not work. You have to manually add user to admin group in your desire Org
-      #role_attribute_path: contains(roles[*], 'admin') && 'Admin' || contains(roles[*], 'editor') && 'Editor' || 'Viewer'
-      # groups_attribute_path: groups
-      email_attribute_path: email
-      login_attribute_path: username
-      name_attribute_path: full_name
+      role_attribute_path: Viewer
       # tls_skip_verify_insecure: false
       # tls_client_cert: ""
       # tls_client_key: ""
       # tls_client_ca : /etc/oidc/ca.pem
       # allowed_domains: mycompany.com mycompany.org
       # empty_scopes: false
-    # plugin.grafana-piechart-panel:
-    #   path: /var/lib/bb-plugins/piechart-panel
-    # plugin.grafana-polystat-panel:
-    #   path: /var/lib/bb-plugins/polystat-panel
-    # plugin.redis-datasource:
-    #   path: /var/lib/bb-plugins/redis-datasource
-  # auth:
-  #   disable_login_form: false 
-  #   oauth_auto_login: false 
-  #   oauth_skip_org_role_update_sync: false  
-  #   skip_org_role_sync: false  
-  # users:
-  #   auto_assign_org: true
-  #   auto_assign_org_role: Admin  #Viewer default org_role
-  #   auto_assign_org_id: 1
-  # security:
-  #   disable_initial_admin_creation: true
-  #   allow_embedding: true
-  #   cookie_secure: fals
-  
+    plugin.grafana-piechart-panel:
+      path: /var/lib/bb-plugins/piechart-panel
+    plugin.grafana-polystat-panel:
+      path: /var/lib/bb-plugins/polystat-panel
+    plugin.redis-datasource:
+      path: /var/lib/bb-plugins/redis-datasource
+
   rbac:
     ## If true, Grafana PSPs will be created
     ##
@@ -1072,13 +1234,13 @@ grafana:
 
   # # To make Grafana persistent (Using Statefulset)
   # #
-  persistence:
-    enabled: true
-    type: sts
-    storageClassName: "longhorn"
-    accessModes:
-      - ReadWriteOnce
-    size: 10Gi
+  # persistence:
+  #   enabled: true
+  #   type: sts
+  #   storageClassName: "storageClassName"
+  #   accessModes:
+  #     - ReadWriteOnce
+  #   size: 20Gi
   #   finalizers:
   #     - kubernetes.io/pvc-protection
 
@@ -1087,6 +1249,26 @@ grafana:
     autoMount: true
 
   sidecar:
+
+    # use IronBank image
+    image:
+      registry: registry1.dso.mil
+      repository: ironbank/kiwigrid/k8s-sidecar
+      tag: 1.27.2
+
+    resources:
+      limits:
+        cpu: 100m
+        memory: 100Mi
+      requests:
+        cpu: 100m
+        memory: 100Mi
+    
+    securityContext:
+      capabilities:
+        drop:
+          - ALL
+
     dashboards:
       enabled: true
       label: grafana_dashboard
@@ -1152,12 +1334,69 @@ grafana:
         handleGrafanaManagedAlerts: false
         implementation: prometheus
 
+  dashboardProviders: {}
+  #  dashboardproviders.yaml:
+  #    apiVersion: 1
+  #    providers:
+  #    - name: 'default'
+  #      orgId: 1
+  #      folder: ''
+  #      type: file
+  #      disableDeletion: false
+  #      editable: true
+  #      options:
+  #        path: /var/lib/grafana/dashboards/default
+
+  downloadDashboardsImage:
+    registry: registry1.dso.mil
+    repository: ironbank/big-bang/base
+    tag: 2.1.0
+  
+  ## Resource settings for above DownloadDashboards container
+  downloadDashboards:
+    resources: 
+      limits:
+        cpu: 20m
+        memory: 20Mi
+      requests:
+        cpu: 20m
+        memory: 20Mi
+
+  dashboards: {}
+  #  default:
+  #    some-dashboard:
+  #      json: |
+  #        JSON_DATA
+  #   custom-dashboard:
+  #     file: dashboards/custom-dashboard.json
+  #   prometheus-stats:
+  #     gnetId: 2
+  #     revision: 2
+  #     datasource: Prometheus
+  #   local-dashboard:
+  #     url: https://example.com/repository/test.json
+  #   local-dashboard-base64:
+  #     url: https://example.com/repository/test-b64.json
+  #     b64content: true
+  # ## Field with internal link pointing to existing data source in Grafana.
+  # ## Can be provisioned via additionalDataSources
+  # exemplarTraceIdDestinations: {}
+  #   # datasourceUid: Jaeger
+  #   # traceIdLabelName: trace_id
+
   extraConfigmapMounts: []
   # - name: certs-configmap
   #   mountPath: /etc/grafana/ssl/
   #   configMap: certs-configmap
   #   readOnly: true
 
+  extraSecretMounts: []
+  # - name: oidc-ca-cert
+  #   mountPath: /etc/oidc
+  #   secretName: grafana-oidc-secret
+  #   readOnly: true
+  #   subPath: "ca.pem"
+  
   deleteDatasources: []
   # - name: example-datasource
   #   orgId: 1
@@ -1177,6 +1416,11 @@ grafana:
   #   type: prometheus
   #   url: https://{{ printf "%s-prometheus.svc" .Release.Name }}:9090
   #   version: 1
+
+  # Flag to mark provisioned data sources for deletion if they are no longer configured.
+  # It takes no effect if data sources are already listed in the deleteDatasources section.
+  # ref: https://grafana.com/docs/grafana/latest/administration/provisioning/#example-data-source-config-file
+  prune: false
 
   ## Passed to grafana subchart and used by servicemonitor below
   ##
@@ -1217,6 +1461,47 @@ grafana:
     #   targetLabel: nodename
     #   replacement: $1
     #   action: replace
+  
+  ## Enable persistence using Persistent Volume Claims
+  ## ref: http://kubernetes.io/docs/user-guide/persistent-volumes/
+  ##
+  persistence:
+    type: pvc
+    enabled: false
+    # storageClassName: default
+    accessModes:
+      - ReadWriteOnce
+    size: 10Gi
+    # annotations: {}
+
+  initChownData:
+    ## If false, data ownership will not be reset at startup
+    ## This allows the prometheus-server to be run with an arbitrary user
+    ## Is not required for BigBang monitoring installations since permission/owership is fully stated
+    enabled: false
+  
+    ## initChownData container image
+    ##
+    image:
+      registry: registry1.dso.mil
+      repository: ironbank/redhat/ubi/ubi9-minimal
+      tag: "9.4"
+      sha: ""
+      pullPolicy: IfNotPresent
+  
+    ## initChownData resource requests and limits
+    ## Ref: http://kubernetes.io/docs/user-guide/compute-resources/
+    ##
+    resources:
+      limits:
+        cpu: 100m
+        memory: 128Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
+
+kiali:
+  enabled: false
 
 ## Flag to disable all the kubernetes component scrapers
 ##
@@ -2078,12 +2363,41 @@ kubeProxy:
 kubeStateMetrics:
   enabled: true
 
-## Configuration for kube-state-metrics subchart
+## Configuration for kube-state-metrics sub-chart
 ##
 kube-state-metrics:
+  # use IronBank image
+  image:
+    registry: registry1.dso.mil
+    repository: ironbank/opensource/kubernetes/kube-state-metrics
+    tag: v2.12.0
+
+  resources:
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
   namespaceOverride: ""
+
   rbac:
     create: true
+
+  podSecurityPolicy:
+    enabled: false
+
+  securityContext:
+    runAsGroup: 65532
+    runAsUser: 65532
+    fsGroup: 65532
+
+  containerSecurityContext:
+    capabilities:
+      drop:
+        - ALL
+
   releaseLabel: true
   prometheus:
     monitor:
@@ -2156,6 +2470,9 @@ nodeExporter:
       enabled: true
     darwin:
       enabled: true
+  serviceMonitor:
+    interval: ""
+  jobLabel: jobLabel
 
   ## ForceDeployDashboard Create dashboard configmap even if nodeExporter deployment has been disabled
   ##
@@ -2164,6 +2481,37 @@ nodeExporter:
 ## Configuration for prometheus-node-exporter subchart
 ##
 prometheus-node-exporter:
+  ## Service Monitor attach metadata
+  serviceMonitor:
+    attachMetadata: {}
+  
+  # set container SecurityContext
+  containerSecurityContext:
+    capabilities:
+      drop:
+        - ALL
+
+  # use IronBank image
+  image:
+    registry: registry1.dso.mil
+    repository: ironbank/opensource/prometheus/node-exporter 
+    tag: v1.8.1
+
+  resources:
+    limits:
+      cpu: 200m
+      memory: 250Mi
+    requests:
+      cpu: 200m
+      memory: 250Mi  
+  ## Disable the hostNetwork in order to resolve no-host-namespace violations. If not set, the prometheus-node-exporter default (hostNetwork: true) is used.
+  #
+  hostNetwork: false
+
+  ## Big Bang modification to resolve OPA violations (not available in upstream chart)
+  #
+  hostPID: false
+  
   namespaceOverride: ""
   podLabels:
     ## Add the 'node-exporter' label to be used by serviceMonitor to match standard common usage in rules and grafana dashboards
@@ -2179,6 +2527,9 @@ prometheus-node-exporter:
       enabled: false
       ipFamilies: ["IPv6", "IPv4"]
       ipFamilyPolicy: "PreferDualStack"
+    labels:
+      jobLabel: node-exporter
+
   prometheus:
     monitor:
       enabled: true
@@ -2242,6 +2593,45 @@ prometheus-node-exporter:
     ##
     pspEnabled: false
 
+## Deploy SNMP exporter as a deployment to all nodes
+##
+snmpExporter:
+  enabled: false
+
+## Configuration for prometheus-snmp-exporter subchart
+##
+  image:
+    repository: registry1.dso.mil/ironbank/opensource/prometheus/snmp_exporter
+    tag: v0.26.0
+  imagePullSecrets:
+    - name: private-registry
+
+  configmapReload:
+    image:
+      repository: registry1.dso.mil/ironbank/opensource/prometheus-operator/prometheus-config-reloader
+      tag: v0.74.0
+
+  ## Security context to be added to snmp-exporter pods
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1001
+    runAsGroup: 1001
+    fsGroup: 1001
+
+  ## Security context to be added to snmp-exporter containers
+  containerSecurityContext:
+    runAsGroup: 1001
+    runAsNonRoot: true
+    runAsUser: 1001
+    capabilities:
+      drop:
+        - ALL
+
+  # Enable this if you're using https://github.com/prometheus-operator/prometheus-operator
+  # A service monitor will be created per each item in serviceMonitor.params[]
+  serviceMonitor:
+    enabled: true
+
 ## Manages Prometheus and Alertmanager components
 ##
 prometheusOperator:
@@ -2267,6 +2657,25 @@ prometheusOperator:
     # The default webhook port is 10250 in order to work out-of-the-box in GKE private clusters and avoid adding firewall rules.
     internalPort: 10250
 
+  ## Liveness probe for the prometheusOperator deployment
+  ##
+  livenessProbe:
+    enabled: true
+    failureThreshold: 3
+    initialDelaySeconds: 0
+    periodSeconds: 10
+    successThreshold: 1
+    timeoutSeconds: 1
+  ## Readiness probe for the prometheusOperator deployment
+  ##
+  readinessProbe:
+    enabled: true
+    failureThreshold: 3
+    initialDelaySeconds: 0
+    periodSeconds: 10
+    successThreshold: 1
+    timeoutSeconds: 1
+
   ## Admission webhook support for PrometheusRules resources added in Prometheus Operator 0.30 can be enabled to prevent incorrectly formatted
   ## rules from making their way into prometheus and potentially preventing the container from starting
   admissionWebhooks:
@@ -2283,6 +2692,10 @@ prometheusOperator:
     ## On chart upgrades (or if the secret exists) the cert will not be re-generated. You can use this to provide your own
     ## certs ahead of time if you wish.
     ##
+    containerSecurityContext:
+      capabilities:
+        drop:
+          - ALL
     annotations: {}
     #   argocd.argoproj.io/hook: PreSync
     #   argocd.argoproj.io/hook-delete-policy: HookSucceeded
@@ -2290,6 +2703,13 @@ prometheusOperator:
     namespaceSelector: {}
     objectSelector: {}
 
+    mutatingWebhookConfiguration:
+      annotations: {}
+      #   argocd.argoproj.io/hook: PreSync
+
+    validatingWebhookConfiguration:
+      annotations: {}
+      #   argocd.argoproj.io/hook: PreSync
 
     deployment:
       enabled: false
@@ -2402,7 +2822,6 @@ prometheusOperator:
       image:
         registry: quay.io
         repository: prometheus-operator/admission-webhook
-        # if not set appVersion field from Chart.yaml is used
         tag: ""
         sha: ""
         pullPolicy: IfNotPresent
@@ -2512,12 +2931,26 @@ prometheusOperator:
     patch:
       enabled: true
       image:
-        registry: registry.k8s.io
-        repository: ingress-nginx/kube-webhook-certgen
-        tag: v20221220-controller-v1.5.1-58-g787ea74b6
+        registry: registry1.dso.mil
+        repository: ironbank/opensource/ingress-nginx/kube-webhook-certgen
+        tag: v1.3.0
         sha: ""
         pullPolicy: IfNotPresent
-      resources: {}
+      resources:
+        limits:
+          cpu: 50m
+          memory: 50Mi
+        requests:
+          cpu: 50m
+          memory: 50Mi
+      containerSecurityContext:
+        capabilities:
+          drop:
+            - ALL
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
       ## Provide a priority class name to the webhook patching job
       ##
       priorityClassName: ""
@@ -2528,7 +2961,38 @@ prometheusOperator:
       podAnnotations: {}
       nodeSelector: {}
       affinity: {}
-      tolerations: []
+      tolerations: [] 
+      ## Service account for Prometheus Operator Webhook Job Patch to use.
+      ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
+      ##
+      serviceAccount:
+        create: true
+        automountServiceAccountToken: true
+    cleanupProxy:
+      image:
+        registry: registry1.dso.mil
+        repository: ironbank/big-bang/base
+        tag: 2.1.0
+        sha: ""
+        pullPolicy: IfNotPresent
+      resources:
+        limits:
+          cpu: 50m
+          memory: 50Mi
+        requests:
+          cpu: 50m
+          memory: 50Mi
+      ## Provide a priority class name to the webhook cleanup proxy job
+      ##
+      priorityClassName: ""
+      ttlSecondsAfterFinished: 60
+      annotations: {}
+      #   argocd.argoproj.io/hook: PreSync
+      #   argocd.argoproj.io/hook-delete-policy: HookSucceeded
+      podAnnotations: {}
+      nodeSelector: {}
+      affinity: {}
+      tolerations: [] 
 
       ## SecurityContext holds pod-level security attributes and common container settings.
       ## This defaults to non root user with uid 2000 and gid 2000. *v1.PodSecurityContext  false
@@ -2540,12 +3004,6 @@ prometheusOperator:
         runAsUser: 2000
         seccompProfile:
           type: RuntimeDefault
-      ## Service account for Prometheus Operator Webhook Job Patch to use.
-      ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
-      ##
-      serviceAccount:
-        create: true
-        automountServiceAccountToken: true
 
     # Security context for create job container
     createSecretJob:
@@ -2600,7 +3058,7 @@ prometheusOperator:
   ## Without this specified option cluster.peer will have value alertmanager-monitoring-alertmanager-0.alertmanager-operated:9094 (default value)
   ## With this specified option cluster.peer will have value alertmanager-monitoring-alertmanager-0.alertmanager-operated.namespace.svc.cluster-domain:9094
   ##
-  # clusterDomain: "cluster.local"
+  clusterDomain: "cluster.local"
 
   networkPolicy:
     ## Enable creation of NetworkPolicy resources.
@@ -2762,13 +3220,13 @@ prometheusOperator:
 
   ## Resource limits & requests
   ##
-  resources: {}
-  # limits:
-  #   cpu: 200m
-  #   memory: 200Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 100Mi
+  resources:
+    limits:
+      cpu: 200m
+      memory: 512Mi
+    requests:
+      cpu: 200m
+      memory: 512Mi
 
   ## Operator Environment
   ##  env:
@@ -2869,11 +3327,11 @@ prometheusOperator:
 
   ## Prometheus-operator image
   ##
+  # get image from ironbank
   image:
-    registry: quay.io
-    repository: prometheus-operator/prometheus-operator
-    # if not set appVersion field from Chart.yaml is used
-    tag: ""
+    registry: registry1.dso.mil
+    repository: ironbank/opensource/prometheus-operator/prometheus-operator
+    tag: v0.75.0
     sha: ""
     pullPolicy: IfNotPresent
 
@@ -2893,14 +3351,13 @@ prometheusOperator:
   ##
   # alertmanagerDefaultBaseImageRegistry: quay.io
 
-  ## Prometheus-config-reloader
+  ## Prometheus-config-reloader image to use for config and rule reloading
   ##
   prometheusConfigReloader:
     image:
-      registry: quay.io
-      repository: prometheus-operator/prometheus-config-reloader
-      # if not set appVersion field from Chart.yaml is used
-      tag: ""
+      registry: registry1.dso.mil
+      repository: ironbank/opensource/prometheus-operator/prometheus-config-reloader
+      tag: v0.75.0
       sha: ""
 
     # add prometheus config reloader liveness and readiness probe. Default: false
@@ -2918,8 +3375,8 @@ prometheusOperator:
   ## Thanos side-car image when configured
   ##
   thanosImage:
-    registry: quay.io
-    repository: thanos/thanos
+    registry: registry1.dso.mil
+    repository: ironbank/opensource/thanos/thanos
     tag: v0.35.1
     sha: ""
 
@@ -2937,6 +3394,15 @@ prometheusOperator:
   ## Set a Field Selector to filter watched secrets
   ##
   secretFieldSelector: "type!=kubernetes.io/dockercfg,type!=kubernetes.io/service-account-token,type!=helm.sh/release.v1"
+
+  ## kubectl image to use when cleaning up
+  ##
+  kubectlImage:
+    registry: registry1.dso.mil
+    repository: ironbank/opensource/kubernetes/kubectl
+    tag: v1.29.6
+    sha: ""
+    pullPolicy: IfNotPresent
 
   ## If false then the user will opt out of automounting API credentials.
   ##
@@ -3460,6 +3926,16 @@ prometheus:
     ##
     scrapeTimeout: ""
 
+    ## List of scrape classes to expose to scraping objects such as
+    ## PodMonitors, ServiceMonitors, Probes and ScrapeConfigs.
+    ##
+    scrapeClasses: []
+    # - name: istio-mtls
+    #   default: false
+    #   tlsConfig:
+    #     caFile: /etc/prometheus/secrets/istio.default/root-cert.pem
+    #     certFile: /etc/prometheus/secrets/istio.default/cert-chain.pem
+
     ## Interval between consecutive evaluations.
     ##
     evaluationInterval: ""
@@ -3498,9 +3974,9 @@ prometheus:
     ## Image of Prometheus.
     ##
     image:
-      registry: quay.io
-      repository: prometheus/prometheus
-      tag: v2.53.0
+      registry: registry1.dso.mil
+      repository: ironbank/opensource/prometheus/prometheus
+      tag: v2.54.1
       sha: ""
 
     ## Tolerations for use with node taints
@@ -3564,7 +4040,7 @@ prometheus:
 
     ## External URL at which Prometheus will be reachable.
     ##
-    externalUrl: ""
+    externalUrl: "https://prometheus.{{ .Values.domain }}"
 
     ## Define which Nodes the Pods are scheduled on.
     ## ref: https://kubernetes.io/docs/user-guide/node-selection/
@@ -3599,7 +4075,7 @@ prometheus:
     ## prometheus resource to be created with selectors based on values in the helm deployment,
     ## which will also match the PrometheusRule resources created
     ##
-    ruleSelectorNilUsesHelmValues: true
+    ruleSelectorNilUsesHelmValues: false
 
     ## PrometheusRules to be selected for target discovery.
     ## If {}, select all PrometheusRules
@@ -3624,7 +4100,7 @@ prometheus:
     ## prometheus resource to be created with selectors based on values in the helm deployment,
     ## which will also match the servicemonitors created
     ##
-    serviceMonitorSelectorNilUsesHelmValues: true
+    serviceMonitorSelectorNilUsesHelmValues: false
 
     ## ServiceMonitors to be selected for target discovery.
     ## If {}, select all ServiceMonitors
@@ -3647,7 +4123,7 @@ prometheus:
     ## prometheus resource to be created with selectors based on values in the helm deployment,
     ## which will also match the podmonitors created
     ##
-    podMonitorSelectorNilUsesHelmValues: true
+    podMonitorSelectorNilUsesHelmValues: false
 
     ## PodMonitors to be selected for target discovery.
     ## If {}, select all PodMonitors
@@ -3669,7 +4145,7 @@ prometheus:
     ## prometheus resource to be created with selectors based on values in the helm deployment,
     ## which will also match the probes created
     ##
-    probeSelectorNilUsesHelmValues: true
+    probeSelectorNilUsesHelmValues: false
 
     ## Probes to be selected for target discovery.
     ## If {}, select all Probes
@@ -3760,10 +4236,11 @@ prometheus:
     ## Standard object's metadata. More info: https://github.com/kubernetes/community/blob/master/contributors/devel/sig-architecture/api-conventions.md#metadata
     ## Metadata Labels and Annotations gets propagated to the prometheus pods.
     ##
-    podMetadata: {}
-    # labels:
-    #   app: prometheus
-    #   k8s-app: prometheus
+    podMetadata:
+      labels:
+        app: prometheus
+      # annotations:
+      #   traffic.sidecar.istio.io/excludeOutboundPorts: "9093"
 
     ## Pod anti-affinity can prevent the scheduler from placing Prometheus replicas on the same node.
     ## The default value "soft" means that the scheduler should *prefer* to not schedule two replica pods onto the same node but no guarantee is provided.
@@ -3809,9 +4286,13 @@ prometheus:
 
     ## Resource limits & requests
     ##
-    resources: {}
-    # requests:
-    #   memory: 400Mi
+    resources:
+      limits:
+        cpu: 300m
+        memory: 5Gi
+      requests:
+        cpu: 300m
+        memory: 5Gi
 
     ## Prometheus StorageSpec for persistent data
     ## ref: https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/user-guides/storage.md
@@ -4126,6 +4607,10 @@ prometheus:
     ## TracingConfig configures tracing in Prometheus.
     ## See https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api.md#prometheustracingconfig
     tracingConfig: {}
+
+    ## Defines the service discovery role used to discover targets from ServiceMonitor objects and Alertmanager endpoints.
+    ## If set, the value should be either “Endpoints” or “EndpointSlice”. If unset, the operator assumes the “Endpoints” role.
+    serviceDiscoveryRole: ""
 
     ## Additional configuration which is not covered by the properties above. (passed through tpl)
     additionalConfig: {}
@@ -4486,8 +4971,8 @@ thanosRuler:
     ## Image of ThanosRuler
     ##
     image:
-      registry: quay.io
-      repository: thanos/thanos
+      registry: registry1.dso.mil
+      repository: ironbank/opensource/thanos/thanos
       tag: v0.35.1
       sha: ""
 
@@ -4754,6 +5239,10 @@ thanosRuler:
     ## PortName to use for ThanosRuler.
     ##
     portName: "web"
+
+    ## WebTLSConfig defines the TLS parameters for HTTPS
+    ## ref: https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api.md#thanosrulerwebspec
+    web: {}
 
     ## Additional configuration which is not covered by the properties above. (passed through tpl)
     additionalConfig: {}

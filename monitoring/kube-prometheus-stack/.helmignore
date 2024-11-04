@@ -24,6 +24,8 @@ OWNERS
 hack/
 ci/
 kube-prometheus-*.tgz
-
+README.md
+CONTRIBUTING.md
+Kptfile
 unittests/
 files/dashboards/

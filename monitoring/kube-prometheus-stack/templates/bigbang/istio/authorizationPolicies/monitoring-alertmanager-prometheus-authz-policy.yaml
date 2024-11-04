@@ -1,0 +1,32 @@
+{{- if or (and .Values.istio.enabled (eq .Values.istio.injection "enabled") .Values.sso.enabled) (and .Values.istio.enabled .Values.istio.hardened.enabled)  -}}
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: monitoring-alertmanager-authz-policy
+  namespace: {{ template "kube-prometheus-stack.namespace" . }}
+spec:
+  selector:
+    matchLabels:
+      alertmanager: {{ template "kube-prometheus-stack.fullname" . }}-alertmanager
+  action: ALLOW
+  rules:
+  - from:
+    - source:
+        namespaces: ["{{ template "kube-prometheus-stack.namespace" . }}"]
+    to:
+    - operation:
+        methods: ["GET", "POST"]
+        paths: ["/*"]
+  - to:
+    - operation:
+        ports: ["{{ .Values.alertmanager.service.port }}", "8080"]
+  - from:
+    - source:
+        namespaces: ["{{ template "kube-prometheus-stack.namespace" . }}"]
+    to:
+    - operation:
+        methods: ["POST"]
+  - to:
+    - operation:
+        ports: ["9094"]
+{{- end }}

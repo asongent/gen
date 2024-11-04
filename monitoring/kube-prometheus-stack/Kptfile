@@ -1,0 +1,11 @@
+apiVersion: kpt.dev/v1alpha1
+kind: Kptfile
+metadata:
+    name: chart
+upstream:
+  type: git
+  git:
+    commit: 71845c4d5795ec552e3ea96036c39dcfb97132ad
+    repo: https://github.com/prometheus-community/helm-charts
+    directory: charts/kube-prometheus-stack
+    ref: kube-prometheus-stack-62.4.0
