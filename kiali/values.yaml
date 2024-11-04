@@ -43,7 +43,7 @@ image:
   digest: "" # use "sha256" if tag is a sha256 hash (do NOT prefix this value with a "@")
   pullPolicy: IfNotPresent
   pullSecrets:
-    - private-registry
+    - ironbank-auth
 
 # Deployment options for the operator pod.
 nodeSelector: {}
@@ -189,7 +189,7 @@ cr:
       image_name: registry1.dso.mil/ironbank/opensource/kiali/kiali
       image_version: v1.89.7
       image_pull_secrets:
-        - private-registry
+        - ironbank-auth
       ingress_enabled: false
       accessible_namespaces:
         - "**"
