@@ -3,7 +3,7 @@
 # Declare variables to be passed into your templates.
 
 # These values are for the BigBang overrides
-domain: dev.bigbang.mil
+domain: stack.fredgentech.net
 flux:
   enabled: false
   namespace: flux-system
@@ -365,7 +365,7 @@ global:
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
   ##
   imagePullSecrets:
-  - name: private-registry
+  - name: ironbank-auth
 
 windowsMonitoring:
   ## Deploys the windows-exporter and Windows-specific dashboards and rules (job name must be 'windows-exporter')
@@ -1100,7 +1100,7 @@ grafana:
     repository: ironbank/big-bang/grafana/grafana-plugins
     tag: 11.1.0
     pullSecrets:
-    - private-registry
+    - ironbank-auth
   
   containerSecurityContext:
     capabilities:
@@ -1130,7 +1130,7 @@ grafana:
     repository: ironbank/opensource/bats/bats
     tag: v1.11.0
     pullSecrets:
-    - private-registry
+    - ironbank-auth
     imagePullPolicy: IfNotPresent
     securityContext:
       capabilites:
@@ -2604,7 +2604,7 @@ snmpExporter:
     repository: registry1.dso.mil/ironbank/opensource/prometheus/snmp_exporter
     tag: v0.26.0
   imagePullSecrets:
-    - name: private-registry
+    - name: ironbank-auth
 
   configmapReload:
     image:
