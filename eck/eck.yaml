@@ -155,7 +155,7 @@ spec:
     count: 1
     config: 
       # index.store.type: mmapfs
-      # node.roles: ["data", "ingest"]
+      node.roles: ["data"]
       node.store.allow_mmap: false #Turn this to false when NOT implementing SSO
       # xpack.ml.enabled: false
       # xpack.security.authc.token.enabled: true
