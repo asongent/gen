@@ -123,25 +123,31 @@ args:
 # Any environment variables defined directly in the statefulset should be set with the appropriate values
 # rather than set here, which will potentially produce duplicates and helm upgrade errors
 # https://www.keycloak.org/server/all-config
-extraEnv: |-       
-        - name: KC_HTTPS_CERTIFICATE_FILE
-          value: /opt/keycloak/conf/tls.crt
-        - name: KC_HTTPS_CERTIFICATE_KEY_FILE
-          value: /opt/keycloak/conf/tls.key
-        - name: KC_HTTPS_TRUST_STORE_PASSWORD
-          value: password
-        - name: KC_HTTPS_CLIENT_AUTH
-          value: none
-        - name: KC_PROXY
-          value: passthrough        
-        - name: KC_HOSTNAME_STRICT_HTTPS
-          value: "true"
-        - name: KC_HOSTNAME
-          value: keycloak.stack.fredgentech.net
-        - name: KC_HOSTNAME_STRICT
-          value: "true"
-        - name: KC_LOG_LEVEL
-          value: "org.keycloak.events:DEBUG,org.infinispan:INFO,org.jgroups:INFO"
+
+extraEnv: |-
+  - name: KC_HTTPS_CERTIFICATE_FILE
+    value: /opt/keycloak/conf/tls.crt
+  - name: KC_HTTPS_CERTIFICATE_KEY_FILE
+    value: /opt/keycloak/conf/tls.key
+  - name: KC_HTTPS_CLIENT_AUTH
+    value: request
+  - name: KC_HTTPS_TRUST_STORE_FILE
+    value: /opt/keycloak/conf/truststore.jks
+  - name: KC_HTTPS_TRUST_STORE_PASSWORD
+    value: password
+  - name: KC_HOSTNAME
+    value: keycloak.stack.fredgentech.net
+  - name: KC_HOSTNAME_STRICT
+    value: "true"
+  - name: KC_LOG_LEVEL
+    value: "org.keycloak.events:DEBUG,org.infinispan:INFO,org.jgroups:INFO"
+
+# - name: KC_HTTPS_CLIENT_AUTH
+#   value: request
+# - name: KC_HOSTNAME_STRICT_HTTPS
+#   value: "true"
+# - name: KC_HTTPS_CLIENT_AUTH
+#   value: none
 
 # extraEnv: |-
 #   - name: KC_HTTPS_CERTIFICATE_FILE
