@@ -12,7 +12,7 @@ spec:
     helm:
       valueFiles:
       - values.yaml
-    path: keycloak
+    path: keycloak/chart
     # kustomize:
     #   version: v4.5.7
     repoURL:  https://github.com/asongent/gen.git
