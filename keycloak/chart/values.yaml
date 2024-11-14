@@ -221,7 +221,7 @@ podAnnotations: {}
 # Liveness probe configuration
 livenessProbe: |
   httpGet:
-    path: /auth/admin/realms/master
+    path: /auth/admin/master/
     port: http
     scheme: HTTP
   failureThreshold: 15
@@ -241,7 +241,7 @@ livenessProbe: |
 # Readiness probe configuration
 readinessProbe: |
   httpGet:
-    path: /auth/admin/realms/master
+    path: /auth/admin/master/
     port: http
     scheme: HTTP
   failureThreshold: 15
@@ -259,13 +259,13 @@ readinessProbe: |
 # Startup probe configuration
 startupProbe: |
   httpGet:
-    path: /auth/admin/realms/master
+    path: /auth/admin/master/
     port: http
   initialDelaySeconds: 90
   timeoutSeconds: 2
   failureThreshold: 60
   periodSeconds: 5
-
+ #/auth/admin/realms/master
 # Revisit after enabling management port
 # startupProbe: |
 #   httpGet:
