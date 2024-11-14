@@ -221,7 +221,7 @@ podAnnotations: {}
 # Liveness probe configuration
 livenessProbe: |
   httpGet:
-    path: /
+    path: /auth/realms/master
     port: http
     scheme: HTTP
   failureThreshold: 15
@@ -241,7 +241,7 @@ livenessProbe: |
 # Readiness probe configuration
 readinessProbe: |
   httpGet:
-    path: /
+    path: /auth/realms/master
     port: http
     scheme: HTTP
   failureThreshold: 15
@@ -259,7 +259,7 @@ readinessProbe: |
 # Startup probe configuration
 startupProbe: |
   httpGet:
-    path: /
+    path: /auth/realms/master
     port: http
   initialDelaySeconds: 90
   timeoutSeconds: 2
