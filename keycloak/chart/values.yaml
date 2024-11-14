@@ -130,6 +130,8 @@ extraEnv: |-
           value: /opt/keycloak/conf/tls.key       
         - name: KC_HOSTNAME_STRICT_HTTPS
           value: "true"
+        - name: KC_HTTPS_TRUST_STORE_FILE
+          value: /opt/keycloak/conf/truststore.jks
         - name: KC_HOSTNAME
           value: keycloak.stack.fredgentech.net
         - name: KC_HOSTNAME_STRICT
