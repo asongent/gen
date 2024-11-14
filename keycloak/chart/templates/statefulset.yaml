@@ -90,7 +90,7 @@ spec:
           {{- tpl . $ | nindent 12 }}
           {{- end }}
           env:
-            {{- if and (.Values.http.relativePath) (eq .Values.http.relativePath "/")  }}
+            {{- if and (.Values.http.relativePath) (eq .Values.http.relativePath "/auth")  }}
             - name: KC_HTTP_RELATIVE_PATH
               value: {{ tpl .Values.http.relativePath $ }}
             {{ else }}
