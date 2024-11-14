@@ -1,0 +1,11 @@
+apiVersion: kpt.dev/v1alpha1
+kind: Kptfile
+metadata:
+  name: keycloak
+upstream:
+  type: git
+  git:
+    commit: c5b93d7a23720bc6b96942cfd8311fe9befe0177
+    repo: https://github.com/codecentric/helm-charts.git
+    directory: /charts/keycloakx
+    ref: keycloakx-2.5.1
