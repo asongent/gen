@@ -221,7 +221,7 @@ podAnnotations: {}
 # Liveness probe configuration
 livenessProbe: |
   httpGet:
-    path: /realms/master
+    path: /auth/realms/master
     port: http
     scheme: HTTP
   failureThreshold: 15
@@ -241,7 +241,7 @@ livenessProbe: |
 # Readiness probe configuration
 readinessProbe: |
   httpGet:
-    path: /realms/master
+    path: /auth/realms/master
     port: http
     scheme: HTTP
   failureThreshold: 15
@@ -259,7 +259,7 @@ readinessProbe: |
 # Startup probe configuration
 startupProbe: |
   httpGet:
-    path: /realms/master
+    path: /auth/realms/master
     port: http
   initialDelaySeconds: 90
   timeoutSeconds: 2
@@ -579,7 +579,7 @@ health:
 
 http:
   # For backwards compatibility reasons we set this to the value used by previous Keycloak versions.
-  relativePath: "/"
+  relativePath: "/auth"
   internalPort: http-internal
   internalScheme: HTTP
 
