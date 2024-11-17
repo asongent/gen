@@ -508,7 +508,7 @@ dbchecker:
 
 postgresql:
   # If `true`, the Postgresql dependency is enabled
-  enabled: true #false
+  enabled: false  #true 
   # PostgreSQL User to create
   postgresqlUsername: keycloak
   # PostgreSQL Password for the new user
