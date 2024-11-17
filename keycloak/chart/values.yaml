@@ -138,7 +138,7 @@ extraEnv: |-
             secretKeyRef:
               name: keycloak-database
               key: password 
-                 
+
         - name: DB_VENDOR
           value: postgres
         - name: DB_ADDR
@@ -574,14 +574,14 @@ database:
   # don't create secret for db password. Instead use existing k8s secret
   # existingSecret: "my-existent-dbpass-secret"
   # existingSecretKey: "password"
-  existingSecret: "keycloak-database"
-  existingSecretKey: "password"
+  existingSecret: ""
+  existingSecretKey: ""
   # E.g. dev-file, dev-mem, mariadb, mssql, mysql, oracle or postgres
-  vendor: postgres
-  hostname: dbms.fredgentech.net
-  port: 5432
-  database: usermanagement
-  username: databaseadmin
+  vendor: ""
+  hostname: 
+  port: ""
+  database: ""
+  username: ""
   password:
 
 cache:
