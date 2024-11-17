@@ -1015,8 +1015,8 @@ grafana:
     # plugin.redis-datasource:
     #   path: /var/lib/bb-plugins/redis-datasource
   auth:
-    disable_login_form: true
-  #   oauth_auto_login: false 
+    disable_login_form: false
+    # oauth_auto_login: false 
   #   oauth_skip_org_role_update_sync: false  
   #   skip_org_role_sync: false  
   # users:
