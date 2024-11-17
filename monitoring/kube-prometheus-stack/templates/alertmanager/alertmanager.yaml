@@ -103,7 +103,7 @@ spec:
 {{- end }}
 {{- if .Values.alertmanager.alertmanagerSpec.podMetadata }}
   podMetadata:
-{{ tpl (toYaml .Values.alertmanager.alertmanagerSpec.podMetadata | indent 4) . }}
+{{ toYaml .Values.alertmanager.alertmanagerSpec.podMetadata | indent 4 }}
 {{- end }}
 {{- if or .Values.alertmanager.alertmanagerSpec.podAntiAffinity .Values.alertmanager.alertmanagerSpec.affinity }}
   affinity:

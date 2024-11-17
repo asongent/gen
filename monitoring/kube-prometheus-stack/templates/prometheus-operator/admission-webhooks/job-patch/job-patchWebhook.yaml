@@ -31,10 +31,6 @@ spec:
       {{- end }}
       containers:
         - name: patch
-          {{- if .Values.prometheusOperator.admissionWebhooks.containerSecurityContext }}
-          securityContext:
-{{ toYaml .Values.prometheusOperator.admissionWebhooks.containerSecurityContext | indent 12 }}
-          {{- end }}
           {{- $registry := .Values.global.imageRegistry | default .Values.prometheusOperator.admissionWebhooks.patch.image.registry -}}
           {{- if .Values.prometheusOperator.admissionWebhooks.patch.image.sha }}
           image: {{ $registry }}/{{ .Values.prometheusOperator.admissionWebhooks.patch.image.repository }}:{{ .Values.prometheusOperator.admissionWebhooks.patch.image.tag }}@sha256:{{ .Values.prometheusOperator.admissionWebhooks.patch.image.sha }}
@@ -54,30 +50,6 @@ spec:
           {{- end }}
           resources:
 {{ toYaml .Values.prometheusOperator.admissionWebhooks.patch.resources | indent 12 }}
-        {{- if and .Values.istio.enabled (eq .Values.istio.injection "enabled") }}
-        - name: cleanup-proxy
-          {{- $registry := .Values.global.imageRegistry | default .Values.prometheusOperator.admissionWebhooks.cleanupProxy.image.registry -}}
-          {{- if .Values.prometheusOperator.admissionWebhooks.cleanupProxy.image.sha }}
-          image: {{ $registry }}/{{ .Values.prometheusOperator.admissionWebhooks.cleanupProxy.image.repository }}:{{ .Values.prometheusOperator.admissionWebhooks.cleanupProxy.image.tag }}@sha256:{{ .Values.prometheusOperator.admissionWebhooks.cleanupProxy.image.sha }}
-          {{- else }}
-          image: {{ $registry }}/{{ .Values.prometheusOperator.admissionWebhooks.cleanupProxy.image.repository }}:{{ .Values.prometheusOperator.admissionWebhooks.cleanupProxy.image.tag }}
-          {{- end }}
-          imagePullPolicy: {{ .Values.prometheusOperator.admissionWebhooks.cleanupProxy.image.pullPolicy }}
-{{- if .Values.prometheusOperator.admissionWebhooks.containerSecurityContext }}
-          securityContext:
-{{ toYaml .Values.prometheusOperator.admissionWebhooks.containerSecurityContext | indent 12 }}
-          {{- end }}
-          command:
-          - /bin/sh
-          - -c
-          - |
-            until curl -fsI http://localhost:15021/healthz/ready; do echo \"Waiting for Sidecar...\"; sleep 3; done;
-            echo \"Sidecar available, sleeping 10 seconds then killing istio proxy...\";
-            sleep 10;
-            x=$(echo $?); curl -fsI -X POST http://localhost:15020/quitquitquit && exit $x
-          resources:
-{{ toYaml .Values.prometheusOperator.admissionWebhooks.cleanupProxy.resources | indent 12 }}
-        {{- end }}
       restartPolicy: OnFailure
       serviceAccountName: {{ template "kube-prometheus-stack.fullname" . }}-admission
       {{- with .Values.prometheusOperator.admissionWebhooks.patch.nodeSelector }}

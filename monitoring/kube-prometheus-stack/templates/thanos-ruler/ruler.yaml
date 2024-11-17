@@ -127,7 +127,7 @@ spec:
 {{- end }}
 {{- if .Values.thanosRuler.thanosRulerSpec.podMetadata }}
   podMetadata:
-{{ tpl (toYaml .Values.thanosRuler.thanosRulerSpec.podMetadata | indent 4) . }}
+{{ toYaml .Values.thanosRuler.thanosRulerSpec.podMetadata | indent 4 }}
 {{- end }}
 {{- if or .Values.thanosRuler.thanosRulerSpec.podAntiAffinity .Values.thanosRuler.thanosRulerSpec.affinity }}
   affinity:
@@ -192,10 +192,6 @@ spec:
   portName: {{ .Values.thanosRuler.thanosRulerSpec.portName }}
 {{- with .Values.thanosRuler.thanosRulerSpec.additionalConfig }}
   {{- tpl (toYaml .) $ | nindent 2 }}
-{{- end }}
-{{- if .Values.thanosRuler.thanosRulerSpec.web }}
-  web:
-{{ toYaml .Values.thanosRuler.thanosRulerSpec.web | indent 4 }}
 {{- end }}
 {{- with .Values.thanosRuler.thanosRulerSpec.additionalConfigString }}
   {{- tpl . $ | nindent 2 }}
