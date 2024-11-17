@@ -126,7 +126,27 @@ args:
 # Any environment variables defined directly in the statefulset should be set with the appropriate values
 # rather than set here, which will potentially produce duplicates and helm upgrade errors
 # https://www.keycloak.org/server/all-config
-extraEnv: |-       
+extraEnv: |-    
+        - name: KB_DB_USERNAME   
+          valuefrom: 
+            secretKeyRef:
+              name: keycloak-database
+              key: user 
+
+        - name: KB_DB_PASSWORD   
+          valuefrom: 
+            secretKeyRef:
+              name: keycloak-database
+              key: password 
+                 
+        - name: DB_VENDOR
+          value: postgres
+        - name: DB_ADDR
+          value: dbms.fredgentech.net
+        - name: DB_PORT
+          value: "5432"
+        - name: DB_DATABASE
+          value: usermanagement
         - name: KC_HTTPS_CERTIFICATE_FILE
           value: /opt/keycloak/conf/tls.crt
         - name: KC_HTTPS_CERTIFICATE_KEY_FILE
