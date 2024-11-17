@@ -988,13 +988,14 @@ grafana:
     auth.generic_oauth:
       enabled: true
       client_id: grafana    #this is a sample client_id, review docs/KEYCLOAK.md
-      client_secret: 8kkkdGZ9EQALnYM403Png2mxfGaKyzKM #this is a sample secret, review docs/KEYCLOAK.md
+      client_secret: taMbgVE87Zz1mR80LpXQkMuGE8s4m4sk #this is a sample secret, review docs/KEYCLOAK.md
       scopes: openid email profile offline_access roles     #this is a sample client scope, review docs/KEYCLOAK.md
       auth_url: https://keycloak.stack.fredgentech.net/auth/realms/New%20Gen%20Tech/protocol/openid-connect/auth
       token_url: https://keycloak.stack.fredgentech.net/auth/realms/New%20Gen%20Tech/protocol/openid-connect/token
       api_url: https://keycloak.stack.fredgentech.net/auth/realms/New%20Gen%20Tech/protocol/openid-connect/userinfo
       # signout_redirect_url: https://keycloak.stack.fredgentech.net/auth/realms/New%20Gen%20Tech/protocol/openid-connect/logout
       allow_sign_up: true
+      allow_assign_grafana_admin: true
       #allow_assign_grafana_admin: true #Adding this grants user admin privileges.  This does not work. You have to manually add user to admin group in your desire Org
       #role_attribute_path: contains(roles[*], 'admin') && 'Admin' || contains(roles[*], 'editor') && 'Editor' || 'Viewer'
       # groups_attribute_path: groups
