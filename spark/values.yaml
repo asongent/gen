@@ -18,7 +18,7 @@ global:
   ##   - myRegistryKeySecretName
   ##
   imagePullSecrets: []
-  storageClass: ""
+  storageClass: "longhorn"
 ## @section Common parameters
 ##
 
@@ -840,7 +840,7 @@ security:
   ## @param security.rpc.encryptionEnabled Enable the encryption for RPC
   ##
   rpc:
-    authenticationEnabled: false
+    authenticationEnabled: true
     encryptionEnabled: false
   ## @param security.storageEncryptionEnabled Enables local storage encryption
   ##
