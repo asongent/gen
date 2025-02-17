@@ -128,13 +128,13 @@ args:
 # https://www.keycloak.org/server/all-config
 extraEnv: |-    
   - name: KB_DB_USERNAME   
-    valuefrom: 
+    valueFrom: 
       secretKeyRef:
         name: keycloak-database
         key: user 
 
   - name: KB_DB_PASSWORD   
-    valuefrom: 
+    valueFrom: 
       secretKeyRef:
         name: keycloak-database
         key: password 
