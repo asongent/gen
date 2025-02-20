@@ -9,7 +9,8 @@ replicas: 1
 
 image:
   # The Keycloak image repository
-  repository: registry1.dso.mil/ironbank/opensource/keycloak/keycloak
+  repository: ghcr.io/asongent/keycloak-bigbang
+  #registry1.dso.mil/ironbank/opensource/keycloak/keycloak
   # Overrides the Keycloak image tag whose default is the chart appVersion
   tag: "25.0.6"
   # Overrides the Keycloak image tag with a specific digest
@@ -19,7 +20,7 @@ image:
 
 # Image pull secrets for the Pod
 imagePullSecrets:
-- name: iron-bank
+- name: private-registry
 
 # Mapping between IPs and hostnames that will be injected as entries in the Pod's hosts files
 hostAliases: []
@@ -521,7 +522,7 @@ postgresql:
   # this image is only used for dev and CI pipelines
   global:
     imagePullSecrets:
-      - iron-bank
+      - private-registry
   image:
     registry: registry1.dso.mil
     repository: ironbank/opensource/postgres/postgresql12
