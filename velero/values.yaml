@@ -121,7 +121,7 @@ upgradeCRDs: true
 cleanUpCRDs: false
 configuration:
   backupStorageLocation:
-  - name:
+  - name: cluster-backup
     provider: aws
     bucket: stack-back-storage
     caCert:
