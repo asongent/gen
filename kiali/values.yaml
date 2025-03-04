@@ -1123,4 +1123,4 @@ waitJob:
      - kiali.io/v1alpha1
     resources:
      - kiali
-     - StatedfulSets
+     - StatefulSets
