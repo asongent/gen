@@ -126,7 +126,7 @@ configuration:
     bucket: stack-back-storage
     caCert:
     prefix:
-    default:
+    default: default
     accessMode: ReadWrite
     credential:
       name: aws-auth
