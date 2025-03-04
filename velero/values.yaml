@@ -137,7 +137,7 @@ configuration:
      s3Url: http://stack-storage-bucket.s3.amazonaws.com/
     
   volumeSnapshotLocation:
-  - name:
+  - name: cluster-backup
     provider: aws
     config: 
      region: us-west-1
