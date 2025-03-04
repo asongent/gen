@@ -309,7 +309,7 @@ schedules:
     useOwnerReferencesInBackup: false
     template:
       ttl: "240h"
-      storageLocation: default
+      storageLocation: cluster-backup
       includedNamespaces:
       - "*"
 #schedules: {}
