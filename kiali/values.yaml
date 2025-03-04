@@ -1118,11 +1118,11 @@ waitJob:
   scripts:
     image: registry1.dso.mil/ironbank/opensource/kubernetes/kubectl:v1.30.5
   permissions:
-    apiGroups:
-     - apps
-     - kiali.io
-     - kiali.io/v1alpha1
-     - telemetry.istio.io
-    resources:
-     - kiali
-     - StatefulSets
+    apiGroups: [*]
+     # - apps
+     # - kiali.io
+     # - kiali.io/v1alpha1
+     # - telemetry.istio.io
+    resources: [*]
+     # - kiali
+     # - StatefulSets
