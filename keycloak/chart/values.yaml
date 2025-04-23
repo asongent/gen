@@ -118,6 +118,7 @@ command: []
 ## Overrides the default args for the Keycloak container
 ## !! arg: "start" needs to be set for the container to start up properly !!LL
 args: 
+  - "/opt/keycloak/bin/kc.sh
   - "start"
   - "--optimized"
   - "--proxy-headers"
