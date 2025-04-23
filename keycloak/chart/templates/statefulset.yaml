@@ -100,8 +100,8 @@ spec:
             {{- if eq .Values.cache.stack "default" }}
             - name: KC_CACHE
               value: "ispn"
-            - name: KC_CACHE_STACK
-              value: "kubernetes"
+            # - name: KC_CACHE_STACK
+            #   value: "kubernetes"
             {{- end }}
             {{- if .Values.proxy.enabled }}
             - name: KC_PROXY_HEADERS
