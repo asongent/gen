@@ -113,12 +113,12 @@ terminationGracePeriodSeconds: 60
 clusterDomain: cluster.local
 
 ## Overrides the default entrypoint of the Keycloak container
-command: []
+command: 
+- "/opt/keycloak/bin/kc.sh"
 
 ## Overrides the default args for the Keycloak container
 ## !! arg: "start" needs to be set for the container to start up properly !!LL
 args: 
-  - "/opt/keycloak/bin/kc.sh"
   - "start"
   - "--optimized"
   - "--proxy-headers"
