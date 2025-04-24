@@ -129,26 +129,26 @@ args:
 # rather than set here, which will potentially produce duplicates and helm upgrade errors
 # https://www.keycloak.org/server/all-config
 extraEnv: |-    
-  - name: KB_DB_USERNAME   
-    valueFrom: 
-      secretKeyRef:
-        name: keycloak-database
-        key: user 
+  # - name: KB_DB_USERNAME   
+  #   valueFrom: 
+  #     secretKeyRef:
+  #       name: keycloak-database
+  #       key: user 
 
-  - name: KB_DB_PASSWORD   
-    valueFrom: 
-      secretKeyRef:
-        name: keycloak-database
-        key: password 
+  # - name: KB_DB_PASSWORD   
+  #   valueFrom: 
+  #     secretKeyRef:
+  #       name: keycloak-database
+  #       key: password 
 
-  - name: DB_VENDOR
-    value: postgres
-  - name: DB_ADDR
-    value: dbms.fredgentech.net
-  - name: DB_PORT
-    value: "5432"
-  - name: DB_DATABASE
-    value: usermanagement
+  # - name: DB_VENDOR
+  #   value: postgres
+  # - name: DB_ADDR
+  #   value: dbms.fredgentech.net
+  # - name: DB_PORT
+  #   value: "5432"
+  # - name: DB_DATABASE
+  #   value: usermanagement
   - name: KC_HTTPS_CERTIFICATE_FILE
     value: /opt/keycloak/conf/tls.crt
   - name: KC_HTTPS_CERTIFICATE_KEY_FILE
@@ -551,14 +551,14 @@ database:
   # don't create secret for db password. Instead use existing k8s secret
   # existingSecret: "my-existent-dbpass-secret"
   # existingSecretKey: "password"
-  existingSecret: ""
-  existingSecretKey: ""
+  existingSecret: "keycloak-database"
+  existingSecretKey: "password"
   # E.g. dev-file, dev-mem, mariadb, mssql, mysql, oracle or postgres
-  vendor: ""
-  hostname: 
-  port: ""
-  database: ""
-  username: ""
+  vendor: "postgres"
+  hostname: "dbms.fredgentech.net"
+  port: "5432"
+  database: "usermanagement"
+  username: "databaseadmin"
   password:
 
 cache:
