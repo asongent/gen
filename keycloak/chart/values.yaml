@@ -114,7 +114,6 @@ clusterDomain: cluster.local
 
 ## Overrides the default entrypoint of the Keycloak container
 command: 
-- " sh /opt/keycloak/bin/kc.sh  build --db=postgres"
 - "/opt/keycloak/bin/kc.sh"
 
 ## Overrides the default args for the Keycloak container
@@ -555,7 +554,7 @@ database:
   existingSecret: "keycloak-database"
   existingSecretKey: "password"
   # E.g. dev-file, dev-mem, mariadb, mssql, mysql, oracle or postgres
-  vendor: "postgres"
+  vendor: ""
   hostname: "dbms.fredgentech.net"
   port: "5432"
   database: "usermanagement"
