@@ -114,6 +114,7 @@ clusterDomain: cluster.local
 
 ## Overrides the default entrypoint of the Keycloak container
 command: 
+- "./opt/keycloak/bin/kc.sh  build --db=postgres"
 - "/opt/keycloak/bin/kc.sh"
 
 ## Overrides the default args for the Keycloak container
