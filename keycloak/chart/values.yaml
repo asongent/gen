@@ -554,7 +554,7 @@ database:
   existingSecret: "keycloak-database"
   existingSecretKey: "password"
   # E.g. dev-file, dev-mem, mariadb, mssql, mysql, oracle or postgres
-  vendor: ""
+  vendor: "postgres"
   hostname: "dbms.fredgentech.net"
   port: "5432"
   database: "usermanagement"
