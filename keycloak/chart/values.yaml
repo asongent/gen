@@ -129,17 +129,17 @@ args:
 # rather than set here, which will potentially produce duplicates and helm upgrade errors
 # https://www.keycloak.org/server/all-config
 extraEnv: |-    
-  # - name: KB_DB_USERNAME   
-  #   valueFrom: 
-  #     secretKeyRef:
-  #       name: keycloak-database
-  #       key: user 
+  - name: KB_DB_USERNAME   
+    valueFrom: 
+      secretKeyRef:
+        name: keycloak-database
+        key: user 
 
-  # - name: KB_DB_PASSWORD   
-  #   valueFrom: 
-  #     secretKeyRef:
-  #       name: keycloak-database
-  #       key: password 
+  - name: KB_DB_PASSWORD   
+    valueFrom: 
+      secretKeyRef:
+        name: keycloak-database
+        key: password 
 
   # - name: DB_VENDOR
   #   value: postgres
