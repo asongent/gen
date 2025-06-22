@@ -566,19 +566,19 @@ postgresql:
 # -- If the database is not managed by this chart, you can use these keys to configure the connection
 database:
   # -- name of the existing secret containing the database password
-  existingSecret: "keycloak-database"
+  existingSecret: ""
   # -- key in the existing secret containing the database password
-  existingSecretKey: "password"
+  existingSecretKey: ""
   # -- E.g. dev-file, dev-mem, mariadb, mssql, mysql, oracle or postgres
   vendor: postgres
   # -- The database host
-  hostname: dbms.fredgentech.net
+  hostname: 
   # -- The database port
-  port: 5432
+  port: 
   # -- The database name
-  database: usermanagement
+  database: 
   # -- The database username
-  username: databaseadmin
+  username:
   # -- The database password (ignored if existingSecret is set)
   password:
 
