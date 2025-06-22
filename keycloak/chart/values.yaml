@@ -279,7 +279,7 @@ readinessProbe: |
 startupProbe: |
   httpGet:
     path: /auth/realms/master
-    port: https
+    port: http
   initialDelaySeconds: 90
   timeoutSeconds: 10
   failureThreshold: 60
