@@ -129,16 +129,17 @@ extraEnv: |-
   - name: KC_HOSTNAME_STRICT
     value: "true"
 
-#   - name: KC_HTTPS_CERTIFICATE_FILE
-#     value: /opt/keycloak/conf/tls.crt
-#   - name: KC_HTTPS_CERTIFICATE_KEY_FILE
-#     value: /opt/keycloak/conf/tls.key
-#   - name: KC_HTTPS_CLIENT_AUTH
-#     value: request
-#   - name: KC_HTTPS_TRUST_STORE_FILE
-#     value: /opt/keycloak/conf/truststore.jks
-#   - name: KC_HTTPS_TRUST_STORE_PASSWORD
-#     value: password
+  - name: KC_HTTPS_CERTIFICATE_FILE
+    value: /opt/keycloak/conf/tls.crt
+  - name: KC_HTTPS_CERTIFICATE_KEY_FILE
+    value: /opt/keycloak/conf/tls.key
+  # - name: KC_HTTPS_CLIENT_AUTH
+  #   value: request
+  # - name: KC_HTTPS_TRUST_STORE_FILE
+  #   value: /opt/keycloak/conf/truststore.jks
+  # - name: KC_HTTPS_TRUST_STORE_PASSWORD
+  #   value: password
+    
 # - name: KC_HOSTNAME
 #   value: keycloak.stack.fredgentech.net
 # - name: KC_HOSTNAME_STRICT
@@ -262,13 +263,19 @@ resources:
     memory: "1Gi"
 
 # -- Add additional volumes, e. g. for custom themes
-extraVolumes: ""
+extraVolumes: |
+  - name: kc-http-certificate-file
+    secret: 
+      secretName: keycloak-tls
 
 # -- This values key is reserved for integration with BigBang chart
 extraVolumesBigBang: {}
 
 # -- Add additional volumes mounts, e. g. for custom themes
-extraVolumeMounts: ""
+extraVolumeMounts: |
+  - name:  kc-http-certificate-file
+    mountPath: /opt/keycloak/conf
+    readOnly: true
 
 # -- This values key is reserved for integration with BigBang chart
 extraVolumeMountsBigBang: {}
