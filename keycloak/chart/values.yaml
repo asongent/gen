@@ -125,7 +125,7 @@ args:
 # Any environment variables defined directly in the statefulset should be set with the appropriate values
 # rather than set here, which will potentially produce duplicates and helm upgrade errors
 # https://www.keycloak.org/server/all-config
-extraEnv: 
+extraEnv: |
   - name: KC_HOSTNAME
     value: keycloak.stack.fredgentech.net
   - name: KC_HOSTNAME_STRICT
