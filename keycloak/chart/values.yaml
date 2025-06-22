@@ -136,32 +136,32 @@ extraEnv: |-
   - name: KC_HTTPS_CERTIFICATE_KEY_FILE
     value: /opt/keycloak/conf/tls.key
 
-  - name: KC_DB_URL_HOST
-    value: "jdbc:postgresql://dbms.fredgentech.net:5432/usermanagement"
+# - name: KC_DB_URL_HOST
+#   value: "jdbc:postgresql://dbms.fredgentech.net:5432/usermanagement"
 
 
-  - name: KC_DB_USERNAME
-    valueFrom:
-      secretKeyRef:
-        name: keycloak-database
-        key: user
-      
-  - name: KC_DB_PASSWORD
-    valueFrom:
-      secretKeyRef:
-        name: keycloak-database
-        key: password
+# - name: KC_DB_USERNAME
+#   valueFrom:
+#     secretKeyRef:
+#       name: keycloak-database
+#       key: user
+    
+# - name: KC_DB_PASSWORD
+#   valueFrom:
+#     secretKeyRef:
+#       name: keycloak-database
+#       key: password
 
-  - name: KEYCLOAK_ADMIN
-    valueFrom:
-      secretKeyRef:
-        name: keycloak-admin
-        key: username
-  - name: KEYCLOAK_ADMIN_PASSWORD
-    valueFrom:
-      secretKeyRef:
-        name: keycloak-admin
-        key: password
+# - name: KEYCLOAK_ADMIN
+#   valueFrom:
+#     secretKeyRef:
+#       name: keycloak-admin
+#       key: username
+# - name: KEYCLOAK_ADMIN_PASSWORD
+#   valueFrom:
+#     secretKeyRef:
+#       name: keycloak-admin
+#       key: password
 
 # - name: KC_DB_URL_PORT
 #   value: "5432"
@@ -567,17 +567,17 @@ postgresql:
 # -- If the database is not managed by this chart, you can use these keys to configure the connection
 database:
   # -- name of the existing secret containing the database password
-  existingSecret: ""
+  existingSecret: "keycloak-database"
   # -- key in the existing secret containing the database password
-  existingSecretKey: ""
+  existingSecretKey: "password"
   # -- E.g. dev-file, dev-mem, mariadb, mssql, mysql, oracle or postgres
   vendor:
   # -- The database host
-  hostname:
+  hostname: dbms.fredgentech.net
   # -- The database port
-  port:
+  port: 5432
   # -- The database name
-  database:
+  database: usermanagement
   # -- The database username
   username:
   # -- The database password (ignored if existingSecret is set)
