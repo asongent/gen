@@ -512,7 +512,7 @@ dbchecker:
 
 postgresql:
   # -- If `true`, the Postgresql dependency is enabled
-  enabled: true
+  enabled: false
   auth:
     # -- PostgreSQL User to create
     username: keycloak
