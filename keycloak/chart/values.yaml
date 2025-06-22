@@ -135,24 +135,25 @@ extraEnv: |
   - name: KC_HTTPS_CERTIFICATE_KEY_FILE
     value: /opt/keycloak/conf/tls.key
 
-  - name: KC_DB_URL_PORT
-    value: "5432"
-  - name: KC_DB_URL_DATABASE
-    value: "usermanagement"
-  - name: KC_DB_URL_HOST
-    value: "dbms.fredgentech.net"
+# - name: KC_DB_URL_PORT
+#   value: "5432"
+# - name: KC_DB_URL_DATABASE
+#   value: "usermanagement"
+# - name: KC_DB_URL_HOST
+#   value: "dbms.fredgentech.net"
+
+# - name: KC_DB_USERNAME
+#   valueFrom:
+#     secretKeyRef:
+#       name: keycloak-database
+#       key: user
     
-  - name: KC_DB_USERNAME
-    valueFrom:
-      secretKeyRef:
-        name: keycloak-database
-        key: user
-      
-  - name: KC_DB_PASSWORD
-    valueFrom:
-      secretKeyRef:
-        name: keycloak-database
-        key: password
+# - name: KC_DB_PASSWORD
+#   valueFrom:
+#     secretKeyRef:
+#       name: keycloak-database
+#       key: password
+
 # - name: KC_HTTPS_CLIENT_AUTH
 #   value: request
 # - name: KC_HTTPS_TRUST_STORE_FILE
@@ -524,7 +525,7 @@ dbchecker:
 
 postgresql:
   # -- If `true`, the Postgresql dependency is enabled
-  enabled: false
+  enabled: true
   auth:
     # -- PostgreSQL User to create
     username: keycloak
