@@ -118,7 +118,6 @@ command: []
 # **arg: "start" needs to be set for the container to start up properly**
 args:
   - "start"
-  - "--optimized"
   - "--proxy-headers"
   - "xforwarded"
 
