@@ -1,0 +1,24 @@
+args:
+  - "start-dev"
+  - "--import-realm"
+
+secrets:
+  realm:
+    stringData:
+      realm.json: '{{ .Files.Get "resources/dev/baby-yoda.json" }}'
+
+extraVolumes: |-
+  - name: realm
+    secret:
+      secretName: {{ include "keycloak.fullname" . }}-realm
+
+extraVolumeMounts: |-
+  - name: realm
+    mountPath: /opt/keycloak/data/import/realm.json
+    subPath: realm.json
+
+bbtests:
+  enabled: true
+
+networkPolicies:
+  enabled: true

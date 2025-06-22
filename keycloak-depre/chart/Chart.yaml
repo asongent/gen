@@ -1,0 +1,46 @@
+apiVersion: v2
+name: keycloak
+version: 2.5.1-bb.0
+appVersion: 25.0.6
+description: Keycloak.X - Open Source Identity and Access Management for Modern Applications and Services
+keywords:
+  - sso
+  - idm
+  - openid connect
+  - saml
+  - kerberos
+  - oauth
+  - ldap
+  - keycloakx
+  - quarkus
+home: https://www.keycloak.org/
+icon: https://www.keycloak.org/resources/images/keycloak_logo_200px.svg
+sources:
+  - https://github.com/codecentric/helm-charts
+  - https://github.com/keycloak/keycloak/tree/main/quarkus/container
+  - https://github.com/bitnami/charts/tree/master/bitnami/postgresql
+maintainers:
+  - name: thomasdarimont
+    email: thomas.darimont+github@gmail.com
+dependencies:
+  - name: postgresql
+    version: 10.3.13
+    repository: file://./deps/postgresql
+    condition: postgresql.enabled
+  - name: gluon
+    version: "0.5.4"
+    repository: "oci://registry1.dso.mil/bigbang"
+annotations:
+  bigbang.dev/applicationVersions: |
+    - Keycloak: 25.0.6
+  helm.sh/images: |
+    - name: keycloak
+      image: registry1.dso.mil/ironbank/opensource/keycloak/keycloak:25.0.6
+    - name: postgresl12
+      condition: postgresql.enabled
+      image: registry1.dso.mil/ironbank/opensource/postgres/postgresql12:12.20
+    - name: base
+      condition: bbtests.enabled
+      image: registry1.dso.mil/ironbank/big-bang/base:2.1.0
+  bigbang.dev/upstreamReleaseNotesMarkdown: |
+    - [Find upstream chart's release notes and CHANGELOG here](https://www.keycloak.org/docs/latest/release_notes/index.html)

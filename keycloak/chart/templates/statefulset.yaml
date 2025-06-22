@@ -34,7 +34,7 @@ spec:
         {{- printf "%s: %s" $key (tpl $value $ | quote) | nindent 8 }}
         {{- end }}
       labels:
-        {{- include "keycloak.selectorLabels" . | nindent 8 }}
+        {{- include "keycloak.labels" . | nindent 8 }}
         {{- if and .Values.postgresql.enabled (and .Values.postgresql.networkPolicy .Values.postgresql.networkPolicy.enabled) }}
         {{ include "keycloak.postgresql.fullname" . }}-client: "true"
         {{- end }}
@@ -57,9 +57,9 @@ spec:
             - |
               echo 'Waiting for PostgreSQL to become ready...'
 
-              until pg_isready -h {{ include "keycloak.postgresql.fullname" . }} -p {{ .Values.postgresql.service.port }} -U {{ .Values.postgresql.postgresqlUsername }}; do sleep 2; done
+              until pg_isready -h {{ include "keycloak.postgresql.fullname" . }} -p {{ .Values.postgresql.service.port }} -U {{ .Values.postgresql.auth.username }}; do sleep 2; done
 
-              echo 'Horay! Keycloak connection to backend PostgreSQL database is OK ✓'
+              echo 'PostgreSQL OK ✓'
           env:
           - name: POSTGRES_HOST_AUTH_METHOD
             value: "trust"
@@ -100,8 +100,8 @@ spec:
             {{- if eq .Values.cache.stack "default" }}
             - name: KC_CACHE
               value: "ispn"
-            # - name: KC_CACHE_STACK
-            #   value: "kubernetes"
+            - name: KC_CACHE_STACK
+              value: "kubernetes"
             {{- end }}
             {{- if .Values.proxy.enabled }}
             - name: KC_PROXY_HEADERS
@@ -153,7 +153,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ include "keycloak.postgresql.fullname" . }}
-                  key: postgresql-password
+                  key: password
             {{- end }}
             {{- if .Values.metrics.enabled }}
             - name: KC_METRICS_ENABLED
@@ -167,12 +167,9 @@ spec:
             {{- tpl . $ | nindent 12 }}
             {{- end }}
           envFrom:
-            {{- with .Values.envFrom }}
+            {{- with .Values.extraEnvFrom }}
             {{- tpl . $ | nindent 12 }}
             {{- end }}
-            # {{- with .Values.extraEnvFrom }}
-            # {{- tpl . $ | nindent 12 }}
-            # {{- end }}
           ports:
             - name: http
               containerPort: 8080
