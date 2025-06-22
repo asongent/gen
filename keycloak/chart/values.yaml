@@ -142,6 +142,17 @@ extraEnv: |
   - name: KC_DB_URL_HOST
     value: "dbms.fredgentech.net"
     
+  - name: KC_DB_USERNAME
+    valueFrom:
+      secretKeyRef:
+        name: keycloak-database
+        key: user
+      
+  - name: KC_DB_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: keycloak-database
+        key: password
 # - name: KC_HTTPS_CLIENT_AUTH
 #   value: request
 # - name: KC_HTTPS_TRUST_STORE_FILE
@@ -152,18 +163,6 @@ extraEnv: |
 # - name: KC_DB_URL_HOST
 #   value: "jdbc:postgresql://dbms.fredgentech.net:5432/usermanagement"
 
-
-# - name: KC_DB_USERNAME
-#   valueFrom:
-#     secretKeyRef:
-#       name: keycloak-database
-#       key: user
-    
-# - name: KC_DB_PASSWORD
-#   valueFrom:
-#     secretKeyRef:
-#       name: keycloak-database
-#       key: password
 
 # - name: KEYCLOAK_ADMIN
 #   valueFrom:
