@@ -150,53 +150,6 @@ extraEnv: |
       secretKeyRef:
         name: keycloak-database
         key: password
-  - name: KEYCLOAK_ADMIN
-    valueFrom:
-      secretKeyRef:
-        name: keycloak-admin
-        key: username
-  - name: KEYCLOAK_ADMIN_PASSWORD
-    valueFrom:
-      secretKeyRef:
-        name: keycloak-admin
-        key: password
-# - name: KC_DB_USERNAME
-#   valueFrom:
-#     secretKeyRef:
-#       name: keycloak-database
-#       key: user
-    
-# - name: KC_DB_PASSWORD
-#   valueFrom:
-#     secretKeyRef:
-#       name: keycloak-database
-#       key: password
-
-# - name: KC_HTTPS_CLIENT_AUTH
-#   value: request
-# - name: KC_HTTPS_TRUST_STORE_FILE
-#   value: /opt/keycloak/conf/truststore.jks
-# - name: KC_HTTPS_TRUST_STORE_PASSWORD
-#   value: password
-
-# - name: KEYCLOAK_ADMIN
-#   valueFrom:
-#     secretKeyRef:
-#       name: keycloak-admin
-#       key: username
-# - name: KEYCLOAK_ADMIN_PASSWORD
-#   valueFrom:
-#     secretKeyRef:
-#       name: keycloak-admin
-#       key: password
-    
-# - name: KC_HOSTNAME
-#   value: keycloak.stack.fredgentech.net
-# - name: KC_HOSTNAME_STRICT
-#   value: "true"
-#   - name: KC_LOG_LEVEL
-#     value: "org.keycloak.events:DEBUG,org.infinispan:INFO,org.jgroups:INFO"
-
 # -- Additional environment variables for Keycloak mapped from Secret or ConfigMap
 extraEnvFrom: |
   - secretRef:
