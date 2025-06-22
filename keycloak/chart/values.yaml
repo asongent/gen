@@ -579,7 +579,7 @@ database:
   # -- The database name
   database: usermanagement
   # -- The database username
-  username:
+  username: databaseadmin
   # -- The database password (ignored if existingSecret is set)
   password:
 
