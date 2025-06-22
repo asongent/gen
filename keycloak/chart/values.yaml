@@ -304,8 +304,8 @@ secrets:
       # -- https://access.redhat.com/documentation/en-us/openjdk/11/html-single/configuring_openjdk_11_on_rhel_with_fips/index
       JAVA_TOOL_OPTIONS: "-Dcom.redhat.fips=false"
       # -- default admin credentials. Override them for production deployments
-      KEYCLOAK_ADMIN: "admin"
-      KEYCLOAK_ADMIN_PASSWORD: "password"
+      KC_BOOTSTRAP_ADMIN_USERNAME: "admin"
+      KC_BOOTSTRAP_ADMIN_PASSWORD: "password"
       # -- java opts for jgroups required for infinispan distributed cache when using the kubernetes stack.
       # -- https://www.keycloak.org/server/caching
       JAVA_OPTS_APPEND: -Djgroups.dns.query={{ include "keycloak.fullname" . }}-headless
