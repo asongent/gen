@@ -152,7 +152,7 @@ extraEnv: |-
 # -- Additional environment variables for Keycloak mapped from Secret or ConfigMap
 extraEnvFrom: |
   - secretRef:
-      name: '{{ include "keycloak.fullname" . }}-env'
+      name: 'admin-login'
 
 # --  Pod priority class name
 priorityClassName: ""
