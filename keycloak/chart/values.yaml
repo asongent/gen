@@ -496,8 +496,10 @@ postgresql:
     imagePullSecrets:
       - private-registry
   image:
-    registry: registry1.dso.mil
-    repository: ironbank/opensource/postgres/postgresql-alpine
+    #registry: registry1.dso.mil
+    #repository: ironbank/opensource/postgres/postgresql-alpine
+    registry: ghcr.io
+    repository: asongent/postgresql-alpine
     tag: "15.10"
   service:
     port: 5432
