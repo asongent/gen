@@ -145,6 +145,11 @@ extraEnv: |
     value: "dbms.fredgentech.net"
   - name: KC_DB_USERNAME
     value: databaseadmin
+  - name: KC_DB_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: keycloak-database
+        key: password
 
 # - name: KC_DB_USERNAME
 #   valueFrom:
