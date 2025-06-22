@@ -571,7 +571,7 @@ database:
   # -- key in the existing secret containing the database password
   existingSecretKey: "password"
   # -- E.g. dev-file, dev-mem, mariadb, mssql, mysql, oracle or postgres
-  vendor:
+  vendor: postgres
   # -- The database host
   hostname: dbms.fredgentech.net
   # -- The database port
