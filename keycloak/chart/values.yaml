@@ -130,7 +130,8 @@ extraEnv: |-
     value: keycloak.stack.fredgentech.net
   - name: KC_HOSTNAME_STRICT
     value: "true"
-
+  - name: KC_LOG_LEVEL
+    value: DEBUG
   - name: KC_HTTPS_CERTIFICATE_FILE
     value: /opt/keycloak/conf/tls.crt
   - name: KC_HTTPS_CERTIFICATE_KEY_FILE
