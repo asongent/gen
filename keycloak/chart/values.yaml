@@ -10,7 +10,7 @@ replicas: 1
 image:
   # -- The Keycloak image repository
   #repository: registry1.dso.mil/ironbank/opensource/keycloak/keycloak
-  repository: ghcr.io/asongent/keycloak-bigbang
+  repository: ghcr.io/asongent/keycloak-custom #keycloak-bigbang
   # Overrides the Keycloak image tag whose default is the chart appVersion
   tag: "26.1.4"
   # Overrides the Keycloak image tag with a specific digest
