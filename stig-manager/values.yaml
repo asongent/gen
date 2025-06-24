@@ -33,6 +33,14 @@ serviceAccount:
 env: 
   - name: STIGMAN_CLASSIFICATION
     value: Uxxxxxxxxxxxxx
+  - name: STIGMAN_DB_TLS_CA_FILE
+    value: "/home/node/tls/mysql/ca.pem"
+
+  - name: STIGMAN_DB_CERT_FILE
+    value: "/home/node/tls/mysql/tls.pem"
+
+  - name: STIGMAN_DB_TLS_KEY_FILE
+    value: "/home/node/tls/mysql/key.pem"
 
 #   - name: STIGMAN_CLIENT_OIDC_PROVIDER
 #     value: https://localhost/kc/realms/stigman
@@ -133,16 +141,27 @@ resources:
   requests:
     cpu: 100m
     memory: 128Mi
-volumeMounts:
-- name: stig-manager-volume
-  mountPath: /usr/share/nginx/html/index.html
+volumes: {}
+# - name: stig-manager-volume
+volumeMounts: {} 
+# - name: stig-manager-volume
+#   mountPath: /xxury/
 
-data:
-  persistenceVolumeClaim:
-    name: stig-manager-volume
-  storageClassName: ""
-  accessMode: ReadWriteOnce
-  storageValue: 1Gi
+extraVolumes: 
+- name: msql-certificate-file
+  secret: 
+    secretName: msql-cert-secret
+
+extraVolumeMounts: 
+- name:  mysql-certificate-file
+  mountPath: /home/node/tls/mysql
+  readOnly: true
+data: ""
+  # persistenceVolumeClaim:
+  #   name: stig-manager-volume
+  # storageClassName: ""
+  # accessMode: ReadWriteOnce
+  # storageValue: 1Gi
  
 autoscaling:
   enabled: true
