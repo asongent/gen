@@ -44,7 +44,15 @@ spec:
               {{- if .Values.resources.requests.cpu }}
               cpu: {{ .Values.resources.requests.cpu }}{{- end }}
             {{- end }}
-         {{- end }}   
+         {{- end }}  
+        
+          volumeMounts:
+            {{- if .Values.volumeMounts }}
+            {{- toYaml .Values.volumeMounts | nindent 12 }}
+            {{- end }}
+            {{- if .Values.extraVolumeMounts }}
+            {{- toYaml .Values.extraVolumeMounts | nindent 12 }}
+            {{- end }}
           env: 
           {{- range .Values.env }}
           - name: {{ .name }}
@@ -88,13 +96,21 @@ spec:
               key: {{ .oidcclientSecret }}
           {{- end }}
           {{- end }}
-
+      volumes:
+        {{- if .Values.extraVolumes }}
+        {{- toYaml .Values.extraVolumes | nindent 8 }}
+        {{- end }}
+        {{- if .Values.volumes }}
+        {{- toYaml .Values.volumes | nindent 8 }}
+        {{- end }}
       volumeClaimTemplates:
+      {{- if .Values.data.persistenceVolumeClaim }}
       - metadata:
           name: {{ .Values.data.persistenceVolumeClaim.name }}
         spec:
           accessModes: [ "{{ .Values.data.accessMode }}" ]
-          storageClassName: "{{ .Values.data.storageClassName }}"
+          storageClassName: {{ .Values.data.storageClassName | quote }}
           resources:
             requests:
               storage: {{ .Values.data.storageValue }}
+      {{- end }}
