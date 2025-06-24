@@ -45,46 +45,48 @@ spec:
               cpu: {{ .Values.resources.requests.cpu }}{{- end }}
             {{- end }}
          {{- end }}   
-          env:
+          env: 
           {{- range .Values.env }}
           - name: {{ .name }}
             value: {{ .value | quote }}
           {{- end }}
-        
-      #   {{- if .Values.extraEnv }}
-      #   {{- range .Values.extraEnv.secrets }}
-      #     {{- if .userKey }}
-      #     - name: STIGMAN_DB_USER
-      #       valueFrom:
-      #         secretKeyRef:
-      #           name: {{ .name }}
-      #           key: {{ .userKey }}
-      #     - name: STIGMAN_DB_PASSWORD
-      #       valueFrom:
-      #         secretKeyRef:
-      #           name: {{ .name }}
-      #           key: {{ .passKey }}
-      #     {{- end }}
-      #     {{- if .hostkey }}
-      #     - name: STIGMAN_DB_HOST
-      #       valueFrom:
-      #         secretKeyRef:
-      #           name: {{ .name }}
-      #           key: {{ .hostkey }}
-      #     {{- end }}
-      #     {{- if .client_id }}
-      #     - name: STIGMAN_OIDC_PROVIDER
-      #       valueFrom:
-      #         secretKeyRef:
-      #           name: {{ .name }}
-      #           key: {{ .client_id }}
-      #     {{- end }}
-      #   {{- end }}
-      # {{- end }}
-          volumeMounts:
-          {{- range .Values.volumeMounts }}
-            - mountPath: {{ .mountPath }}
+          {{- if .Values.secrets }}
+          {{- range .Values.secrets }}
+          - name: STIGMAN_DB_USER
+            valueFrom:
+              secretKeyRef:
+                name: {{ .name }}
+                key: {{ .dbusernameKey }}
+          - name: STIGMAN_DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .name }}
+                key: {{ .dbpasswordKey }}
+          - name: STIGMAN_DB_HOST
+            valueFrom:
+              secretKeyRef:
+                name: {{ .name }}
+                key: {{ .dbhostkey }}
+          - name: STIGMAN_OIDC_PROVIDER
+            valueFrom:
+              secretKeyRef:
+                name: {{ .name }}
+                key: {{ .oidchostKey }}
+            {{- end }}
+            {{- end }}
+          {{- if .Values.extralEnv.secrets }}
+        {{- range .Values.extralEnv.secrets }}
+        - name: STIGMAN_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
               name: {{ .name }}
+              key: {{ .oidcclientidKey }}
+        - name: STIGMAN_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: {{ .name }}
+              key: {{ .oidcclientSecret }}
+          {{- end }}
           {{- end }}
 
       volumeClaimTemplates:
