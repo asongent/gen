@@ -1,0 +1,98 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "stig-manager.fullname" . }}
+  labels:
+    app: {{ include "stig-manager.name" . }}
+spec:
+  serviceName: {{ include "stig-manager.fullname" . }}
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "stig-manager.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "stig-manager.name" . }}
+    spec: 
+      {{- if .Values.serviceAccount.create }}
+      serviceAccountName: {{ include "stig-manager.serviceAccountName" . }}
+      {{- end }}
+      securityContext: {{- toYaml .Values.securityContext | nindent 10 }}
+      containers:
+        - name: stig-manager
+          image: {{ .Values.image.repository }}/{{ .Values.image.name }}:{{ .Values.image.tag }}
+
+          {{- if .Values.resources }}
+          ports:
+          {{- range .Values.containerPorts }}
+            - containerPort: {{ .containerPort }}
+              protocol: {{ .protocol | default "TCP" }}
+          {{- end }}
+          resources:
+            {{- if .Values.resources.limits }}
+            limits:
+              {{- if .Values.resources.limits.memory }}
+              memory: {{ .Values.resources.limits.memory }}{{- end }}
+              {{- if .Values.resources.limits.cpu }}
+              cpu: {{ .Values.resources.limits.cpu }}{{- end }}
+            {{- end }}
+            {{- if .Values.resources.requests }}
+            requests:
+              {{- if .Values.resources.requests.memory }}
+              memory: {{ .Values.resources.requests.memory }}{{- end }}
+              {{- if .Values.resources.requests.cpu }}
+              cpu: {{ .Values.resources.requests.cpu }}{{- end }}
+            {{- end }}
+         {{- end }}   
+          env:
+          {{- range .Values.env }}
+          - name: {{ .name }}
+            value: {{ .value | quote }}
+          {{- end }}
+        
+      #   {{- if .Values.extraEnv }}
+      #   {{- range .Values.extraEnv.secrets }}
+      #     {{- if .userKey }}
+      #     - name: STIGMAN_DB_USER
+      #       valueFrom:
+      #         secretKeyRef:
+      #           name: {{ .name }}
+      #           key: {{ .userKey }}
+      #     - name: STIGMAN_DB_PASSWORD
+      #       valueFrom:
+      #         secretKeyRef:
+      #           name: {{ .name }}
+      #           key: {{ .passKey }}
+      #     {{- end }}
+      #     {{- if .hostkey }}
+      #     - name: STIGMAN_DB_HOST
+      #       valueFrom:
+      #         secretKeyRef:
+      #           name: {{ .name }}
+      #           key: {{ .hostkey }}
+      #     {{- end }}
+      #     {{- if .client_id }}
+      #     - name: STIGMAN_OIDC_PROVIDER
+      #       valueFrom:
+      #         secretKeyRef:
+      #           name: {{ .name }}
+      #           key: {{ .client_id }}
+      #     {{- end }}
+      #   {{- end }}
+      # {{- end }}
+          volumeMounts:
+          {{- range .Values.volumeMounts }}
+            - mountPath: {{ .mountPath }}
+              name: {{ .name }}
+          {{- end }}
+
+      volumeClaimTemplates:
+      - metadata:
+          name: {{ .Values.data.persistenceVolumeClaim.name }}
+        spec:
+          accessModes: [ "{{ .Values.data.accessMode }}" ]
+          storageClassName: "{{ .Values.data.storageClassName }}"
+          resources:
+            requests:
+              storage: {{ .Values.data.storageValue }}
