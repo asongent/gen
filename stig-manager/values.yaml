@@ -2,7 +2,7 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-replicaCount: 1
+replicaCount: 2
 
 image:
   repository: registry1.dso.mil/ironbank/opensource
@@ -11,8 +11,7 @@ image:
   tag: "1.3.8"
 
 imagePullSecrets:
-- name: some-secret
-- name: apple
+- name: private-registry
 nameOverride: ""
 fullnameOverride: ""
 
@@ -32,7 +31,8 @@ serviceAccount:
 ## must not carry sensitive data
 env: 
   - name: STIGMAN_CLASSIFICATION
-    value: Uxxxxxxxxxxxxx
+    value: U
+
   - name: STIGMAN_DB_TLS_CA_FILE
     value: "/home/node/tls/mysql/ca.pem"
 
@@ -44,14 +44,16 @@ env:
 
 #   - name: STIGMAN_CLIENT_OIDC_PROVIDER
 #     value: https://localhost/kc/realms/stigman
+#   - name: STIGMAN_OIDC_PROVIDER
+#     value: http://keycloak:8080/realms/stigman
+
 #   - name: STIGMAN_DB_HOST
 #     value: mysql
 #   - name: STIGMAN_DB_PASSWORD
 #     value: stigmanpw
 #   - name: STIGMAN_DB_USER
 #     value: stigman
-#   - name: STIGMAN_OIDC_PROVIDER
-#     value: http://keycloak:8080/realms/stigman
+
 
 ## I this context, the secret name must be "mysql-auth-secret". key may change, but must be updated in the entries
 ## below to match what was used when you created the secret. Example
@@ -65,15 +67,17 @@ env:
 ##   db_password: bXlzcS1wYXNz
 ##   db_user: bXlzcWwtdXNlcg==
 ##   odic_host: aHR0cDovL2tleWNsb2FrOjgwODAvcmVhbG1zL3N0aWdtYW4=
+##   oidcclientproviderkey: aHR0cDovL2tleWNsb2FrOjgwODAvcmVhbG1zL3N0aWdtYW4=
 
 secrets:
-  - name: mysql-auth-secret
+  - name: stigman-auth-secret
     dbusernameKey: db_user
     dbpasswordKey: db_password
     dbhostkey: host_url
-    oidchostKey: odic_host
+    oidchostKey: oidc_host
+    oidcclientproviderkey: oidc_client_provider
 
-## In similar manner above create a secret called "oidc-provider-auth-secret" if exter envs such as 
+## In similar manner above create a secret called "oidc-provider-auth-secret" if extra envs such as 
 ## STIGMAN_OIDC_CLIENT_ID and STIGMAN_OIDC_CLIENT_SECRET are needed.
 ##----
 ## apiVersion: v1
@@ -84,11 +88,11 @@ secrets:
 ##   client_id: bXlzcWwuY29trtdsc
 ##   client_secret: rtfdeeebXlzcS1wYXNz
 
-extralEnv:
-  secrets:
-  - name: oidc-provider-auth-secret
-    oidcclientidKey: client_id
-    oidcclientSecret: client_secret
+extralEnv: {}
+  # secrets:
+  # - name: oidc-provider-auth-secret
+  #   oidcclientidKey: client_id
+  #   oidcclientSecret: client_secret
   
 
 
@@ -118,6 +122,12 @@ service:
     port: 443
     targetPort: 52000
 
+istio:
+  create: true
+  host: stigman.stack.fredgentech.net
+  namespace: istio-system
+  gatewayName: general-gateway
+  servicePort:  54000
 
 ingress:
   enabled:  false
@@ -130,17 +140,17 @@ ingress:
   tls: 
     secretName: tls-secret
 
-resources: 
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  limits:
-    cpu: 100m
-    memory: 128Mi
-  requests:
-    cpu: 100m
-    memory: 128Mi
+  ## We usually recommend not to specify default resources and to leave this as a conscious
+  ## choice for the user. This also increases chances charts run on environments with little
+  ## resources, such as Minikube. If you do want to specify resources, uncomment the following
+  ## lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+resources: {}
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
 volumes: {}
 # - name: stig-manager-volume
 volumeMounts: {} 
@@ -156,16 +166,18 @@ extraVolumeMounts:
 - name:  mysql-certificate-file
   mountPath: /home/node/tls/mysql
   readOnly: true
-data: {}
-  # persistenceVolumeClaim:
+data: 
+  persistenceVolumeClaim:
+  storageClassName: ""
+  accessMode: ReadWriteOnce
+  storage: 1Gi
+  # claimTemaplate:
   #   name: stig-manager-volume
-  # storageClassName: ""
-  # accessMode: ReadWriteOnce
-  # storageValue: 1Gi
+   
  
 autoscaling:
   enabled: true
-  minReplicas: 1
+  minReplicas: 2
   maxReplicas: 100
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
@@ -198,3 +210,16 @@ affinity: |
                 values:
                   - test
           topologyKey: topology.kubernetes.io/zone
+
+database: 
+  enabled: true
+  image: mysql
+  tag: 8.0
+  storage: 20Gi
+  auth: 
+  - name: mysql-secret
+    dbusername: db_user
+    dbpassword: db_password
+    rootpass: rootpass
+  initiaDatabase: stigman
+  replicaCount: 2

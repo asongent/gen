@@ -1,0 +1,60 @@
+{{- if .Values.database.enabled }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Release.Name }}-mysql
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Release.Name }}-mysql
+spec:
+  replicas: {{ .Values.database.replicaCount}}
+  selector:
+    matchLabels:
+      app:  {{ .Release.Name }}-mysql
+      tier: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app:  {{ .Release.Name }}-mysql
+        tier: {{ .Release.Name }}
+    spec:
+      volumes:
+      - name: mysql-persistent-storage
+        persistentVolumeClaim:
+          claimName: {{ .Release.Name }}-mysql-claim
+      containers:
+        - name: mysql
+          image: {{ .Values.database.image }}:{{ .Values.database.tag }}
+          ports:
+            - containerPort: 3306
+              name: mysql
+          env:
+          - name: MYSQL_DATABASE
+            value: {{ .Values.database.initiaDatabase }}
+          {{- if .Values.database.auth }}
+          {{- range .Values.database.auth }}
+          - name: MYSQL_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .name }}
+                key: {{ .rootpass }}
+          - name: STIGMAN_DB_USER
+            valueFrom:
+              secretKeyRef:
+                name: {{ .name }}
+                key: {{ .dbusername }}
+          - name: MYSQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .name }}
+                key: {{ .dbpassword }}
+            {{- end }}
+        {{- end }}
+          
+          volumeMounts:
+            - name: mysql-persistent-storage
+              mountPath: /var/lib/mysql
+  # volumeClaimTemplates:
+  #   - metadata:
+  #       name: mysql-persisten
+{{- end}}

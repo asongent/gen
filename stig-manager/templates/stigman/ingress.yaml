@@ -3,6 +3,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ .Release.Name }}-ingress
+  namespace: {{ .Release.Namespace }}
   annotations: {{- toYaml .Values.ingress.annotations| nindent 10 }}
 spec:
   ingressClassName: {{ .Values.ingress.className }}

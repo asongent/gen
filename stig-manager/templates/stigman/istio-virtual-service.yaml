@@ -1,0 +1,22 @@
+
+{{- if .Values.istio.create }}
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: {{ include "stig-manager.fullname" . }}-vs
+  namespace: {{ .Release.Namespace }}
+spec:
+  hosts:
+    - {{ .Values.istio.host }} 
+  gateways:
+    - {{ .Values.istio.namespace }}/{{ .Values.istio.gatewayName }} 
+  http:
+    - match:
+        - uri:
+            prefix: /
+      route:
+        - destination:
+            host: {{ .Release.Name }}-svc
+            port:
+              number: {{ .Values.istio.servicePort }}
+{{- end}}

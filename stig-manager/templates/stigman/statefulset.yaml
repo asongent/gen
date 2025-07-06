@@ -2,11 +2,11 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: {{ include "stig-manager.fullname" . }}
+  namespace: {{ .Release.Namespace }}
   labels:
     app: {{ include "stig-manager.name" . }}
 spec:
-  serviceName: {{ include "stig-manager.fullname" . }}
-  replicas: 1
+  replicas: {{ .Values.replicaCount}}
   selector:
     matchLabels:
       app: {{ include "stig-manager.name" . }}
@@ -75,6 +75,11 @@ spec:
               secretKeyRef:
                 name: {{ .name }}
                 key: {{ .dbhostkey }}
+          - name: STIGMAN_CLIENT_OIDC_PROVIDER
+            valueFrom:
+              secretKeyRef:
+                name: {{ .name }}
+                key: {{ .oidcclientproviderkey }}
           - name: STIGMAN_OIDC_PROVIDER
             valueFrom:
               secretKeyRef:
@@ -104,13 +109,13 @@ spec:
         {{- toYaml .Values.volumes | nindent 8 }}
         {{- end }}
       volumeClaimTemplates:
-      {{- if .Values.data.persistenceVolumeClaim }}
+      {{- if .Values.data.claimTemaplate }}
       - metadata:
-          name: {{ .Values.data.persistenceVolumeClaim.name }}
+          name: {{ .Values.data.claimTemaplate.name }}
         spec:
           accessModes: [ "{{ .Values.data.accessMode }}" ]
           storageClassName: {{ .Values.data.storageClassName | quote }}
           resources:
             requests:
-              storage: {{ .Values.data.storageValue }}
+              storage: {{ .Values.data.storage }}
       {{- end }}

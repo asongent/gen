@@ -1,0 +1,15 @@
+{{- if .Values.database.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}-mysql-claim
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Release.Name }}-mysql
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.database.storage }}
+{{- end }}
