@@ -166,11 +166,11 @@ extraVolumeMounts:
 - name:  mysql-certificate-file
   mountPath: /home/node/tls/mysql
   readOnly: true
-data: 
-  persistenceVolumeClaim:
-  storageClassName: ""
-  accessMode: ReadWriteOnce
-  storage: 1Gi
+data: {}
+  # persistenceVolumeClaim:
+  # storageClassName: ""
+  # accessMode: ReadWriteOnce
+  # storage: 1Gi
   # claimTemaplate:
   #   name: stig-manager-volume
    
