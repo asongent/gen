@@ -147,7 +147,7 @@ spec:
           spec:
             accessModes:
               - ReadWriteOnce
-            storageClassName: s3
+            storageClassName: ""
             resources:
               requests:
                 storage: 10Gi
@@ -220,7 +220,7 @@ spec:
         spec:
           accessModes:
             - ReadWriteOnce
-          storageClassName: s3
+          storageClassName: ""
           resources:
             requests:
               storage: 10Gi
