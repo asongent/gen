@@ -71,9 +71,10 @@ env:
 
 secrets:
   - name: stigman-auth-secret
+    db_schema: db_name
     dbusernameKey: db_user
     dbpasswordKey: db_password
-    dbhostkey: host_url
+    dbhostkey: db_url
     oidchostKey: oidc_host
     oidcclientproviderkey: oidc_client_provider
     classification: class

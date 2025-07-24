@@ -76,7 +76,11 @@ spec:
               secretKeyRef:
                 name: {{ .name }}
                 key: {{ .classification }}
-
+          - name: STIGMAN_DB_SCHEMA
+            valueFrom:
+              secretKeyRef:
+                name: {{ .name }}
+                key: {{ .db_schema }}
 
           - name: STIGMAN_DB_HOST
             valueFrom:

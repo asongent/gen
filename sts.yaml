@@ -37,6 +37,8 @@ spec:
 
             - name:  STIGMAN_DB_PASSWORD
               value: stigman
+            - name: STIGMAN_DB_SCHEMA
+              value: stigmanager
 
             - name:  STIGMAN_DB_USER
               value: stigman
