@@ -5,10 +5,10 @@
 replicaCount: 2
 
 image:
-  repository: registry1.dso.mil/ironbank/opensource/stig-manager
+  repository:  registry1.dso.mil/ironbank/opensource/stig-manager  #ghcr.io/asongent/stig-manager:1.0.0
   name: stig-manager
   pullPolicy: IfNotPresent
-  tag: "1.5.10"
+  tag: "1.5.9"
 
 imagePullSecrets:
 - name: iron-bank-secret
