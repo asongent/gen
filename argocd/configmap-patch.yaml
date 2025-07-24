@@ -3,12 +3,13 @@ kind: ConfigMap
 metadata:
   name: argocd-cm
 data:
-  # kustomize.version.v4.1.1_ksops: /custom-tools/kustomize
+  kustomize.version.v4.1.1_ksops: /custom-tools/kustomize
   # kustomize.version.v4.1.1_ksops: /custom-tools/kustomize
   # kustomize.buildOptions.v4.1.1_ksops: "--enable-alpha-plugins"
   # kustomize.buildOptions: "--enable-alpha-plugins"
-  kustomize.buildOptions: "--enable-alpha-plugins"
-  kustomize.version.v4.5.7: /custom-tools/kustomize_4_5_7
+  kustomize.buildOptions.v4.1.1_ksops: "--enable-alpha-plugins"
+  kustomize.buildOptions: "--enable-alpha-plugins --enable-exec"
+  kustomize.version.v5.0.0: /custom-tools/kustomize
   resource.compareoptions: |
     ignoreAggregatedRoles: true
   # ui.bannercontent: "Welcome To New Generation Technology!"
@@ -35,9 +36,9 @@ data:
   #     sshPrivateKeySecret:
   #       name: private-repo 
   #       key: sshprivateKey
-  configManagementPlugins: |-
-    - name: argocd-vault-plugin
-      generate:
-        command: ["argocd-vault-plugin"]
-        args: ["generate", "./"]
+  # configManagementPlugins: |-
+  #   - name: argocd-vault-plugin
+  #     generate:
+  #       command: ["argocd-vault-plugin"]
+  #       args: ["generate", "./"]
 

@@ -1,17 +1,19 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: gateway-virtual-services-resources
+  name: stig-manager
   namespace: argocd
 spec:
   project: default
   source:
     repoURL:  https://github.com/asongent/gen.git
     targetRevision: HEAD
-    path: virtual-services
-    kustomize:
-      version: v5.2.1 #.v5.6.0 # v4.5.7
-  destination: 
+    path: stig-manager
+    helm:
+      valueFiles:
+      - values.yaml
+  destination:
+    namespace: stig-manager
     server: https://kubernetes.default.svc
   syncPolicy:
     automated:

@@ -30,17 +30,17 @@ serviceAccount:
 ##    value: Uxxxxxxxxxxxxxnot 
 ## must not carry sensitive data
 env: 
-  - name: STIGMAN_CLASSIFICATION
-    value: U
+  - name:  STIGMAN_CLIENT_KEYCLOAK_CLIENTID
+    value: stig-manager
 
-  - name: STIGMAN_DB_TLS_CA_FILE
-    value: "/home/node/tls/mysql/ca.pem"
+  # - name: STIGMAN_DB_TLS_CA_FILE
+  #   value: "/home/node/tls/mysql/ca.pem"
 
-  - name: STIGMAN_DB_CERT_FILE
-    value: "/home/node/tls/mysql/tls.pem"
+  # - name: STIGMAN_DB_CERT_FILE
+  #   value: "/home/node/tls/mysql/tls.pem"
 
-  - name: STIGMAN_DB_TLS_KEY_FILE
-    value: "/home/node/tls/mysql/key.pem"
+  # - name: STIGMAN_DB_TLS_KEY_FILE
+  #   value: "/home/node/tls/mysql/key.pem"
 
 #   - name: STIGMAN_CLIENT_OIDC_PROVIDER
 #     value: https://localhost/kc/realms/stigman
@@ -57,17 +57,17 @@ env:
 
 ## I this context, the secret name must be "mysql-auth-secret". key may change, but must be updated in the entries
 ## below to match what was used when you created the secret. Example
-##----
-## apiVersion: v1
-## kind: Secret
-## metadata:
+# ##----
+# apiVersion: v1
+# kind: Secret
+# metadata:
 #   name: mysql-auth-secret
-## data:
-##   db_host: bXlzcWwuY29t
-##   db_password: bXlzcS1wYXNz
-##   db_user: bXlzcWwtdXNlcg==
-##   odic_host: aHR0cDovL2tleWNsb2FrOjgwODAvcmVhbG1zL3N0aWdtYW4=
-##   oidcclientproviderkey: aHR0cDovL2tleWNsb2FrOjgwODAvcmVhbG1zL3N0aWdtYW4=
+# data:
+#   db_host: bXlzcWwuY29t
+#   db_password: bXlzcS1wYXNz
+#   db_user: bXlzcWwtdXNlcg==
+#   odic_host: aHR0cDovL2tleWNsb2FrOjgwODAvcmVhbG1zL3N0aWdtYW4=
+#   oidcclientproviderkey: aHR0cDovL2tleWNsb2FrOjgwODAvcmVhbG1zL3N0aWdtYW4=
 
 secrets:
   - name: stigman-auth-secret
@@ -76,6 +76,7 @@ secrets:
     dbhostkey: host_url
     oidchostKey: oidc_host
     oidcclientproviderkey: oidc_client_provider
+    classification: class
 
 ## In similar manner above create a secret called "oidc-provider-auth-secret" if extra envs such as 
 ## STIGMAN_OIDC_CLIENT_ID and STIGMAN_OIDC_CLIENT_SECRET are needed.
@@ -134,7 +135,7 @@ ingress:
   annotations: {}
   className: "nginx"
   pathType: ImplementationSpecific
-  host: dev.spacefore.mil
+  host: stigman.stack.fredgentech.net
   service:
     port: 52000
   tls: 
@@ -157,15 +158,15 @@ volumeMounts: {}
 # - name: stig-manager-volume
 #   mountPath: /xxury/
 
-extraVolumes: 
-- name: msql-certificate-file
-  secret: 
-    secretName: msql-cert-secret
+extraVolumes: {}
+# - name: msql-certificate-file
+#   secret: 
+#     secretName: msql-cert-secret
 
-extraVolumeMounts: 
-- name:  mysql-certificate-file
-  mountPath: /home/node/tls/mysql
-  readOnly: true
+extraVolumeMounts: {}
+# - name:  mysql-certificate-file
+#   mountPath: /home/node/tls/mysql
+#   readOnly: true
 data: {}
   # persistenceVolumeClaim:
   # storageClassName: ""
@@ -212,7 +213,7 @@ affinity: |
           topologyKey: topology.kubernetes.io/zone
 
 database: 
-  enabled: true
+  enabled: false
   image: mysql
   tag: 8.0
   storage: 20Gi

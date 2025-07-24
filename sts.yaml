@@ -27,7 +27,7 @@ spec:
       containers:
         - image: jmugu/stig-manager:1.0.0 #ghcr.io/asongent/stig-manager:1.0.0
           name: stigman
-          resources: 
+          resources: {}
           env:
             - name:  STIGMAN_CLASSIFICATION
               value: CUI

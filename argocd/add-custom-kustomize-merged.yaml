@@ -30,77 +30,69 @@ spec:
             secretName: sops-age
       # 2. Use an init container to download/copy custom binaries into the emptyDir
       initContainers:
-        - name: download-tools
-          image: ghcr.io/asongent/alpine:3.8 #jmugu/alpine:3.8
-          command: [sh, -c]
-          args:
-            - wget -qO- https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv4.5.7/kustomize_v4.5.7_linux_amd64.tar.gz | tar -xvzf - &&
-              mv kustomize /custom-tools/kustomize_4_5_7  #kustomize_4_5_7 could be removed
-            
-          volumeMounts:
-            - mountPath: /custom-tools
-              name: custom-tools             
-        - name: download-vault-plugins
-          image: registry.access.redhat.com/ubi8
-          env:
-            - name: AVP_VERSION
-              value: 1.16.1
-          command: [sh, -c]
-          args:
-            - >-
-              curl -L https://github.com/argoproj-labs/argocd-vault-plugin/releases/download/v$(AVP_VERSION)/argocd-vault-plugin_$(AVP_VERSION)_linux_amd64 -o argocd-vault-plugin &&
-              chmod +x argocd-vault-plugin &&
-              mv argocd-vault-plugin /custom-tools/
-          volumeMounts:
-            - mountPath: /custom-tools
-              name: custom-tools
-        - name: install-ksops
-          image: ghcr.io/asongent/viaductoss/ksops:v4.1.0 #jmugu/ksops:v4.1.0  #viaductoss/ksops:v4.1.0 
-          command: ["/bin/sh", "-c"]
-          args:
-            - echo "Installing KSOPS...";
-              cp ksops /custom-tools/;
-              cp /custom-tools/ksops 
-              cp $GOPATH/bin/kustomize /custom-tools/;
-              echo "Done."
-          volumeMounts:
-            - mountPath: /custom-tools
-              name: custom-tools
-              readOnly: false
-      # 3. Volume mount the custom-tools directory to the repo-server
+      - image: alpine:3.8
+        imagePullPolicy: IfNotPresent
+        name: download-tools
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        
+        args:
+        - wget -qO- https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv5.2.1/kustomize_v5.2.1_linux_amd64.tar.gz |
+          tar -xvzf - && mv kustomize /custom-tools/kustomize_5_2_1
+        command:
+        - sh
+        - -c
+        
+        volumeMounts:
+        - mountPath: /custom-tools
+          name: custom-tools
+      - args:
+        - echo "Installing KSOPS..."; cp ksops /custom-tools/; cp /custom-tools/ksops
+          cp $GOPATH/bin/kustomize /custom-tools/; echo "Done."
+        command:
+        - /bin/sh
+        - -c
+        image: viaductoss/ksops:v4.1.0
+        name: install-ksops
+        volumeMounts:
+        - mountPath: /custom-tools
+          name: custom-tools
       
       containers:  
         - name: argocd-repo-server
-          envFrom:
-          - secretRef:
-              name: vault-configuration 
+          # envFrom:
+          # - secretRef:
+          #     name: vault-configuration 
           volumeMounts:
   
-            - name: custom-tools
-              mountPath: /usr/local/bin/argocd-vault-plugin
-              subPath: argocd-vault-plugin
-
-            - mountPath: /custom-tools
-              name: custom-tools
-            - mountPath: /usr/local/bin/kustomize
-              name: custom-tools
-              subPath: kustomize
-              # Verify this matches a XDG_CONFIG_HOME=/.config env variable
-            - mountPath: /.config/kustomize/plugin/viaduct.ai/v1/ksops/ksops
-              name: custom-tools
-              # subPath: ksops.so default
-              subPath: ksops
-            ##Added mountPath
-            - mountPath: /.config/sops/age/keys.so
-              name: sops-age
-              subPath: keys.so
+          - mountPath: /custom-tools
+            name: custom-tools
+          - mountPath: /usr/local/bin/kustomize
+            name: custom-tools
+            subPath: kustomize
+          - mountPath: /.config/kustomize/plugin/viaduct.ai/v1/ksops/ksops
+            name: custom-tools
+            subPath: ksops
+          - mountPath: /.config/sops/age/keys.so
+            name: sops-age
+            subPath: keys.so
+              
           # 4. Set the XDG_CONFIG_HOME env variable to allow kustomize to detect the plugin
+          # env:
+          #   - name: XDG_CONFIG_HOME
+          #     value: /.config
+          #   ## addefd this line for sops enc
+          #   - name: SOPS_AGE_KEY_FILE
+          #     value: /.config/sops/age/keys.so
+          #   - name: KUSTOMIZE_PLUGIN_HOME
+          #     value: /.config/kustomize/
+
           env:
-            - name: XDG_CONFIG_HOME
-              value: /.config
-            ## addefd this line for sops enc
-            - name: SOPS_AGE_KEY_FILE
-              value: /.config/sops/age/keys.so
+          - name: XDG_CONFIG_HOME
+            value: /.config
+          - name: SOPS_AGE_KEY_FILE
+            value: /.config/sops/age/keys.so
         # - name: avp
         #   command: [/var/run/argocd/argocd-cmp-server]
         #   image: registry.access.redhat.com/ubi8
