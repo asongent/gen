@@ -112,7 +112,7 @@ securityContext: {}
 networkPolicy:
   enabled: false
 containerPorts:
-  - containerPort: 52000
+  - containerPort: 54000
     protocol: TCP
 service:
   type: ClusterIP
