@@ -33,14 +33,14 @@ env:
   - name:  STIGMAN_CLIENT_KEYCLOAK_CLIENTID
     value: stig-manager
 
-  - name: STIGMAN_DB_TLS_CA_FILE
-    value: /home/node/tls/mysql/ca.crt
+  # - name: STIGMAN_DB_TLS_CA_FILE
+  #   value: /home/node/tls/mysql/ca.crt
 
-  - name: STIGMAN_DB_CERT_FILE
-    value: /home/node/tls/mysql/tls.crt
+  # - name: STIGMAN_DB_CERT_FILE
+  #   value: /home/node/tls/mysql/tls.crt
 
-  - name: STIGMAN_DB_TLS_KEY_FILE
-    value: /home/node/tls/mysql/tls.key
+  # - name: STIGMAN_DB_TLS_KEY_FILE
+  #   value: /home/node/tls/mysql/tls.key
 
 #   - name: STIGMAN_CLIENT_OIDC_PROVIDER
 #     value: https://localhost/kc/realms/stigman
@@ -162,15 +162,15 @@ volumeMounts: {}
 # - name: stig-manager-volume
 #   mountPath: /xxury/
 
-extraVolumes: 
-- name: mysql-certificate-file
-  secret: 
-    secretName: mysql-cert-secret
+extraVolumes: {}
+# - name: mysql-certificate-file
+#   secret: 
+#     secretName: mysql-cert-secret
 
-extraVolumeMounts: 
-- name:  mysql-certificate-file
-  mountPath: /home/node/tls/mysql
-  readOnly: true
+extraVolumeMounts: {}
+# - name:  mysql-certificate-file
+#   mountPath: /home/node/tls/mysql
+#   readOnly: true
 data: {}
   # persistenceVolumeClaim:
   # storageClassName: ""
