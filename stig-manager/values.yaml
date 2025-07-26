@@ -116,10 +116,9 @@ networkPolicy:
 containerPorts:
   - containerPort: 54000
     protocol: TCP
-    
+
 service:
   type: ClusterIP
-
   ports: 
   - name: http
     protocol: TCP
