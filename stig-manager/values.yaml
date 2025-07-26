@@ -125,6 +125,8 @@ service:
     port: 80
     targetPort: 54000
 
+## This TOGGLE to create istio virtual service. This must be enabled only when istio
+## is used as Ingress controller and already deployed
 istio:
   create: true
   host: stigman.stack.fredgentech.net
