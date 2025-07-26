@@ -163,7 +163,7 @@ volumeMounts: {}
 #   mountPath: /xxury/
 
 extraVolumes: 
-- name: msql-certificate-file
+- name: mysql-certificate-file
   secret: 
     secretName: mysql-cert-secret
 
