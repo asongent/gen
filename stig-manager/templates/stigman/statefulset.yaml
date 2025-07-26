@@ -23,11 +23,12 @@ spec:
         - name: stig-manager
           image: {{ .Values.image.repository }}/{{ .Values.image.name }}:{{ .Values.image.tag }}
 
-          {{- if .Values.resources }}
+          {{- if .Values.containerPorts  }}
           ports:
           {{- range .Values.containerPorts }}
             - containerPort: {{ .containerPort }}
               protocol: {{ .protocol | default "TCP" }}
+              name: http
           {{- end }}
           resources:
             {{- if .Values.resources.limits }}

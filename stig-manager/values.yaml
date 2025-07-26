@@ -112,24 +112,26 @@ securityContext: {}
 ### Turn enabled to tue if you would like to create networkk policy.
 networkPolicy:
   enabled: false
+
 containerPorts:
   - containerPort: 54000
     protocol: TCP
+    
 service:
   type: ClusterIP
 
   ports: 
-  - name: https
+  - name: http
     protocol: TCP
-    port: 443
-    targetPort: 52000
+    port: 80
+    targetPort: 54000
 
 istio:
   create: true
   host: stigman.stack.fredgentech.net
   namespace: istio-system
   gatewayName: general-gateway
-  servicePort:  54000
+  servicePort:  80
 
 ingress:
   enabled:  false
