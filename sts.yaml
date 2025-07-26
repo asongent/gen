@@ -1,7 +1,6 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  namespace: stigman
   annotations:
     kompose.cmd: kompose convert
     kompose.version: 1.32.0 (765fde254)
@@ -33,15 +32,15 @@ spec:
               value: CUI
 
             - name:  STIGMAN_DB_HOST
-              value: stigman-mysql
+              value: '192.168.1.73'
 
             - name:  STIGMAN_DB_PASSWORD
-              value: stigman
+              value: YzNScFoyMWhibUZuWlhJSwo=
             - name: STIGMAN_DB_SCHEMA
               value: stigmanager
 
             - name:  STIGMAN_DB_USER
-              value: stigman
+              value: stigman-admin
 
             - name:  STIGMAN_CLIENT_KEYCLOAK_CLIENTID
               value: stig-manager

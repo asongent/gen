@@ -34,13 +34,13 @@ env:
     value: stig-manager
 
   - name: STIGMAN_DB_TLS_CA_FILE
-    value: "/home/node/tls/mysql/ca.crt"
+    value: /home/node/tls/mysql/ca.crt
 
   - name: STIGMAN_DB_CERT_FILE
-    value: "/home/node/tls/mysql/tls.crt"
+    value: /home/node/tls/mysql/tls.crt
 
   - name: STIGMAN_DB_TLS_KEY_FILE
-    value: "/home/node/tls/mysql/tls.key"
+    value: /home/node/tls/mysql/tls.key
 
 #   - name: STIGMAN_CLIENT_OIDC_PROVIDER
 #     value: https://localhost/kc/realms/stigman
