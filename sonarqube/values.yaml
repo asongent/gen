@@ -30,7 +30,7 @@ edition: "community"
 
 image:
   repository: sonarqube
-  tag: lts-{{ .Values.edition }}
+  tag: 25.7.0.110598-{{ .Values.edition }}
   pullPolicy: IfNotPresent
   # If using a private repository, the imagePullSecrets to use
   # pullSecrets:
