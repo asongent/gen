@@ -4,10 +4,10 @@
 
 openshift: false
 
-registry: docker.io
+registry: ghcr.io
 tag: 5.4.5
 oem:
-imagePullSecrets:
+imagePullSecrets: private-registry 
 psp: false
 rbac: true # required for rancher authentication
 serviceAccount: default
@@ -34,15 +34,15 @@ global: # required for rancher authentication (https://<Rancher_URL>/)
       controller:
         tag: 5.2.4
         image: controller
-        registry: docker.io/neuvector
+        registry: ghcr.io/asongent/neuvector
       manager:
         tag: 5.2.4
         image: manager
-        registry: docker.io/neuvector
+        registry: ghcr.io/asongent/neuvector
       enforcer:
         tag: 5.2.4
         image: enforcer
-        registry: docker.io/neuvector
+        registry: ghcr.io/asongent/neuvector
 
   aws:
     enabled: false
