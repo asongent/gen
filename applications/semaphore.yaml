@@ -11,7 +11,7 @@ spec:
   source:
     path: semaphore
     kustomize:
-      version: v4.5.7
+      version: v5.2.1 
     repoURL:  https://github.com/asongent/gen
     targetRevision: HEAD
   syncPolicy:

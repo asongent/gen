@@ -10,7 +10,7 @@ spec:
     targetRevision: HEAD
     path: virtual-services
     kustomize:
-      version: v5.2.1 #.v5.6.0 # v4.5.7
+      version: v5.2.1 
   destination: 
     server: https://kubernetes.default.svc
   syncPolicy:
