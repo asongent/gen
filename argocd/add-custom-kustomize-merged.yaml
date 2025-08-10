@@ -133,7 +133,7 @@ metadata:
     app.kubernetes.io/name: argocd-repo-server
     app.kubernetes.io/part-of: argocd
 spec:
-  replicas: 3
+  replicas: 2
   selector:
     matchLabels:
       'app.kubernetes.io/name': argocd-repo-server
@@ -165,12 +165,12 @@ spec:
           image: viaductoss/ksops:v4.0.1
           command: ["/bin/sh", "-c"]
           args:
-            #- 'echo "Installing KSOPS..."; cp ksops /custom-tools/; cp $GOPATH/bin/kustomize /custom-tools/; echo "Done.";'
-            - echo "Installing KSOPS...";
-              export PKG_NAME=ksops;
-              mv ${PKG_NAME}.so /custom-tools/;
-              mv $GOPATH/bin/kustomize /custom-tools/;
-              echo "Done.";
+            
+            # - echo "Installing KSOPS...";
+            #   export PKG_NAME=ksops;
+            #   mv ${PKG_NAME}.so /.config/kustomize/plugin/viaduct.ai/v1/ksops;
+          - echo "Installing KSOPS..."; cp ksops /custom-tools/; cp /custom-tools/ksops
+            cp $GOPATH/bin/kustomize /custom-tools/; echo "Done."
           volumeMounts:
             - mountPath: /custom-tools
               name: custom-tools
@@ -184,11 +184,12 @@ spec:
               name: custom-tools
               subPath: kustomize
               # Verify this matches a XDG_CONFIG_HOME=/.config env variable
-            - mountPath: /.config/kustomize/plugin/viaduct.ai/v1/ksops/ksops.so #Default
-            # - mountPath: /.config/kustomize/plugin/viaduct.ai/v1/ksops/ksop
+            # - mountPath: /.config/kustomize/plugin/viaduct.ai/v1/ksops/ksops.so #Default
+
+            - mountPath: /.config/kustomize/plugin/viaduct.ai/v1/ksops/ksops
               name: custom-tools
-              # subPath: ksops.so default
               subPath: ksops
+              # subPath: ksopsso #default
             ##Added mountPath
             - mountPath: /.config/sops/age/keys.so
               name: sops-age
