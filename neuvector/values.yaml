@@ -4,7 +4,7 @@
 
 openshift: false
 
-registry: ghcr.io
+registry: ghcr.io/asongent
 tag: 5.4.5
 oem:
 imagePullSecrets: private-registry 
