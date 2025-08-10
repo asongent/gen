@@ -190,9 +190,11 @@ metadata:
     app.kubernetes.io/instance: "semaphore"
 spec:
   restartPolicy: Never
+  imagePullSecrets:
+      - name: private-registry
   containers:
     - name: wget
-      image: busybox
+      image: ghcr.io/asongent/busybox:latest  
       command:
         - wget
       args:
