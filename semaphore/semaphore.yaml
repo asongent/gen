@@ -185,7 +185,7 @@ spec:
       # - name: config
       #   configMap:
       #     name: semaphore-ansible-semaphore-config
-      # - name: workdir
+      - name: workdir
         persistentVolumeClaim:
           claimName: semaphore-ansible-semaphore-workdir
 ---
