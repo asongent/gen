@@ -174,12 +174,20 @@ spec:
             - name: workdir
               mountPath: /tmp/semaphore
       volumes:
-        - name: config
-          configMap:
-            name: semaphore-ansible-semaphore-config
-        - name: workdir
-          persistentVolumeClaim:
-            claimName: semaphore-ansible-semaphore-workdir
+      - name: config
+        projected:
+          sources:
+          - secret:
+              name: semaphore-config
+              items:
+                - key: config.json
+                  path: config.json
+      - name: config
+      #   configMap:
+      #     name: semaphore-ansible-semaphore-config
+      # - name: workdir
+        persistentVolumeClaim:
+          claimName: semaphore-ansible-semaphore-workdir
 ---
 apiVersion: v1
 kind: Pod
