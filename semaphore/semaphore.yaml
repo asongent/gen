@@ -182,7 +182,7 @@ spec:
               items:
                 - key: config.json
                   path: config.json
-      - name: config
+      # - name: config
       #   configMap:
       #     name: semaphore-ansible-semaphore-config
       # - name: workdir
