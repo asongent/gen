@@ -141,16 +141,16 @@ spec:
               - |
                 bin/elasticsearch-plugin remove --purge analysis-icu
                 bin/elasticsearch-plugin install --batch analysis-icu
-      volumeClaimTemplates:
-        - metadata:
-            name: elasticsearch-master
-          spec:
-            accessModes:
-              - ReadWriteOnce
-            storageClassName: "longhorn"
-            resources:
-              requests:
-                storage: 10Gi
+    volumeClaimTemplates:
+      - metadata:
+          name: elasticsearch-master
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          storageClassName: "longhorn"
+          resources:
+            requests:
+              storage: 10Gi
   - name: data
     count: 1
     config: 
@@ -185,16 +185,16 @@ spec:
           traffic.sidecar.istio.io/includeInboundPorts: "*"
           traffic.sidecar.istio.io/excludeOutboundPorts: "9300,443" 
           traffic.sidecar.istio.io/excludeInboundPorts: "9300"
-      spec:
-        affinity:
-          nodeAffinity:
-            requiredDuringSchedulingIgnoredDuringExecution:
-              nodeSelectorTerms:
-              - matchExpressions:
-                - key: reserve
-                  operator: In
-                  values:
-                  - elastic-data
+      # spec:
+      #   affinity:
+      #     nodeAffinity:
+      #       requiredDuringSchedulingIgnoredDuringExecution:
+      #         nodeSelectorTerms:
+      #         - matchExpressions:
+      #           - key: reserve
+      #             operator: In
+      #             values:
+      #             - elastic-data
         securityContext:
           fsGroup: 1000
           runAsGroup: 1000
