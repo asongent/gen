@@ -76,7 +76,7 @@ spec:
             - -c
             - |
               bin/elasticsearch-plugin install --batch analysis-icu
-             # bin/elasticsearch-plugin remove --purge analysis-icu
+              bin/elasticsearch-plugin remove --purge analysis-icu
 
     volumeClaimTemplates:
       - metadata:
@@ -149,7 +149,7 @@ spec:
             - -c
             - |
               bin/elasticsearch-plugin install --batch analysis-icu
-            # bin/elasticsearch-plugin remove --purge analysis-icu
+              bin/elasticsearch-plugin remove --purge analysis-icu
               
             
 
