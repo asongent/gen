@@ -1,67 +1,3 @@
-# apiVersion: v1
-# kind: PersistentVolumeClaim
-# metadata:
-#   name: elasticsearch-data-elasticsearch-es-data-0
-#   namespace: eck
-#   labels:
-#     elasticsearch.k8s.elastic.co/cluster-name: elasticsearch
-#     type: local
-# spec:
-#   storageClassName: local-storage
-#   accessModes:
-#     - ReadWriteOnce
-#   resources:
-#     requests:
-#       storage: 10Gi
-# ---
-# # apiVersion: v1
-# # kind: PersistentVolumeClaim
-# # metadata:
-# #   name: elasticsearch-data-elasticsearch-es-master-0
-# #   namespace: eck
-# #   labels:
-# #     elasticsearch.k8s.elastic.co/cluster-name: elasticsearch
-# #     type: local
-# # spec:
-# #   storageClassName: local-storage
-# #   accessModes:
-# #     - ReadWriteOnce
-# #   resources:
-# #     requests:
-# #       storage: 10Gi
-
-# ---
-# apiVersion: v1
-# kind: PersistentVolume
-# metadata:
-#   name: data-elasticsearch-es-data-pv
-#   labels:
-#     elasticsearch.k8s.elastic.co/cluster-name: elasticsearch
-#     type: local
-# spec:
-#   storageClassName: local-storage
-#   capacity:
-#     storage: 10Gi
-#   accessModes:
-#     - ReadWriteOnce
-#   persistentVolumeReclaimPolicy: Retain
-#   hostPath:
-#     path: "/usr/share/elasticsearch/data"
----
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: kibana-sa
-  namespace: eck
-imagePullSecrets:
-- name: private-registry
----
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: elasticsearch-sa
-  namespace: eck
----
 apiVersion: elasticsearch.k8s.elastic.co/v1
 kind: Elasticsearch
 metadata:
@@ -100,57 +36,58 @@ spec:
       #   claims.principal: sub
       #   ssl.verification_mode: none
 
-      podTemplate:
-        metadata:
-          annotations:
-            traffic.sidecar.istio.io/includeInboundPorts: "*"
-            traffic.sidecar.istio.io/excludeOutboundPorts: "9300,443" 
-            traffic.sidecar.istio.io/excludeInboundPorts: "9300"
+    podTemplate:
+      metadata:
+        annotations:
+          traffic.sidecar.istio.io/includeInboundPorts: "*"
+          traffic.sidecar.istio.io/excludeOutboundPorts: "9300,443" 
+          traffic.sidecar.istio.io/excludeInboundPorts: "9300"
+      spec:
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+              - matchExpressions:
+                - key: reserve
+                  operator: In
+                  values:
+                  - elastic-master
+        securityContext:
+          fsGroup: 1000
+          runAsGroup: 1000
+          runAsUser: 1000
+        serviceAccountName: elasticsearch-sa
+        automountServiceAccountToken: true
+        containers:
+          - name: elasticsearch
+            # env:
+            # - name: ES_JAVA_OPTS
+            #   value: "-Xms2g -Xmx2g"
+            resources: {}
+              # requests:
+              #   memory: 4Gi
+              #   cpu: 2
+              # limits:
+              #   memory: 4Gi
+        initContainers:
+        - name: install-plugins
+          command:
+            - sh
+            - -c
+            - |
+              bin/elasticsearch-plugin remove --purge analysis-icu
+              bin/elasticsearch-plugin install --batch analysis-icu
+
+    volumeClaimTemplates:
+      - metadata:
+          name: elasticsearch-data
         spec:
-          affinity:
-            nodeAffinity:
-              requiredDuringSchedulingIgnoredDuringExecution:
-                nodeSelectorTerms:
-                - matchExpressions:
-                  - key: reserve
-                    operator: In
-                    values:
-                    - elastic-master
-          securityContext:
-            fsGroup: 1000
-            runAsGroup: 1000
-            runAsUser: 1000
-          serviceAccountName: elasticsearch-sa
-          automountServiceAccountToken: true
-          containers:
-            - name: elasticsearch
-              # env:
-              # - name: ES_JAVA_OPTS
-              #   value: "-Xms2g -Xmx2g"
-              resources: {}
-                # requests:
-                #   memory: 4Gi
-                #   cpu: 2
-                # limits:
-                #   memory: 4Gi
-          initContainers:
-          - name: install-plugins
-            command:
-              - sh
-              - -c
-              - |
-                bin/elasticsearch-plugin remove --purge analysis-icu
-                bin/elasticsearch-plugin install --batch analysis-icu
-      volumeClaimTemplates:
-        - metadata:
-            name: elasticsearch-master
-          spec:
-            accessModes:
-              - ReadWriteOnce
-            storageClassName: "longhorn"
-            resources:
-              requests:
+          accessModes:  [ "ReadWriteOnce" ]
+          storageClassName: "longhorn"
+          resources:
+            requests:
               storage: 10Gi
+
   - name: data
     count: 1
     config: 
@@ -177,7 +114,6 @@ spec:
       #   claims.name: preferred_username
       #   claims.principal: sub
       #   ssl.verification_mode: none
-      
 
     podTemplate:
       metadata:
@@ -214,16 +150,17 @@ spec:
             - |
               bin/elasticsearch-plugin remove --purge analysis-icu
               bin/elasticsearch-plugin install --batch analysis-icu
-      volumeClaimTemplates:
-        - metadata:
-            name: elasticsearch-data
-          spec:
-            accessModes:
-              - ReadWriteOnce
-            storageClassName: "longhorn"
-            resources:
-              requests:
-                storage: 10Gi
+
+    volumeClaimTemplates:
+      - metadata:
+          name: elasticsearch-data  
+        spec:
+          accessModes: [ "ReadWriteOnce" ]
+          storageClassName: "longhorn"
+          resources:
+            requests:
+              storage: 10Gi
+
   http:
     service:
       spec:
@@ -418,3 +355,17 @@ spec:
   trafficPolicy:
     tls:
       mode: SIMPLE
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: kibana-sa
+  namespace: eck
+imagePullSecrets:
+- name: private-registry
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: elasticsearch-sa
+  namespace: eck
