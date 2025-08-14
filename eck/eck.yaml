@@ -60,9 +60,11 @@ spec:
         automountServiceAccountToken: true
         containers:
           - name: elasticsearch
-            # env:
-            # - name: ES_JAVA_OPTS
-            #   value: "-Xms2g -Xmx2g"
+            env:
+            - name: ES_JAVA_OPTS
+              value: "-Xms2g -Xmx2g"
+            - name: ES_PLUGINS
+              value: analysis-icu
             resources: {}
               # requests:
               #   memory: 4Gi
@@ -142,6 +144,8 @@ spec:
             env:
             - name: ES_JAVA_OPTS
               value: "-Xms2g -Xmx2g"
+            - name: ES_PLUGINS
+              value: analysis-icu
         initContainers:
         - name: install-plugins
           command:
