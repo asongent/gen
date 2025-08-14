@@ -141,15 +141,15 @@ spec:
               - |
                 bin/elasticsearch-plugin remove --purge analysis-icu
                 bin/elasticsearch-plugin install --batch analysis-icu
-    volumeClaimTemplates:
-      - metadata:
-          name: elasticsearch-master
-        spec:
-          accessModes:
-            - ReadWriteOnce
-          storageClassName: "longhorn"
-          resources:
-            requests:
+      volumeClaimTemplates:
+        - metadata:
+            name: elasticsearch-master
+          spec:
+            accessModes:
+              - ReadWriteOnce
+            storageClassName: "longhorn"
+            resources:
+              requests:
               storage: 10Gi
   - name: data
     count: 1
@@ -214,16 +214,16 @@ spec:
             - |
               bin/elasticsearch-plugin remove --purge analysis-icu
               bin/elasticsearch-plugin install --batch analysis-icu
-    volumeClaimTemplates:
-      - metadata:
-          name: elasticsearch-data
-        spec:
-          accessModes:
-            - ReadWriteOnce
-          storageClassName: "longhorn"
-          resources:
-            requests:
-              storage: 10Gi
+      volumeClaimTemplates:
+        - metadata:
+            name: elasticsearch-data
+          spec:
+            accessModes:
+              - ReadWriteOnce
+            storageClassName: "longhorn"
+            resources:
+              requests:
+                storage: 10Gi
   http:
     service:
       spec:
