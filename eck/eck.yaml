@@ -43,15 +43,15 @@ spec:
           traffic.sidecar.istio.io/excludeOutboundPorts: "9300,443" 
           traffic.sidecar.istio.io/excludeInboundPorts: "9300"
       spec:
-        affinity:
-          nodeAffinity:
-            requiredDuringSchedulingIgnoredDuringExecution:
-              nodeSelectorTerms:
-              - matchExpressions:
-                - key: reserve
-                  operator: In
-                  values:
-                  - elastic-master
+        # affinity:
+        #   nodeAffinity:
+        #     requiredDuringSchedulingIgnoredDuringExecution:
+        #       nodeSelectorTerms:
+        #       - matchExpressions:
+        #         - key: reserve
+        #           operator: In
+        #           values:
+        #           - elastic-master
         securityContext:
           fsGroup: 1000
           runAsGroup: 1000
@@ -122,15 +122,15 @@ spec:
           traffic.sidecar.istio.io/excludeOutboundPorts: "9300,443" 
           traffic.sidecar.istio.io/excludeInboundPorts: "9300"
       spec:
-        affinity:
-          nodeAffinity:
-            requiredDuringSchedulingIgnoredDuringExecution:
-              nodeSelectorTerms:
-              - matchExpressions:
-                - key: reserve
-                  operator: In
-                  values:
-                  - elastic-data
+        # affinity:
+        #   nodeAffinity:
+        #     requiredDuringSchedulingIgnoredDuringExecution:
+        #       nodeSelectorTerms:
+        #       - matchExpressions:
+        #         - key: reserve
+        #           operator: In
+        #           values:
+        #           - elastic-data
         securityContext:
           fsGroup: 1000
           runAsGroup: 1000
