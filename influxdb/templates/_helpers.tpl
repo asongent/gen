@@ -1,88 +1,217 @@
+{{/*
+Copyright Broadcom, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
 {{/* vim: set filetype=mustache: */}}
+
 {{/*
-Expand the name of the chart.
+Return the proper InfluxDB&trade; Core image name
 */}}
-{{- define "influxdb.name" -}}
-{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
+{{- define "influxdb.image" -}}
+{{ include "common.images.image" (dict "imageRoot" .Values.image "global" .Values.global) }}
 {{- end -}}
 
 {{/*
-Create a default fully qualified app name.
-We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
-If release name contains chart name it will be used as a full name.
+Return the proper image name (for the init container volume-permissions image)
 */}}
-{{- define "influxdb.fullname" -}}
-{{- if .Values.fullnameOverride -}}
-{{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" -}}
-{{- else -}}
-{{- $name := default .Chart.Name .Values.nameOverride -}}
-{{- if contains $name .Release.Name -}}
-{{- .Release.Name | trunc 63 | trimSuffix "-" -}}
-{{- else -}}
-{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
-{{- end -}}
-{{- end -}}
+{{- define "influxdb.volumePermissions.image" -}}
+{{ include "common.images.image" (dict "imageRoot" .Values.defaultInitContainers.volumePermissions.image "global" .Values.global) }}
 {{- end -}}
 
 {{/*
-Create chart name and version as used by the chart label.
+Return the proper image name (for the "create-admin-token" job image)
 */}}
-{{- define "influxdb.chart" -}}
-{{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
+{{- define "influxdb.createAdminToken.image" -}}
+{{ include "common.images.image" (dict "imageRoot" .Values.createAdminTokenJob.image "global" .Values.global) }}
 {{- end -}}
 
 {{/*
-Common labels
+Return the proper Docker Image Registry Secret Names
 */}}
-{{- define "influxdb.labels" -}}
-helm.sh/chart: {{ include "influxdb.chart" . }}
-{{ include "influxdb.selectorLabels" . }}
-{{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-{{- end }}
-app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- define "influxdb.imagePullSecrets" -}}
+{{ include "common.images.pullSecrets" (dict "images" (list .Values.image .Values.defaultInitContainers.volumePermissions.image .Values.createAdminTokenJob.image) "global" .Values.global) }}
 {{- end -}}
 
 {{/*
-Selector labels
-*/}}
-{{- define "influxdb.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "influxdb.name" . }}
-app.kubernetes.io/instance: {{ .Release.Name }}
-{{- end -}}
-
-{{/*
-Create the name of the service account to use
+Create the name of the ServiceAccount to use
 */}}
 {{- define "influxdb.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create -}}
-  {{ default (include "influxdb.fullname" .) .Values.serviceAccount.name }}
+    {{ default (include "common.names.fullname" .) .Values.serviceAccount.name }}
 {{- else -}}
-  {{ default "default" .Values.serviceAccount.name }}
+    {{ default "default" .Values.serviceAccount.name }}
 {{- end -}}
 {{- end -}}
 
 {{/*
-Define ports for kubernetes.
+Create the name of the ServiceAccount to use on "create-admin-token" job pods
 */}}
-{{- define "influxdb.rpcPortNumber" -}}
-  {{ default 8088 (regexReplaceAll ":([0-9]+)" (index .Values "config" "rpc" "bind-address") "${1}") }}
+{{- define "influxdb.createAdminTokenJob.serviceAccountName" -}}
+{{- if .Values.createAdminTokenJob.serviceAccount.create -}}
+    {{ default (printf "%s-create-admin-token" (include "common.names.fullname" .)) .Values.createAdminTokenJob.serviceAccount.name }}
+{{- else -}}
+    {{ default "default" .Values.createAdminTokenJob.serviceAccount.name }}
 {{- end -}}
-{{- define "influxdb.metaPortNumber" -}}
-  {{ default 8091 (regexReplaceAll ":([0-9]+)" (index .Values "config" "meta" "bind-address") "${1}") }}
 {{- end -}}
-{{- define "influxdb.httpPortNumber" -}}
-  {{ default 8086 (regexReplaceAll ":([0-9]+)" (index .Values "config" "http" "bind-address") "${1}") }}
+
+{{/*
+Create the name of the ServiceAccount to use on "delete-admin-token" job pods
+*/}}
+{{- define "influxdb.deleteAdminTokenJob.serviceAccountName" -}}
+{{- if .Values.createAdminTokenJob.serviceAccount.create -}}
+    {{ default (printf "%s-delete-admin-token" (include "common.names.fullname" .)) .Values.createAdminTokenJob.serviceAccount.name }}
+{{- else -}}
+    {{ default "default" .Values.createAdminTokenJob.serviceAccount.name }}
 {{- end -}}
-{{- define "influxdb.graphitePortNumber" -}}
-  {{ default 2003 (regexReplaceAll ":([0-9]+)" (index .Values "config" "graphite" "bind-address") "${1}") }}
 {{- end -}}
-{{- define "influxdb.collectdPortNumber" -}}
-  {{ default 25826 (regexReplaceAll ":([0-9]+)" (index .Values "config" "collectd" "bind-address") "${1}") }}
+
+{{/*
+Return the InfluxDB&trade; Core secret name
+*/}}
+{{- define "influxdb.secret.name" -}}
+{{- if .Values.auth.existingSecret -}}
+    {{- tpl .Values.auth.existingSecret . -}}
+{{- else }}
+    {{- include "common.names.fullname" . -}}
 {{- end -}}
-{{- define "influxdb.opentsdbPortNumber" -}}
-  {{ default 4242 (regexReplaceAll ":([0-9]+)" (index .Values "config" "opentsdb" "bind-address") "${1}") }}
 {{- end -}}
-{{- define "influxdb.udpPortNumber" -}}
-  {{ default 8089 (regexReplaceAll ":([0-9]+)" (index .Values "config" "udp" "bind-address") "${1}") }}
+
+{{/*
+Return the secret key that contains the InfluxDB&trade; Core admin token
+*/}}
+{{- define "influxdb.secret.adminTokenKey" -}}
+{{- if and .Values.auth.existingSecret .Values.auth.existingSecretAdminTokenKey -}}
+    {{- tpl .Values.auth.existingSecretAdminTokenKey . -}}
+{{- else -}}
+    {{- print "admin-token" -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Get the InfluxDB&trade; Core Store secret name
+*/}}
+{{- define "influxdb.store.secret.name" -}}
+{{- if eq .Values.objectStore "s3" }}
+    {{- if .Values.s3.auth.existingSecret -}}
+        {{- tpl .Values.s3.auth.existingSecret . -}}
+    {{- else }}
+        {{- printf "%s-s3" (include "common.names.fullname" .) -}}
+    {{- end -}}
+{{- else if eq .Values.objectStore "google" }}
+    {{- if .Values.google.auth.existingSecret -}}
+        {{- tpl .Values.google.auth.existingSecret . -}}
+    {{- else }}
+        {{- printf "%s-google" (include "common.names.fullname" .) -}}
+    {{- end -}}
+{{- else if eq .Values.objectStore "azure" }}
+    {{- if .Values.azure.auth.existingSecret -}}
+        {{- tpl .Values.azure.auth.existingSecret . -}}
+    {{- else }}
+        {{- printf "%s-azure" (include "common.names.fullname" .) -}}
+    {{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Returns true if a secret should be created for InfluxDB&trade; Core Store credentials
+*/}}
+{{- define "influxdb.store.secret.create" -}}
+{{- if or (and (eq .Values.objectStore "s3") (not .Values.s3.auth.existingSecret)) (and (eq .Values.objectStore "google") (not .Values.google.auth.existingSecret)) (and (eq .Values.objectStore "azure") (not .Values.azure.auth.existingSecret)) }}
+true
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the name of the secret containing the CA TLS certificate
+*/}}
+{{- define "influxdb.tls.ca.secretName" -}}
+{{- if or .Values.tls.autoGenerated.enabled (and (not (empty .Values.tls.ca))) -}}
+    {{- printf "%s-ca-crt" (include "common.names.fullname" .) -}}
+{{- else -}}
+    {{- required "An existing secret name must be provided with a CA cert for InfluxDB(TM) Core if cert is not provided!" (tpl .Values.tls.existingCASecret .) -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the name of the secret containing the TLS certificates for InfluxDB&trade; Core servers
+*/}}
+{{- define "influxdb.tls.server.secretName" -}}
+{{- if or .Values.tls.autoGenerated.enabled (and (not (empty .Values.tls.server.cert)) (not (empty .Values.tls.server.key))) -}}
+    {{- printf "%s-crt" (include "common.names.fullname" .) -}}
+{{- else -}}
+    {{- required "An existing secret name must be provided with TLS certs for InfluxDB(TM) Core servers if cert and key are not provided!" (tpl .Values.tls.server.existingSecret .) -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the InfluxDB&trade; Core initialization scripts ConfigMap name.
+*/}}
+{{- define "influxdb.initdbScriptsConfigmapName" -}}
+{{- if .Values.initdbScriptsCM -}}
+    {{- print (tpl .Values.initdbScriptsCM .) -}}
+{{- else -}}
+    {{- printf "%s-initdb-scripts" (include "common.names.fullname" .) -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the InfluxDB&trade; Core initialization scripts Secret name
+*/}}
+{{- define "influxdb.initdbScriptsSecret" -}}
+{{- print (tpl .Values.initdbScriptsSecret .) -}}
+{{- end -}}
+
+{{/*
+Compile all warnings into a single message.
+*/}}
+{{- define "influxdb.validateValues" -}}
+{{- $messages := list -}}
+{{- $messages := append $messages (include "influxdb.validateValues.replicaCount" .) -}}
+{{- $messages := append $messages (include "influxdb.validateValues.auth.existingSecret" .) -}}
+{{- $messages := without $messages "" -}}
+{{- $message := join "\n" $messages -}}
+
+{{- if $message -}}
+{{-   printf "\nVALUES VALIDATION:\n%s" $message -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Validate values of InfluxDB&trade; Core - replicaCount
+*/}}
+{{- define "influxdb.validateValues.replicaCount" -}}
+{{- if and (or (eq .Values.objectStore "file") (eq .Values.objectStore "memory")) (or .Values.autoscaling.hpa.enabled (gt (int .Values.replicaCount) 1)) }}
+replicaCount:
+    Running multiple InfluxDB(TM) Core replicas is not supported when using
+    the file or memory object store. Please ensure you run a single replica
+    and HPA is disabled (--set replicaCount=1,autoscaling.hpa.enabled=false).
+{{- end -}}
+{{- end -}}
+
+{{/*
+Validate values of InfluxDB&trade; Core - auth.existingSecret
+*/}}
+{{- define "influxdb.validateValues.auth.existingSecret" -}}
+{{- if and .Values.auth.enabled .Values.auth.existingSecret }}
+{{- if .Values.createAdminTokenJob.enabled }}
+auth.existingSecret:
+    Consuming the admin token from a secret is incompatible with running
+    a K8s job to create it. Please disable the job (--set createAdminTokenJob.enabled=false)
+    or unset the existingSecret value (--set auth.existingSecret="").
+{{- end -}}
+{{- if eq .Values.objectStore "memory" }}
+auth.existingSecret:
+    Consuming the admin token from a secret is incompatible with using
+    the memory object store given there's no existing data.
+    Please ensure you unset the existingSecret value (--set auth.existingSecret="").
+{{- else if and (eq .Values.objectStore "file") (or (not .Values.persistence.enabled) (not .Values.persistence.existingClaim)) }}
+auth.existingSecret:
+    Consuming the admin token from a secret is incompatible with using
+    the file object store with no previously existing data. Please ensure
+    you set the PVC name with your existing data (--set persistence.enabled=true
+    --set persistence.existingClaim=<PVC_NAME>) or unset the existingSecret value
+    (--set auth.existingSecret="").
+{{- end -}}
+{{- end -}}
 {{- end -}}
