@@ -434,3 +434,27 @@ spec:
         host: minio
         port:
           number: 9001
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  labels:
+  name: influxdb-vs
+  namespace: influxdb
+spec:
+  gateways:
+  - istio-system/general-gateway
+  hosts:
+  - 'influxdb.stack.fredgentech.net'
+  http:
+  - retries:
+      attempts: 3
+      perTryTimeout: 2s
+    match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: influxdb
+        port:
+          number: 8086

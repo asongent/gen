@@ -8,6 +8,13 @@ status: {}
 apiVersion: v1
 kind: Namespace
 metadata:
+  name: influxdb
+spec: {}
+status: {}
+---
+apiVersion: v1
+kind: Namespace
+metadata:
   name: spark-operator
 spec: {}
 status: {}

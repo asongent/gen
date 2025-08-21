@@ -65,12 +65,13 @@ spec:
               value: "-Xms2g -Xmx2g"
             - name: ES_PLUGINS
               value: analysis-icu
-            resources: {}
-              # requests:
-              #   memory: 4Gi
-              #   cpu: 2
-              # limits:
-              #   memory: 4Gi
+            resources: 
+              requests:
+                memory: 4Gi
+                cpu: 4
+              limits:
+                memory: 4Gi
+                cpu: 4
         initContainers:
         - name: install-plugins
           command:
@@ -146,6 +147,13 @@ spec:
               value: "-Xms2g -Xmx2g"
             - name: ES_PLUGINS
               value: analysis-icu
+            resources:
+              requests:
+                memory: 4Gi
+                cpu: 4
+              limits:
+                memory: 4Gi
+                cpu: 4
         initContainers:
         - name: install-plugins
           command:
