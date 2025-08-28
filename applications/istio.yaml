@@ -44,6 +44,12 @@ spec:
     automated:
       prune: true
       selfHeal: true
+  ignoreDifferences:
+    - group: apps
+      kind: StatefulSet
+      jsonPointers:
+        - /spec/template/metadata/annotations/secret.revision.kyverno.io
+        - /spec/template/metadata/annotations/ops.corp.com~1triggerrestart
 --- 
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -68,4 +74,10 @@ spec:
     automated:
       prune: true
       selfHeal: true
+  ignoreDifferences:
+    - group: apps
+      kind: StatefulSet
+      jsonPointers:
+        - /spec/template/metadata/annotations/secret.revision.kyverno.io
+        - /spec/template/metadata/annotations/ops.corp.com~1triggerrestart
       
