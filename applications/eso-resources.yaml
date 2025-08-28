@@ -8,7 +8,7 @@ spec:
   source:
     repoURL:  https://github.com/asongent/gen.git
     targetRevision: HEAD
-    path: eso-resources/ready-to-deploy
+    path: eso-resources/ready
     # kustomize:
     #   version: v5.2.1 
   destination: 
