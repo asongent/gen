@@ -21,3 +21,8 @@ spec:
     automated:
       prune: true
       selfHeal: true
+  ignoreDifferences:
+    - group: apps
+      kind: StatefulSet
+      jsonPointers:
+        - /spec/template/metadata/annotations/secret.revision.kyverno.io
