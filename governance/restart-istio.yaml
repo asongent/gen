@@ -3,7 +3,7 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: kyverno-keycloak-mutate
+  name: kyverno-istio-mutate
   namespace: keycloak
 rules:
   - apiGroups: ["apps"]
@@ -13,7 +13,7 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: kyverno-keycloak-mutate-binding
+  name: kyverno-istio-mutate-binding
   namespace: keycloak
 roleRef:
   apiGroup: rbac.authorization.k8s.io
