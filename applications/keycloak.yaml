@@ -26,3 +26,6 @@ spec:
       kind: StatefulSet
       jsonPointers:
         - /spec/template/metadata/annotations/secret.revision.kyverno.io
+        - /spec/template/metadata/annotations/ops.corp.com~1triggerrestart
+
+
