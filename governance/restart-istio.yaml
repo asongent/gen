@@ -1,28 +1,27 @@
-
----
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: kyverno-istio-mutate
+  name: kyverno-deployment-updater
   namespace: istio-system
 rules:
   - apiGroups: ["apps"]
-    resources: ["Deployments"]
-    verbs: ["get", "patch", "update"]
+    resources: ["deployments", "statefulsets"]
+    verbs: ["get", "list", "watch", "patch", "update"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: kyverno-istio-mutate-binding
+  name: kyverno-deployment-updater
   namespace: istio-system
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: kyverno-istio-mutate
+  name: kyverno-deployment-updater
 subjects:
   - kind: ServiceAccount
     name: kyverno-background-controller
     namespace: kyverno
+
 
 --- 
 apiVersion: kyverno.io/v1
@@ -72,8 +71,8 @@ spec:
       targets:
         - apiVersion: apps/v1
           kind: Deployment
-          name: keycloak
-          namespace: keycloak
+          name: ingressgateway
+          namespace: istio-system
       patchStrategicMerge:
         spec:
           template:
