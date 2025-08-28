@@ -4,7 +4,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: kyverno-istio-mutate
-  namespace: keycloak
+  namespace: istio-system
 rules:
   - apiGroups: ["apps"]
     resources: ["Deployments"]
@@ -14,11 +14,11 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: kyverno-istio-mutate-binding
-  namespace: keycloak
+  namespace: istio-system
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: kyverno-keycloak-mutate
+  name: kyverno-istio-mutate
 subjects:
   - kind: ServiceAccount
     name: kyverno-background-controller
