@@ -28,7 +28,7 @@ subjects:
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-  name: restart-Deployment-on-secret-change
+  name: restart-deployment-on-secret-change
   annotations:
     policies.kyverno.io/title: Restart Deployment On Secret Change
     policies.kyverno.io/category: Other
