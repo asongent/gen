@@ -1,0 +1,21 @@
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: private-reg
+  namespace: keycloak
+spec:
+  refreshInterval: 1m
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: secrets-source       
+  target:
+    template:
+      type: kubernetes.io/dockerconfigjson
+    name: private-reg
+  data:
+  - secretKey: .dockerconfigjson
+    remoteRef:
+      key: private-reg
+      property: docker
+      
+  
