@@ -4,16 +4,15 @@ metadata:
   name: eso-resources
   namespace: argocd
 spec:
-  destination:
-    namespace: argocd
-    server: https://kubernetes.default.svc
   project: default
   source:
-    path: eso-resources
-    kustomize:
-      version: v5.2.1 
     repoURL:  https://github.com/asongent/gen.git
     targetRevision: HEAD
+    path: eso-resources/ready-to-deploy
+    # kustomize:
+    #   version: v5.2.1 
+  destination: 
+    server: https://kubernetes.default.svc
   syncPolicy:
     automated:
       prune: true
