@@ -4,5 +4,5 @@ resources:
 - cluster-secret-store.yaml
 - istio-gateway-tls-secret.yaml
 - keycloak-tls-secret.yaml
-- private-registry.yaml
-- secrets-fetch.yaml
+# - private-registry.yaml
+# - secrets-fetch.yaml
