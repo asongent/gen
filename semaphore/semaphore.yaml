@@ -173,6 +173,11 @@ spec:
               subPath: config.json
             - name: workdir
               mountPath: /tmp/semaphore
+            
+            - name: ssh
+              mountPath: ~/.ssh/ansible
+              subPath: ansible
+        
       volumes:
       - name: config
         projected:
@@ -182,6 +187,14 @@ spec:
               items:
                 - key: config.json
                   path: config.json
+      - name: ssh
+        projected:
+          sources:
+          - secret:
+              name: ansible-ssh
+              items:
+              - key: ansible
+                path: ansible
       # - name: config
       #   configMap:
       #     name: semaphore-ansible-semaphore-config
