@@ -84,7 +84,8 @@ spec:
       - name: private-registry
       containers:
         - name: ansible-semaphore
-          image: ghcr.io/asongent/semaphorui-terraform:v2.9.37 #semaphoreui/semaphore:v2.9.37
+          image: ghcr.io/asongent/semaphorui-aws-terraform:v2.9.37
+          #image: ghcr.io/asongent/semaphorui-terraform:v2.9.37 #semaphoreui/semaphore:v2.9.37
           env:
             - name: SEMAPHORE_PORT
               value: "3000"
@@ -176,9 +177,9 @@ spec:
             - name: workdir
               mountPath: /tmp/semaphore
             
-            # - name: ssh
-            #   mountPath: /home/semaphore/.ansible/key/ansible
-            #   subPath: ansible
+            - name: aws
+              mountPath: $HOME/.aws/credentials
+              subPath: credentials
         
       volumes:
       - name: config
@@ -189,14 +190,14 @@ spec:
               items:
                 - key: config.json
                   path: config.json
-      # - name: ssh
-      #   projected:
-      #     sources:
-      #     - secret:
-      #         name: ansible-ssh
-      #         items:
-      #         - key: ansible
-      #           path: ansible
+      - name: aws
+        projected:
+          sources:
+          - secret:
+              name: aws-access-secret-key
+              items:
+              - key: credentials
+                path: credentials
       # - name: config
       #   configMap:
       #     name: semaphore-ansible-semaphore-config
