@@ -1,5 +1,5 @@
 
-FROM semaphoreui/semaphore:v2.9.37
+FROM semaphoreui/semaphore:v2.16.29
 USER root
 RUN apk add --no-cache wget unzip bash python3 py3-pip
 ENV TERRAFORM_VERSION=1.13.1

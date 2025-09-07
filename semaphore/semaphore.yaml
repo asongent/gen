@@ -84,7 +84,7 @@ spec:
       - name: private-registry
       containers:
         - name: ansible-semaphore
-          image: ghcr.io/asongent/semaphorui-aws-terraform:v2.9.38
+          image: ghcr.io/asongent/semaphorui-aws-terraform:v2.16.29
           #image: ghcr.io/asongent/semaphorui-terraform:v2.9.37 #semaphoreui/semaphore:v2.9.37
           env:
             - name: SEMAPHORE_PORT
