@@ -175,7 +175,7 @@ spec:
               mountPath: /tmp/semaphore
             
             - name: ssh
-              mountPath: /home/semaphore/.ssh/ansible
+              mountPath: /home/semaphore/.ansible/key/ansible
               subPath: ansible
         
       volumes:
