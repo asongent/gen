@@ -80,9 +80,11 @@ spec:
       serviceAccountName: semaphore-ansible-semaphore
       securityContext:
         fsGroup: 1001
+      imagePullSecrets:
+      - name: private-registry
       containers:
         - name: ansible-semaphore
-          image: semaphoreui/semaphore:v2.9.37
+          image: ghcr.io/asongent/semaphorui-terraform:v2.9.37 #semaphoreui/semaphore:v2.9.37
           env:
             - name: SEMAPHORE_PORT
               value: "3000"
@@ -174,9 +176,9 @@ spec:
             - name: workdir
               mountPath: /tmp/semaphore
             
-            - name: ssh
-              mountPath: /home/semaphore/.ansible/key/ansible
-              subPath: ansible
+            # - name: ssh
+            #   mountPath: /home/semaphore/.ansible/key/ansible
+            #   subPath: ansible
         
       volumes:
       - name: config
@@ -187,14 +189,14 @@ spec:
               items:
                 - key: config.json
                   path: config.json
-      - name: ssh
-        projected:
-          sources:
-          - secret:
-              name: ansible-ssh
-              items:
-              - key: ansible
-                path: ansible
+      # - name: ssh
+      #   projected:
+      #     sources:
+      #     - secret:
+      #         name: ansible-ssh
+      #         items:
+      #         - key: ansible
+      #           path: ansible
       # - name: config
       #   configMap:
       #     name: semaphore-ansible-semaphore-config
