@@ -11,6 +11,7 @@ RUN wget https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform
 
 # ENV AWS_ACCESS_KEY="" \
 #     AWS_ACCESS_SECRET_KEY=""
+RUN mkdir -p /home/semaphore/.aws
 RUN apk update 
 RUN apk upgrade 
 RUN pip3 install --upgrade pip
