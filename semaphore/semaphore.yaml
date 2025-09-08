@@ -49,14 +49,14 @@ spec:
     spec:
       serviceAccountName: semaphore-ansible-semaphore
       securityContext:
-          runAsUser: 1001       
-          runAsGroup: 1001     
+          # runAsUser: 1001       
+          # runAsGroup: 1001     
           fsGroup: 1001
       imagePullSecrets:
       - name: private-registry      
       containers:
         - name: ansible-semaphore
-          image: ghcr.io/asongent/awscli-semaphorui:v2.16.29-custom
+          image: ghcr.io/asongent/awscli-semaphorui:v2.16.29-custom-ssh
           #image: #semaphoreui/semaphore:v2.16.29 #ghcr.io/asongent/semaphorui-aws-terraform:v2.16.29
           command:
           - sh
