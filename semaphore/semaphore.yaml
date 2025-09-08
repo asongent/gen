@@ -71,21 +71,42 @@ spec:
           image: ghcr.io/asongent/awscli-semaphorui:v2.16.29 
           #image: #semaphoreui/semaphore:v2.16.29 #ghcr.io/asongent/semaphorui-aws-terraform:v2.16.29
           command:
-            - sh
-            - -c
-            - |
-              if ! semaphore user get --config=/etc/semaphore/config.json --login $(SEMAPHORE_ADMIN_USERNAME) >/dev/null; then
-                semaphore user add \
-                  --config=/etc/semaphore/config.json \
-                  --admin \
-                  --name=$(SEMAPHORE_ADMIN_FULLNAME) \
-                  --login=$(SEMAPHORE_ADMIN_USERNAME) \
-                  --password=$(SEMAPHORE_ADMIN_PASSWORD) \
-                  --email=$(SEMAPHORE_ADMIN_EMAIL)
+          - sh
+          - -c
+          - |
+            if ! semaphore user get --config=/etc/semaphore/config.json --login "$SEMAPHORE_ADMIN_USERNAME" >/dev/null 2>&1; then
+              if ! semaphore user add \
+                --config=/etc/semaphore/config.json \
+                --admin \
+                --name="$SEMAPHORE_ADMIN_FULLNAME" \
+                --login="$SEMAPHORE_ADMIN_USERNAME" \
+                --password="$SEMAPHORE_ADMIN_PASSWORD" \
+                --email="$SEMAPHORE_ADMIN_EMAIL"; then
+                echo "❌ Failed to create admin user"
               else
-                echo "Admin already extists"
+                echo "✅ Admin user created"
               fi
-              exit 0
+            else
+              echo "ℹ️ Admin already exists"
+            fi
+            exit 0
+
+          # command:
+          #   - sh
+          #   - -c
+          #   - |
+          #     if ! semaphore user get --config=/etc/semaphore/config.json --login $(SEMAPHORE_ADMIN_USERNAME) >/dev/null; then
+          #       semaphore user add \
+          #         --config=/etc/semaphore/config.json \
+          #         --admin \
+          #         --name=$(SEMAPHORE_ADMIN_FULLNAME) \
+          #         --login=$(SEMAPHORE_ADMIN_USERNAME) \
+          #         --password=$(SEMAPHORE_ADMIN_PASSWORD) \
+          #         --email=$(SEMAPHORE_ADMIN_EMAIL)
+          #     else
+          #       echo "Admin already extists"
+          #     fi
+          #     exit 0
           env:
             - name: SEMAPHORE_ADMIN_FULLNAME
               valueFrom:
