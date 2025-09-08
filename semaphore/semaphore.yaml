@@ -203,10 +203,10 @@ spec:
                 path: credentials
       - name: ssh
         projected:
+          defaultMode: 0400
           sources:
           - secret:
               name: ansible-ssh
-              defaultMode: 0400
               items:
               - key: ansible
                 path: ansible
