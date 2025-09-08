@@ -1,19 +1,19 @@
 
 ---
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: semaphore-ansible-semaphore-workdir
-  namespace: semaphore
-  labels:
-    app.kubernetes.io/name: "ansible-semaphore"
-    app.kubernetes.io/instance: "semaphore"
-spec:
-  accessModes:
-    - "ReadWriteOnce"
-  resources:
-    requests:
-      storage: "10G"
+# apiVersion: v1
+# kind: PersistentVolumeClaim
+# metadata:
+#   name: semaphore-ansible-semaphore-workdir
+#   namespace: semaphore
+#   labels:
+#     app.kubernetes.io/name: "ansible-semaphore"
+#     app.kubernetes.io/instance: "semaphore"
+# spec:
+#   accessModes:
+#     - "ReadWriteOnce"
+#   resources:
+#     requests:
+#       storage: "10G"
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -90,26 +90,6 @@ spec:
               echo "ℹ️ Admin already exists"
             fi
             exec /usr/local/bin/semaphore server --config=/etc/semaphore/config.json
-
-
-                          
-
-          # command:
-          #   - sh
-          #   - -c
-          #   - |
-          #     if ! semaphore user get --config=/etc/semaphore/config.json --login $(SEMAPHORE_ADMIN_USERNAME) >/dev/null; then
-          #       semaphore user add \
-          #         --config=/etc/semaphore/config.json \
-          #         --admin \
-          #         --name=$(SEMAPHORE_ADMIN_FULLNAME) \
-          #         --login=$(SEMAPHORE_ADMIN_USERNAME) \
-          #         --password=$(SEMAPHORE_ADMIN_PASSWORD) \
-          #         --email=$(SEMAPHORE_ADMIN_EMAIL)
-          #     else
-          #       echo "Admin already extists"
-          #     fi
-          #     exit 0
           env:
             - name: SEMAPHORE_ADMIN_FULLNAME
               valueFrom:
@@ -211,10 +191,12 @@ spec:
               subPath: config.json
             - name: workdir
               mountPath: /tmp/semaphore
-            
             - name: aws
               mountPath: /home/semaphore/.aws/credentials
               subPath: credentials
+            - name: ssh
+              mountPath: /home/semaphore/.ssh/ansible
+              subPath: ansible
         
       volumes:
       - name: config
@@ -233,12 +215,28 @@ spec:
               items:
               - key: credentials
                 path: credentials
+      - name: ssh
+        projected:
+          sources:
+          - secret:
+              name: ansible-ssh
+              items:
+              - key: ansible
+                path: ansible
       # - name: config
       #   configMap:
       #     name: semaphore-ansible-semaphore-config
-      - name: workdir
-        persistentVolumeClaim:
-          claimName: semaphore-ansible-semaphore-workdir
+      # - name: workdir
+      #   persistentVolumeClaim:
+      #     claimName: semaphore-ansible-semaphore-workdir
+  volumeClaimTemplates:
+    - metadata:
+        name: workdir
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 10Gi
 ---
 apiVersion: v1
 kind: Pod
