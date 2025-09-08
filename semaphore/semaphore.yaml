@@ -49,9 +49,11 @@ spec:
     spec:
       serviceAccountName: semaphore-ansible-semaphore
       securityContext:
-        fsGroup: 1001
+          runAsUser: 1000       
+          runAsGroup: 1000      
+          fsGroup: 1000 
       imagePullSecrets:
-      - name: private-registry
+      - name: private-registry      
       containers:
         - name: ansible-semaphore
           image: ghcr.io/asongent/awscli-semaphorui:v2.16.29 
