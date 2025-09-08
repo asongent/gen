@@ -89,9 +89,10 @@ spec:
             else
               echo "ℹ️ Admin already exists"
             fi
-            tail -f /dev/null
+            exec /usr/local/bin/semaphore server --config=/etc/semaphore/config.json
 
-                  
+
+                          
 
           # command:
           #   - sh
