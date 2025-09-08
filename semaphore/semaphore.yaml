@@ -86,21 +86,21 @@ spec:
         - name: ansible-semaphore
           image: semaphoreui/semaphore:v2.16.29 # ghcr.io/asongent/semaphorui-aws-terraform:v2.16.29
           #image: ghcr.io/asongent/semaphorui-terraform:v2.9.37 #semaphoreui/semaphore:v2.9.37
-          command:
-            - sh
-            - -c
-            - |
-              if ! semaphore user get --config=/etc/semaphore/config.json --login $(SEMAPHORE_ADMIN_USERNAME) >/dev/null; then
-                semaphore user add \
-                  --config=/etc/semaphore/config.json \
-                  --admin \
-                  --name=$(SEMAPHORE_ADMIN_FULLNAME) \
-                  --login=$(SEMAPHORE_ADMIN_USERNAME) \
-                  --password=$(SEMAPHORE_ADMIN_PASSWORD) \
-                  --email=$(SEMAPHORE_ADMIN_EMAIL)
-              else
-                echo "Admin already extists"
-              fi
+          # command:
+          #   - sh
+          #   - -c
+          #   - |
+          #     if ! semaphore user get --config=/etc/semaphore/config.json --login $(SEMAPHORE_ADMIN_USERNAME) >/dev/null; then
+          #       semaphore user add \
+          #         --config=/etc/semaphore/config.json \
+          #         --admin \
+          #         --name=$(SEMAPHORE_ADMIN_FULLNAME) \
+          #         --login=$(SEMAPHORE_ADMIN_USERNAME) \
+          #         --password=$(SEMAPHORE_ADMIN_PASSWORD) \
+          #         --email=$(SEMAPHORE_ADMIN_EMAIL)
+          #     else
+          #       echo "Admin already extists"
+          #     fi
           env:
             - name: SEMAPHORE_ADMIN_FULLNAME
               valueFrom:
