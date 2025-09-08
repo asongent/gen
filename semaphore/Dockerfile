@@ -8,9 +8,7 @@ RUN wget https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform
     && unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip \
     && mv terraform /usr/local/bin/ \
     && rm terraform_${TERRAFORM_VERSION}_linux_amd64.zip
-
-# ENV AWS_ACCESS_KEY="" \
-#     AWS_ACCESS_SECRET_KEY=""
+    
 RUN mkdir -p /home/semaphore/.aws
 RUN apk update 
 RUN apk upgrade 

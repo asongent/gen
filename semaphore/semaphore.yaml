@@ -101,21 +101,21 @@ spec:
               value: "false"
             - name: SEMAPHORE_USE_REMOTE_RUNNER
               value: "false"
-            - name: SEMAPHORE_DB_DIALECT
-              value: "postgres"
-            - name: SEMAPHORE_DB_HOST
-              value: "dbms.fredgentech.net"
-            - name: SEMAPHORE_DB_PORT
-              value: "5432"
-            - name: SEMAPHORE_DB
-              value: "semaphore"
-            - name: SEMAPHORE_DB_USER
-              value: "databaseadmin"
-            - name: SEMAPHORE_DB_PASS
-              valueFrom:
-                secretKeyRef:
-                  name: semaphore-ansible-semaphore-database
-                  key: password
+            # - name: SEMAPHORE_DB_DIALECT
+            #   value: "postgres"
+            # - name: SEMAPHORE_DB_HOST
+            #   value: "dbms.fredgentech.net"
+            # - name: SEMAPHORE_DB_PORT
+            #   value: "5432"
+            # - name: SEMAPHORE_DB
+            #   value: "semaphore"
+            # - name: SEMAPHORE_DB_USER
+            #   value: "databaseadmin"
+            # - name: SEMAPHORE_DB_PASS
+            #   valueFrom:
+            #     secretKeyRef:
+            #       name: semaphore-ansible-semaphore-database
+            #       key: password
             - name: SEMAPHORE_LDAP_ENABLE
               value: "false"
             - name: SEMAPHORE_EMAIL_ALERT
@@ -145,14 +145,14 @@ spec:
                   name: semaphore-ansible-semaphore-general
                   key: accesskeyEncryption
 # Additional envs
-            - name: SEMAPHORE_ADMIN_PASSWORD
-              value: "blablabla"
-            - name: SEMAPHORE_ADMIN_NAME
-              value:  "admin"
-            - name: SEMAPHORE_ADMIN_EMAIL
-              value:  "admin@localhost"
-            - name: SEMAPHORE_ADMIN
-              value:  "admin"
+            # - name: SEMAPHORE_ADMIN_PASSWORD
+            #   value: "blablabla"
+            # - name: SEMAPHORE_ADMIN_NAME
+            #   value:  "admin"
+            # - name: SEMAPHORE_ADMIN_EMAIL
+            #   value:  "admin@localhost"
+            # - name: SEMAPHORE_ADMIN
+            #   value:  "admin"
           ports:
             - name: http
               containerPort: 3000
