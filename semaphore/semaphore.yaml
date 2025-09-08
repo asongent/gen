@@ -56,7 +56,7 @@ spec:
       - name: private-registry      
       containers:
         - name: ansible-semaphore
-          image: ghcr.io/asongent/awscli-semaphorui:v2.16.29-custom-ssh
+          image: ghcr.io/asongent/awscli-semaphorui:v2.16.29-ssh
           #image: #semaphoreui/semaphore:v2.16.29 #ghcr.io/asongent/semaphorui-aws-terraform:v2.16.29
           command:
           - sh
