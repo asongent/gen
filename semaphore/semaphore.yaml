@@ -1,21 +1,5 @@
 
 ---
-# apiVersion: v1
-# kind: ConfigMap
-# metadata:
-#   name: semaphore-ansible-semaphore-config
-#   namespace: semaphore
-#   labels:
-#     app.kubernetes.io/name: "ansible-semaphore"
-#     app.kubernetes.io/instance: "semaphore"
-# data:
-#   config.json: |
-#     {
-#       "ssh_config_path": "~/.ssh/config",
-#       "billing_enabled": true
-#     }
-# ---
-# Source: ansible-semaphore/templates/pvc.yaml
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -84,8 +68,8 @@ spec:
       - name: private-registry
       containers:
         - name: ansible-semaphore
-          image: semaphoreui/semaphore:v2.16.29 # ghcr.io/asongent/semaphorui-aws-terraform:v2.16.29
-          #image: ghcr.io/asongent/semaphorui-terraform:v2.9.37 #semaphoreui/semaphore:v2.9.37
+          image: ghcr.io/asongent/awscli-semaphorui:v2.16.29 
+          #image: #semaphoreui/semaphore:v2.16.29 #ghcr.io/asongent/semaphorui-aws-terraform:v2.16.29
           command:
             - sh
             - -c
