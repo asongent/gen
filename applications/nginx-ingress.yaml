@@ -13,7 +13,7 @@ spec:
       valueFiles:
       - values.yaml
   destination:
-    namespace: nginx-ingress
+    namespace: service-mesh/nginx-controller/nginx-ingress
     server: https://kubernetes.default.svc
   syncPolicy:
     automated:
