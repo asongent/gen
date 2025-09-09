@@ -8,12 +8,12 @@ spec:
   source:
     repoURL:  https://github.com/asongent/gen.git
     targetRevision: HEAD
-    path: nginx-ingress
+    path:  service-mesh/nginx-controller/nginx-ingress
     helm:
       valueFiles:
       - values.yaml
   destination:
-    namespace: service-mesh/nginx-controller/nginx-ingress
+    namespace: nginx-ingress
     server: https://kubernetes.default.svc
   syncPolicy:
     automated:
