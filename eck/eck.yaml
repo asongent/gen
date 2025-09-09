@@ -14,7 +14,7 @@ spec:
       es.enforce.bootstrap.checks: true
       index.store.type: mmapfs
       node.roles: ["master"]
-      node.store.allow_mmap: true #turn this to false when NOT implementing sso as well
+      node.store.allow_mmap: false #turn this to false when NOT implementing sso as well
       xpack.ml.enabled: false
       # xpack.security.authc.token.enabled: true
       # # xpack.reporting.roles.enabled: true
@@ -62,7 +62,7 @@ spec:
           - name: elasticsearch
             env:
             - name: ES_JAVA_OPTS
-              value: "-Xms2g -Xmx2g"
+              value: "-Xms1500m -Xmx1500m"
             - name: ES_PLUGINS
               value: analysis-icu
             resources: 
@@ -144,7 +144,7 @@ spec:
           - name: elasticsearch
             env:
             - name: ES_JAVA_OPTS
-              value: "-Xms2g -Xmx2g"
+              value: "-Xms1500m -Xmx1500m"
             - name: ES_PLUGINS
               value: analysis-icu
             resources:
@@ -170,7 +170,6 @@ spec:
           name: elasticsearch-data  
         spec:
           accessModes: [ "ReadWriteOnce" ]
-          storageClassName: "longhorn"
           resources:
             requests:
               storage: 10Gi
@@ -191,8 +190,7 @@ metadata:
   name: kibana
   namespace: eck
 spec:
-  version: 9.1.1
-  # image: ghcr.io/asongent/kibana-costum:9.1.1
+  version: '9.1.1'
   count: 1
   elasticsearchRef:
     name: elasticsearch
@@ -209,40 +207,40 @@ spec:
     #     order: 1
     server.publicBaseUrl: "https://kibana.stack.fredgentech.net"
     # server.host: "0.0.0.0"
-    xpack.fleet.agents.elasticsearch.hosts: ["https://elasticsearch-es-http.eck.svc:9200"]
-    xpack.fleet.agents.fleet_server.hosts: ["https://fleet-server-agent-http.eck.svc:8220"]
-    xpack.fleet.packages:
-      - name: system
-        version: latest
-      - name: elastic_agent
-        version: latest
-      - name: fleet_server
-        version: latest
-    xpack.fleet.agentPolicies:
-      - name: Fleet Server on ECK policy
-        id: eck-fleet-server
-        namespace: eck
-        monitoring_enabled:
-          - logs
-          - metrics
-        unenroll_timeout: 900
-        package_policies:
-        - name: fleet_server-1
-          id: fleet_server-1
-          package:
-            name: fleet_server
-      - name: Elastic Agent on ECK policy
-        id: eck-agent
-        namespace: eck
-        monitoring_enabled:
-          - logs
-          - metrics
-        unenroll_timeout: 900
-        package_policies:
-          - name: system-1
-            id: system-1
-            package:
-              name: system
+    # xpack.fleet.agents.elasticsearch.hosts: ["https://elasticsearch-es-http.eck.svc:9200"]
+    # xpack.fleet.agents.fleet_server.hosts: ["https://fleet-server-agent-http.eck.svc:8220"]
+    # xpack.fleet.packages:
+    #   - name: system
+    #     version: latest
+    #   - name: elastic_agent
+    #     version: latest
+    #   - name: fleet_server
+    #     version: latest
+    # xpack.fleet.agentPolicies:
+    #   - name: Fleet Server on ECK policy
+    #     id: eck-fleet-server
+    #     namespace: eck
+    #     monitoring_enabled:
+    #       - logs
+    #       - metrics
+    #     unenroll_timeout: 900
+    #     package_policies:
+    #     - name: fleet_server-1
+    #       id: fleet_server-1
+    #       package:
+    #         name: fleet_server
+    #   - name: Elastic Agent on ECK policy
+    #     id: eck-agent
+    #     namespace: eck
+    #     monitoring_enabled:
+    #       - logs
+    #       - metrics
+    #     unenroll_timeout: 900
+    #     package_policies:
+    #       - name: system-1
+    #         id: system-1
+    #         package:
+    #           name: system
   http:
     tls:
       selfSignedCertificate:
@@ -341,7 +339,6 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  creationTimestamp: '2024-01-22T22:08:58Z'
   labels:
     common.k8s.elastic.co/type: kibana
     kibana.k8s.elastic.co/name: kibana

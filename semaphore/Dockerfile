@@ -7,7 +7,9 @@ RUN apk add --no-cache wget unzip bash python3 py3-pip
 #     && unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip \
 #     && mv terraform /usr/local/bin/ \
 #     && rm terraform_${TERRAFORM_VERSION}_linux_amd64.zip
-    
+RUN mkdir -p /home/semaphore/.ssh \
+    chown semaphore:semaphore /home/semaphore/.ssh
+        
 RUN mkdir -p /home/semaphore/.aws
 RUN apk update 
 RUN apk upgrade 

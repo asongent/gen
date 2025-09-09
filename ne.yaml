@@ -1,0 +1,26 @@
+# apiVersion: v1
+# kind: Secret
+# metadata:
+#     name: semaphore-ansible-semaphore-runner
+#     namespace: semaphore
+#     labels:
+#         app.kubernetes.io/name: ansible-semaphore
+#         app.kubernetes.io/instance: semaphore
+# type: Opaque
+# data:
+#     token: dXpYZHB1WDJkUzhacmJOSmtXSzhzcTJzUFQ4QUdYT2E=
+# ---
+# apiVersion: v1
+# kind: Secret
+# metadata:
+#     name: semaphore-ansible-semaphore-general
+#     namespace: semaphore
+#     labels:
+#         app.kubernetes.io/name: ansible-semaphore
+#         app.kubernetes.io/instance: semaphore
+# type: Opaque
+# data:
+#     cookieHash: V0d4aGJuRXdRV1F5YkdOd2VIaHdSVXBoY0dsR2JGWjRiVFUxVkdoWldIWT0=
+#     cookieEncryption: YURKNFp6RkxRalpYU2pkRFVGcGpVakl3UWtKWVMweExXVUZ3WkZkdlNEUT0=
+#     accesskeyEncryption: TVhseU5GQmxaR1JTV1ZsaWNFMDJWV1JoZEVZeVQweFhTblE0YlVrM1Uzaz0=
+---
