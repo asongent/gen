@@ -61,6 +61,7 @@ spec:
         resources:
           namespaces:
             - istio-system
+            - nginx-ingress
     validate:
       message: "Service of type LoadBalancer is not allowed."
       pattern:
