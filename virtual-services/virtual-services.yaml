@@ -139,7 +139,7 @@ spec:
         prefix: /
     route:
     - destination:
-        host: airflow-webserver
+        host: airflow-api-server #airflow-webserver
         port:
           number: 8080
 
