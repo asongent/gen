@@ -46,10 +46,10 @@ hub:
     GenericOAuthenticator:
       client_id: hub
       client_secret: F7ftyaSMuB8vIzhop16EQzRGAStjXZwj
-      oauth_callback_url: https://hub.stack.fredgentech.net/hub/oauth_callback
-      authorize_url: https://keycloak.stack.fredgentech.net/auth/realms/New%20Gen%20Tech/protocol/openid-connect/auth
-      token_url: https://keycloak.stack.fredgentech.net/auth/realms/New%20Gen%20Tech/protocol/openid-connect/token
-      userdata_url: https://keycloak.stack.fredgentech.net/auth/realms/New%20Gen%20Tech/protocol/openid-connect/userinfo
+      oauth_callback_url: https://hub.stack.fredgentech.com/hub/oauth_callback
+      authorize_url: https://keycloak.stack.fredgentech.com/auth/realms/New%20Gen%20Tech/protocol/openid-connect/auth
+      token_url: https://keycloak.stack.fredgentech.com/auth/realms/New%20Gen%20Tech/protocol/openid-connect/token
+      userdata_url: https://keycloak.stack.fredgentech.com/auth/realms/New%20Gen%20Tech/protocol/openid-connect/userinfo
       login_service: keycloak
       username_claim: preferred_username 
       # userdata_params:

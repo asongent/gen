@@ -424,7 +424,7 @@ jdbcOverwrite:
   # If enable the JDBC Overwrite, make sure to set `postgresql.enabled=false`
   enable: true
   # The JDBC url of the external DB
-  jdbcUrl: "jdbc:postgresql://dbms.fredgentech.net/sonarqube?socketTimeout=1500"
+  jdbcUrl: "jdbc:postgresql://dbms.fredgentech.com/sonarqube?socketTimeout=1500"
   # # The DB user that should be used for the JDBC connection
   jdbcUsername: "databaseadmin"
   # # Use this if you don't mind the DB password getting stored in plain text within the values file

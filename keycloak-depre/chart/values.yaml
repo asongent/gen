@@ -132,7 +132,7 @@ extraEnv: |-
   - name: DB_VENDOR
     value: postgres
   - name: KC_DB_URL_HOST
-    value: dbms.fredgentech.net
+    value: dbms.fredgentech.com
   - name: DB_PORT
     value: "5432"
   - name: DB_DATABASE
@@ -144,7 +144,7 @@ extraEnv: |-
   - name: KC_HOSTNAME_STRICT_HTTPS
     value: "true"
   - name: KC_HOSTNAME
-    value: keycloak.stack.fredgentech.net
+    value: keycloak.stack.fredgentech.com
   - name: KC_HOSTNAME_STRICT
     value: "true"
   - name: KC_LOG_LEVEL
@@ -554,7 +554,7 @@ database:
   existingSecretKey: "" #"password"
   # E.g. dev-file, dev-mem, mariadb, mssql, mysql, oracle or postgres
   vendor: "" #"postgres"
-  hostname: "" #"dbms.fredgentech.net"
+  hostname: "" #"dbms.fredgentech.com"
   port: "" #"5432"
   database: "" #"usermanagement"
   username: 

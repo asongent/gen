@@ -8,7 +8,7 @@ spec:
   gateways:
   - istio-system/general-gateway
   hosts:
-  - 'hub.stack.fredgentech.net'
+  - 'hub.stack.fredgentech.com'
   http:
   - retries:
       attempts: 3
@@ -32,7 +32,7 @@ spec:
   gateways:
   - istio-system/general-gateway
   hosts:
-  - 'reporter.stack.fredgentech.net'
+  - 'reporter.stack.fredgentech.com'
   http:
   - retries:
       attempts: 3
@@ -56,7 +56,7 @@ spec:
   gateways:
   - istio-system/general-gateway
   hosts:
-  - 'rabbitmq.stack.fredgentech.net'
+  - 'rabbitmq.stack.fredgentech.com'
   http:
   - retries:
       attempts: 3
@@ -81,7 +81,7 @@ spec:
   gateways:
   - istio-system/general-gateway
   hosts:
-  - 'grafana.stack.fredgentech.net'
+  - 'grafana.stack.fredgentech.com'
   http:
   - retries:
       attempts: 3
@@ -105,7 +105,7 @@ spec:
   gateways:
   - istio-system/general-gateway
   hosts:
-  - 'prom.stack.fredgentech.net'
+  - 'prom.stack.fredgentech.com'
   http:
   - retries:
       attempts: 3
@@ -129,7 +129,7 @@ spec:
   gateways:
   - istio-system/general-gateway
   hosts:
-  - 'airflow.stack.fredgentech.net'
+  - 'airflow.stack.fredgentech.com'
   http:
   - retries:
       attempts: 3
@@ -161,7 +161,7 @@ spec:
   gateways:
     - istio-system/general-gateway
   hosts:
-    - argocd.stack.fredgentech.net
+    - argocd.stack.fredgentech.com
   http:
     - route:
       - destination:
@@ -179,7 +179,7 @@ spec:
   gateways:
   - istio-system/general-gateway
   hosts:
-  - 'storage.stack.fredgentech.net'
+  - 'storage.stack.fredgentech.com'
   http:
   - retries:
       attempts: 3
@@ -204,7 +204,7 @@ spec:
   gateways:
   - istio-system/general-gateway
   hosts:
-  - 'jaegar.stack.fredgentech.net'
+  - 'jaegar.stack.fredgentech.com'
   http:
   - retries:
       attempts: 3
@@ -229,7 +229,7 @@ spec:
   gateways:
   - istio-system/general-gateway
   hosts:
-  - 'neuvector.stack.fredgentech.net'
+  - 'neuvector.stack.fredgentech.com'
   http:
   - retries:
       attempts: 3
@@ -253,7 +253,7 @@ spec:
   gateways:
   - istio-system/general-gateway
   hosts:
-  - 'artifactory.stack.fredgentech.net'
+  - 'artifactory.stack.fredgentech.com'
   http:
   - retries:
       attempts: 3
@@ -277,7 +277,7 @@ spec:
   gateways:
   - istio-system/general-gateway
   hosts:
-  - 'sonarqube.stack.fredgentech.net'
+  - 'sonarqube.stack.fredgentech.com'
   http:
   - retries:
       attempts: 3
@@ -302,7 +302,7 @@ spec:
   gateways:
   - istio-system/general-gateway
   hosts:
-  - 'gitlab.stack.fredgentech.net'
+  - 'gitlab.stack.fredgentech.com'
   http:
   - retries:
       attempts: 3
@@ -327,7 +327,7 @@ spec:
 #   gateways:
 #   - istio-system/general-gateway
 #   hosts:
-#   - 'minio.stack.fredgentech.net'
+#   - 'minio.stack.fredgentech.com'
 #   http:
 #   - retries:
 #       attempts: 3
@@ -352,7 +352,7 @@ spec:
 #   gateways:
 #     - istio-system/general-gateway
 #   hosts:
-#     - argocd.fredgentech.net
+#     - argocd.fredgentech.com
 #   http:
 #     - route:
 #       - destination:
@@ -372,7 +372,7 @@ spec:
   gateways:
   - istio-system/general-gateway
   hosts:
-  - 'keycloak.stack.fredgentech.net'
+  - 'keycloak.stack.fredgentech.com'
   http:
   - retries:
       attempts: 3
@@ -397,7 +397,7 @@ spec:
   gateways:
   - istio-system/general-gateway
   hosts:
-  - 'spark.stack.fredgentech.net'
+  - 'spark.stack.fredgentech.com'
   http:
   - retries:
       attempts: 3
@@ -421,7 +421,7 @@ spec:
   gateways:
   - istio-system/general-gateway
   hosts:
-  - 'minio.stack.fredgentech.net'
+  - 'minio.stack.fredgentech.com'
   http:
   - retries:
       attempts: 3
@@ -445,7 +445,7 @@ spec:
   gateways:
   - istio-system/general-gateway
   hosts:
-  - 'influxdb.stack.fredgentech.net'
+  - 'influxdb.stack.fredgentech.com'
   http:
   - retries:
       attempts: 3

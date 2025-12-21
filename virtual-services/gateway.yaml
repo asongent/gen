@@ -54,7 +54,7 @@ spec:
 #     istio: ingressgateway # use istio default controller
 #   servers:
 #   - hosts:
-#     - 'seldon-model.fredgentech.net'
+#     - 'seldon-model.fredgentech.com'
 #     port:
 #       name: http
 #       number: 80
@@ -63,7 +63,7 @@ spec:
 #     tls:
 #       httpsRedirect: true
 #   - hosts:
-#     - 'seldon-model.fredgentech.net'
+#     - 'seldon-model.fredgentech.com'
 #     port:
 #       name: https
 #       number: 443

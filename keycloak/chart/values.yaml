@@ -127,7 +127,7 @@ args:
 # https://www.keycloak.org/server/all-config
 extraEnv: |
   - name: KC_HOSTNAME
-    value: keycloak.stack.fredgentech.net
+    value: keycloak.stack.fredgentech.com
   - name: KC_HOSTNAME_STRICT
     value: "true"
   - name: KC_HTTPS_CERTIFICATE_FILE
@@ -142,7 +142,7 @@ extraEnv: |
   - name: KC_DB_URL_DATABASE
     value: "usermanagement"
   - name: KC_DB_URL_HOST
-    value: "dbms.fredgentech.net"
+    value: "dbms.fredgentech.com"
   - name: KC_DB_USERNAME
     value: databaseadmin
   - name: KC_DB_PASSWORD

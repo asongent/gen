@@ -49,10 +49,10 @@ spec:
             #   value: stig-manager
 
             - name:  STIGMAN_OIDC_PROVIDER
-              value: https://keycloak.stack.fredgentech.net/auth/realms/stigman
+              value: https://keycloak.stack.fredgentech.com/auth/realms/stigman
 
             - name:  STIGMAN_CLIENT_OIDC_PROVIDER
-              value: https://keycloak.stack.fredgentech.net/auth/realms/stigman
+              value: https://keycloak.stack.fredgentech.com/auth/realms/stigman
           
           ports:
             - containerPort: 54000

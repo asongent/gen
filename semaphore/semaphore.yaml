@@ -124,7 +124,7 @@ spec:
             - name: SEMAPHORE_SLACK_ALERT
               value: "false"
              # - name: SEMAPHORE_DB_HOST
-            #   value: "dbms.fredgentech.net"
+            #   value: "dbms.fredgentech.com"
             # - name: SEMAPHORE_DB_PORT
             #   value: "5432"
             # - name: SEMAPHORE_DB
@@ -257,7 +257,7 @@ spec:
   gateways:
   - istio-system/general-gateway
   hosts:
-  - 'semaphore.stack.fredgentech.net'
+  - 'semaphore.stack.fredgentech.com'
   http:
   - retries:
       attempts: 3

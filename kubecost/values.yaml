@@ -1142,7 +1142,7 @@ extraObjects:
       name: virtualservice
     spec:
       hosts:
-      - cost.stack.fredgentech.net
+      - cost.stack.fredgentech.com
       gateways:
       - istio-system/general-gateway
       http:

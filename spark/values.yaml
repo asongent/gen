@@ -124,7 +124,7 @@ hostNetwork: false
 master:
   configOptions:
    -Dspark.ui.reverseProxy=true
-   -Dspark.ui.reverseProxyUrl=https://spark.stack.fredgentech.net
+   -Dspark.ui.reverseProxyUrl=https://spark.stack.fredgentech.com
   ## @param worker.extraEnvVars An array to add extra env vars
   ## For example:
   ## extraEnvVars:
@@ -464,7 +464,7 @@ master:
 worker:
   configOptions:
    -Dspark.ui.reverseProxy=true
-   -Dspark.ui.reverseProxyUrl=https://spark.stack.fredgentech.net
+   -Dspark.ui.reverseProxyUrl=https://spark.stack.fredgentech.com
   ## @param worker.extraEnvVars An array to add extra env vars
   ## For example:
   ## extraEnvVars:

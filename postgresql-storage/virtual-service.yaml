@@ -8,7 +8,7 @@ spec:
   gateways:
   - istio-system/general-gateway
   hosts:
-  - 'postgresql.stack.fredgentech.net'
+  - 'postgresql.stack.fredgentech.com'
   http:
   - retries:
       attempts: 3

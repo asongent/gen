@@ -129,7 +129,7 @@ service:
 ## is used as Ingress controller and already deployed
 istio:
   create: true
-  host: stigman.stack.fredgentech.net
+  host: stigman.stack.fredgentech.com
   namespace: istio-system
   gatewayName: general-gateway
   servicePort:  80
@@ -139,7 +139,7 @@ ingress:
   annotations: {}
   className: "nginx"
   pathType: ImplementationSpecific
-  host: stigman.stack.fredgentech.net
+  host: stigman.stack.fredgentech.com
   service:
     port: 52000
   tls: 

@@ -26,4 +26,4 @@ metadata:
   name: config-domain
   namespace: knative-serving
 data:
-  knative.fredgentech.net: ""
+  knative.fredgentech.com: ""

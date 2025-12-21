@@ -517,7 +517,7 @@ spec:
   gateways:
   - istio-system/general-gateway
   hosts:
-  - 'neo4j.stack.fredgentech.net'
+  - 'neo4j.stack.fredgentech.com'
   http:
   - retries:
       attempts: 3
@@ -541,7 +541,7 @@ spec:
   gateways:
   - istio-system/general-gateway
   hosts:
-  - 'bolt.stack.fredgentech.net'
+  - 'bolt.stack.fredgentech.com'
   http:
   - retries:
       attempts: 3

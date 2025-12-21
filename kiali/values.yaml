@@ -1,7 +1,7 @@
 nameOverride: "kiali-operator"
 fullnameOverride: ""
 
-domain: stack.fredgentech.net 
+domain: stack.fredgentech.com 
 
 sso:
   enabled: false
