@@ -17,4 +17,4 @@ spec:
     tls:
       mode: Terminate
       certificateRefs:
-      - name: gateway-certs 
+      - name: gateway-certs  #The  secret gateway-certs must exist. 

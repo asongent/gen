@@ -22,9 +22,9 @@ metadata:
   name: elasticsearch
 spec:
   version:  9.2.3
-  # auth:
-  #   fileRealm:
-  #     - secretName: tracy-secret
+  auth:
+    fileRealm:
+      - secretName:  elastic-custom-users
   #   roles:
   #     - secretName: tracy-roles
   nodeSets: 
@@ -194,7 +194,7 @@ metadata:
   name: kibana
   namespace: eck
 spec:
-  version: '9.1.1'
+  version: '9.2.3'
   count: 1
   elasticsearchRef:
     name: elasticsearch
