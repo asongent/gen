@@ -1,0 +1,20 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: main-gateway
+  namespace: istio-system
+spec:
+  gatewayClassName: istio
+  listeners:
+  - name: http
+    protocol: HTTP
+    port: 80
+    hostname: '*.stack.fredgentech.com'
+  - name: https
+    hostname: '*.stack.fredgentech.com'
+    protocol: HTTPS
+    port: 443
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - name: gateway-certs 

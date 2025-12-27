@@ -1,0 +1,16 @@
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: cluster-main-issuer
+spec:
+  acme:
+    email: dummy@gmail.com
+    privateKeySecretRef:
+      name: main-tls-cert
+    server: https://acme-v02.api.letsencrypt.org/directory
+    solvers:
+    - dns01:
+        cloudflare:
+          apiTokenSecretRef:
+            key: api-token
+            name: api-token-secret

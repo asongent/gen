@@ -1,0 +1,266 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: kibana-sa
+  namespace: eck
+  annotations: {}
+imagePullSecrets:
+  - name: private-registry
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: elasticsearch-sa
+  namespace: eck
+imagePullSecrets:
+  - name: private-registry
+---
+
+apiVersion: elasticsearch.k8s.elastic.co/v1
+kind: Elasticsearch
+metadata:
+  name: elasticsearch
+spec:
+  version:  9.2.3
+  # auth:
+  #   fileRealm:
+  #     - secretName: tracy-secret
+  #   roles:
+  #     - secretName: tracy-roles
+  nodeSets: 
+  - name: master
+    count: 2
+    config:
+      index.store.type: mmapfs
+      node.roles: ["master"]
+      node.store.allow_mmap: true
+      xpack.ml.enabled: false
+    volumeClaimTemplates:
+      - metadata:
+          name: elasticsearch-data
+        spec:
+          resources:
+            requests:
+              storage: 10Gi
+          accessModes:
+            - ReadWriteOnce
+    podTemplate:
+      metadata:
+        annotations:
+          prometheus.istio.io/merge-metrics: "false"
+          traffic.sidecar.istio.io/includeInboundPorts: "*"
+          traffic.sidecar.istio.io/excludeInboundPorts: "9300"
+          traffic.sidecar.istio.io/excludeOutboundPorts: "9300"
+      spec:
+        securityContext:
+          fsGroup: 1000
+          runAsGroup: 1000
+          runAsUser: 1000
+        serviceAccountName:  elasticsearch-sa
+        initContainers:
+          - name: install-plugins
+            command:
+              - sh
+              - -c
+              - |
+                bin/elasticsearch-plugin install --batch analysis-icu
+        containers:
+          - name: elasticsearch
+            env:
+              - name: ES_JAVA_OPTS
+                value: "-Xms1500m -Xmx1500m"
+            resources:
+              limits:
+                cpu: 4
+                memory: 4Gi
+              requests:
+                cpu: 4
+                memory: 4Gi
+            lifecycle:
+              {}
+            imagePullPolicy: IfNotPresent
+            securityContext:
+              capabilities:
+                drop:
+                - ALL
+  - name: data
+    count: 2
+    config:
+      index.store.type: mmapfs
+      node.roles: ["data", "ingest"]
+      node.store.allow_mmap: true
+      xpack.ml.enabled: false
+    volumeClaimTemplates:
+    - metadata:
+        name: elasticsearch-data
+      spec:
+        resources:
+          requests:
+            storage: 10Gi
+        accessModes:
+        - ReadWriteOnce
+    podTemplate:
+      metadata:
+        annotations:
+          prometheus.istio.io/merge-metrics: "false"
+          traffic.sidecar.istio.io/includeInboundPorts: "*"
+          traffic.sidecar.istio.io/excludeInboundPorts: "9300"
+          traffic.sidecar.istio.io/excludeOutboundPorts: "9300"
+      spec:
+        securityContext:
+          fsGroup: 1000
+          runAsGroup: 1000
+          runAsUser: 1000
+        serviceAccountName:  elasticsearch-sa
+        initContainers:
+          - name: install-plugins
+            command:
+              - sh
+              - -c
+              - |
+                bin/elasticsearch-plugin install --batch analysis-icu
+        containers:
+          - name: elasticsearch
+            env:
+              - name: ES_JAVA_OPTS
+                value: "-Xms1500m -Xmx1500m"
+            resources:
+              limits:
+                cpu: 4
+                memory: 4Gi
+              requests:
+                cpu: 4
+                memory: 4Gi
+            lifecycle:
+              {}
+            imagePullPolicy: IfNotPresent
+            securityContext:
+              capabilities:
+                drop:
+                - ALL
+  http:
+    tls:
+      certificate:
+        secretName: elast-tls-certs 
+    service:
+      spec:
+        ports:
+          - name: https
+            port: 443
+            protocol: TCP
+            targetPort: 9200
+          - name: http
+            port: 9200 
+            protocol: TCP
+            targetPort: 9200
+
+
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: elastic-vs
+  namespace: eck
+spec:
+  gateways:
+    - istio-system/general-gateway 
+  hosts:
+    - elastic.stack.fredgentech.com
+  http:
+    - match:
+        - uri:
+            prefix: /
+      route:
+        - destination:
+            host: elasticsearch-es-http 
+            port:
+              number: 9200
+
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: elastic-destination-rule
+  namespace: eck
+spec:
+  host: "elasticsearch-es-http.eck.svc.cluster.local"
+  trafficPolicy:
+    tls:
+      mode: SIMPLE
+---
+apiVersion: kibana.k8s.elastic.co/v1
+kind: Kibana
+metadata:
+  name: kibana
+  namespace: eck
+spec:
+  version: '9.1.1'
+  count: 1
+  elasticsearchRef:
+    name: elasticsearch
+    namespace: eck
+  config:
+    server.publicBaseUrl: "https://kibana.stack.fredgentech.com"
+  http:
+    tls:
+      selfSignedCertificate:
+        disabled: true
+    service:
+      spec:
+        ports:
+          - name: http
+            port: 5601
+            protocol: TCP
+            targetPort: 5601
+  podTemplate:
+    spec:
+      serviceAccountName: kibana-sa
+      securityContext:
+        fsGroup: 1000
+        runAsGroup: 1000
+        runAsUser: 1000
+      containers:
+      - name: kibana
+        env:
+        - name: SERVER_BASEPATH
+          value: "" 
+---
+
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: kibana-vs
+  namespace: eck
+spec:
+  gateways:
+    - istio-system/general-gateway 
+  hosts:
+    - kibana.stack.fredgentech.com
+  http:
+    - match:
+        - uri:
+            prefix: /
+      route:
+        - destination:
+            host: kibana
+            port:
+              number: 5601
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    common.k8s.elastic.co/type: kibana
+    kibana.k8s.elastic.co/name: kibana
+  name: kibana
+  namespace: eck
+spec:
+  ports:
+    - name: http
+      port: 5601
+      protocol: TCP
+      targetPort: 5601
+  selector:
+    common.k8s.elastic.co/type: kibana
+    kibana.k8s.elastic.co/name: kibana
+  type: ClusterIP
