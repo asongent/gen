@@ -11,24 +11,22 @@ image:
   tag: ""
   tls:
     enabled: true
-    volumeMounts:
-      - mountPath: "/certs"
-        name: "bitwarden-tls-certs"
-    volumes:
-      - name: "bitwarden-tls-certs"
-        secret:
-          secretName: "bitwarden-tls-certs"
-          items:
-            - key: "tls.crt"
-              path: "cert.pem"
-            - key: "tls.key"
-              path: "key.pem"
-            - key: "ca.crt"
-              path: "ca.pem"
+    # Name of the secret that contains the TLS cert. Ignored when `image.tls.volumes` is set
+    secretName: bitwarden-tls-certs
+    # Use this to override the default volumes
+    volumes: []
+    # Use this to override the default volume mounts
+    volumeMounts: []
 
 imagePullSecrets: []
 nameOverride: "bitwarden-sdk-server"
 fullnameOverride: "bitwarden-sdk-server"
+namespaceOverride: ""
+
+# Use this to set Environment Variables e.g. HTTP_PROXY, HTTPS_PROXY
+extraEnv: {}
+  # - name: HTTP_PROXY
+  #   value: "http://example.com:8080/"
 
 serviceAccount:
   # Specifies whether a service account should be created
@@ -39,7 +37,21 @@ serviceAccount:
   # If not set and create is true, a name is generated using the fullname template
   name: ""
 
+podDnsPolicy: ""
+
+podDnsConfig: {}
+  # nameservers:
+  #   - 192.0.2.1
+  # searches:
+  #   - ns1.svc.cluster-domain.example
+  #   - my.dns.search.suffix
+  # options:
+  #   - name: ndots
+  #     value: "2"
+  #   - name: edns0
+
 podAnnotations: {}
+deploymentAnnotations: {}
 
 podSecurityContext: {}
   # fsGroup: 2000

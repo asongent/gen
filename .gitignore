@@ -3,6 +3,7 @@ moni
 *-5.2.0
 sops.yaml
 *-74.2
+external-secrets-dep
 jupyterhub-ol
 gitlab-xx
 sonarqube-new-new
