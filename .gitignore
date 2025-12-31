@@ -3,6 +3,8 @@ moni
 *-5.2.0
 sops.yaml
 *-74.2
+gate.yaml
+tls-sec.yaml
 external-secrets-dep
 jupyterhub-ol
 gitlab-xx
