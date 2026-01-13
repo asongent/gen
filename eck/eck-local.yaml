@@ -20,6 +20,7 @@ apiVersion: elasticsearch.k8s.elastic.co/v1
 kind: Elasticsearch
 metadata:
   name: elasticsearch
+  namespace: eck
 spec:
   version:  9.2.3
   auth:
@@ -29,12 +30,14 @@ spec:
   #     - secretName: tracy-roles
   nodeSets: 
   - name: master
-    count: 2
+    count: 1
     config:
       index.store.type: mmapfs
-      node.roles: ["master"]
+      node.roles: ["master", "remote_cluster_client"]
       node.store.allow_mmap: true
       xpack.ml.enabled: false
+
+
     volumeClaimTemplates:
       - metadata:
           name: elasticsearch-data
@@ -52,6 +55,15 @@ spec:
           traffic.sidecar.istio.io/excludeInboundPorts: "9300"
           traffic.sidecar.istio.io/excludeOutboundPorts: "9300"
       spec:
+        affinity:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                - matchExpressions:
+                  - key: reserved
+                    operator: In
+                    values:
+                    - elastic-master
         securityContext:
           fsGroup: 1000
           runAsGroup: 1000
@@ -84,12 +96,18 @@ spec:
                 drop:
                 - ALL
   - name: data
-    count: 2
+    count: 1
     config:
       index.store.type: mmapfs
-      node.roles: ["data", "ingest"]
+      node.roles: ["data", "ingest", "remote_cluster_client"]
       node.store.allow_mmap: true
       xpack.ml.enabled: false
+      ## Below enabled for observability
+      # xpack.security.enabled: true
+      # xpack.security.authc.apiKey.enabled: true
+      # xpack.security.authc.basic.enabled: true
+      # xpack.security.authc.remoteClusterClient.enabled: true
+
     volumeClaimTemplates:
     - metadata:
         name: elasticsearch-data
@@ -107,6 +125,15 @@ spec:
           traffic.sidecar.istio.io/excludeInboundPorts: "9300"
           traffic.sidecar.istio.io/excludeOutboundPorts: "9300"
       spec:
+        affinity:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                - matchExpressions:
+                  - key: reserved
+                    operator: In
+                    values:
+                    - elastic-master
         securityContext:
           fsGroup: 1000
           runAsGroup: 1000
@@ -264,3 +291,93 @@ spec:
     common.k8s.elastic.co/type: kibana
     kibana.k8s.elastic.co/name: kibana
   type: ClusterIP
+
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: elastic-storage
+provisioner: kubernetes.io/no-provisioner
+volumeBindingMode: WaitForFirstConsumer
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  annotations:
+    pv.kubernetes.io/bind-completed: "yes"
+    pv.kubernetes.io/bound-by-controller: "yes"
+  labels:
+    common.k8s.elastic.co/type: elasticsearch
+    elasticsearch.k8s.elastic.co/cluster-name: elasticsearch
+    elasticsearch.k8s.elastic.co/statefulset-name: elasticsearch-es-data
+  name: elasticsearch-data-elasticsearch-es-data-0
+  namespace: eck
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: elastic-storage
+  volumeMode: Filesystem
+  volumeName: data-elasticsearch-es-data-pv
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: data-elasticsearch-es-data-pv
+  labels:
+    elasticsearch.k8s.elastic.co/cluster-name: elasticsearch
+    type: local
+spec:
+  storageClassName: elastic-storage
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  hostPath:
+    path: "/usr/share/elasticsearch/data/es-data-0"
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  annotations:
+    pv.kubernetes.io/bind-completed: "yes"
+    pv.kubernetes.io/bound-by-controller: "yes"
+  labels:
+    common.k8s.elastic.co/type: elasticsearch
+    elasticsearch.k8s.elastic.co/cluster-name: elasticsearch
+    elasticsearch.k8s.elastic.co/statefulset-name: elasticsearch-es-master
+  name: elasticsearch-data-elasticsearch-es-master-0
+  namespace: eck
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: elastic-storage # longhorn
+  volumeMode: Filesystem
+  volumeName: data-elasticsearch-es-master-pv
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: data-elasticsearch-es-master-pv
+  labels:
+    elasticsearch.k8s.elastic.co/cluster-name: elasticsearch
+    type: local
+spec:
+  storageClassName: elastic-storage
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  hostPath:
+    path: "/usr/share/elasticsearch/data/es-master-0"
