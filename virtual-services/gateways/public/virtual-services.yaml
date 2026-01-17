@@ -190,7 +190,7 @@ spec:
   gateways:
     - istio-system/public-gateway 
   hosts:
-    - elastic.fredgentech.com
+    - elasticsearch.fredgentech.com
   http:
     - match:
         - uri:
