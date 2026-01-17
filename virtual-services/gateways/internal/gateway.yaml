@@ -37,3 +37,39 @@ spec:
     tls:
       mode: SIMPLE
       credentialName: tls-cert-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: ingressgateway
+    app.kubernetes.io/instance: ingressgateway
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: ingressgateway
+    app.kubernetes.io/part-of: istio
+    app.kubernetes.io/version: 1.28.2
+    helm.sh/chart: gateway-1.28.2
+    istio: ingressgateway
+    istio.io/dataplane-mode: none
+  name: ingressgateway-internal
+  namespace: istio-system
+spec:
+  ports:
+  - name: status-port
+    port: 15021
+    protocol: TCP
+    targetPort: 15021
+  - name: http2
+    port: 80
+    protocol: TCP
+    targetPort: 80
+  - name: https
+    port: 443
+    protocol: TCP
+    targetPort: 443
+  selector:
+    app: ingressgateway
+    istio: ingressgateway
+  type: LoadBalancer
+status:
+  loadBalancer: {}
