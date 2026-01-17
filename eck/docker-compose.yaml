@@ -1,0 +1,22 @@
+# version: "3"
+services:
+  elastic-agent:
+    image: custom-agent:v5 # docker.elastic.co/elastic-agent/elastic-agent:9.2.4
+    container_name: elastic-agent
+    restart: always
+    user: root
+    environment:
+
+      # - ELASTICSEARCH_API_KEY=API_KEY
+        # - ELASTICSEARCH_USERNAME=""
+        #- ELASTICSEARCH_PASSWORD=""
+        # - ELASTICSEARCH_HOSTS=https://host.com:443
+        #  - FLEET_ENROLL=1
+   #  - FLEET_ENROLLMENT_TOKEN=TOKEN
+   #   - FLEET_INSECURE=true
+      - FLEET_SERVER_ENABLE=false
+  #    - FLEET_SERVER_SERVICE_TOKEN=
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro 
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+      - /proc:/hostfs/proc:ro

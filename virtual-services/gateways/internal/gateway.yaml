@@ -1,0 +1,39 @@
+apiVersion: networking.k8s.io/v1
+kind: IngressClass
+metadata:
+  name: istio
+spec:
+  controller: istio.io/ingress-controller
+--- 
+apiVersion: networking.istio.io/v1
+kind: Gateway
+metadata:
+  name: internal-gateway
+  namespace: istio-system
+  labels:
+    app.kubernetes.io/instance: ingressgateway
+    #app: ingressgateway
+    istio: ingressgateway
+    app: istio-ingressgateway
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - hosts:
+    - '*.stack.fredgentech.com'
+    port:
+      name: http
+      number: 80
+      protocol: HTTP
+    # Upgrade HTTP to HTTPS
+    tls:
+      httpsRedirect: true
+  - hosts:
+    - '*.stack.fredgentech.com'
+    port:
+      name: https
+      number: 443
+      protocol: HTTPS
+    tls:
+      mode: SIMPLE
+      credentialName: tls-cert-secret

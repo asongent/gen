@@ -1,0 +1,126 @@
+
+---
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  labels:
+  name: policy-reporter-vs
+  namespace: policy-reporter
+spec:
+  gateways:
+  - istio-system/internal-gateway
+  hosts:
+  - 'reporter.stack.fredgentech.com'
+  http:
+  - retries:
+      attempts: 3
+      perTryTimeout: 2s
+    match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: policy-reporter-ui
+        port:
+          number: 8080
+---
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  labels:
+  name: rabbitmq-vs
+  namespace:  rabbitmq-system
+spec:
+  gateways:
+  - istio-system/internal-gateway
+  hosts:
+  - 'rabbitmq.stack.fredgentech.com'
+  http:
+  - retries:
+      attempts: 3
+      perTryTimeout: 2s
+    match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: rabbitmq 
+        port:
+          number: 15672
+
+---
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  labels:
+  name: longhorn-vs
+  namespace: longhorn-system
+spec:
+  gateways:
+  - istio-system/internal-gateway
+  hosts:
+  - 'storage.stack.fredgentech.com'
+  http:
+  - retries:
+      attempts: 3
+      perTryTimeout: 2s
+    match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: longhorn-frontend
+        port:
+          number: 80
+
+
+##This config is for user management 
+---
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  labels:
+  name: keycloak
+  namespace: keycloak
+spec:
+  gateways:
+  - istio-system/internal-gateway
+  hosts:
+  - 'keycloak.stack.fredgentech.com'
+  http:
+  - retries:
+      attempts: 3
+      perTryTimeout: 2s
+    match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: keycloak-http #.usermanagement.svc.cluster.local
+        port:
+          number: 80
+
+---
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  labels:
+  name: spark-vs
+  namespace: spark
+spec:
+  gateways:
+  - istio-system/internal-gateway
+  hosts:
+  - 'spark.stack.fredgentech.com'
+  http:
+  - retries:
+      attempts: 3
+      perTryTimeout: 2s
+    match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: spark-master-svc
+        port:
+          number: 80

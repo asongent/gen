@@ -1,20 +1,20 @@
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: kibana-sa
-  namespace: eck
-  annotations: {}
-imagePullSecrets:
-  - name: private-registry
----
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: elasticsearch-sa
-  namespace: eck
-imagePullSecrets:
-  - name: private-registry
----
+# apiVersion: v1
+# kind: ServiceAccount
+# metadata:
+#   name: kibana-sa
+#   namespace: eck
+#   annotations: {}
+# imagePullSecrets:
+#   - name: private-registry
+# ---
+# apiVersion: v1
+# kind: ServiceAccount
+# metadata:
+#   name: elasticsearch-sa
+#   namespace: eck
+# imagePullSecrets:
+#   - name: private-registry
+# ---
 
 apiVersion: elasticsearch.k8s.elastic.co/v1
 kind: Elasticsearch
@@ -36,7 +36,11 @@ spec:
       node.roles: ["master", "remote_cluster_client"]
       node.store.allow_mmap: true
       xpack.ml.enabled: false
-
+      ## Below enabled for observability
+      # xpack.security.authcbasic.enabled: true
+      # xpack.security.enabled: true
+      # xpack.security.auth.apiKey.enabled: true
+      # xpack.security.authcremoteClusterClient.enabled: true
 
     volumeClaimTemplates:
       - metadata:
@@ -104,9 +108,9 @@ spec:
       xpack.ml.enabled: false
       ## Below enabled for observability
       # xpack.security.enabled: true
-      # xpack.security.authc.apiKey.enabled: true
-      # xpack.security.authc.basic.enabled: true
-      # xpack.security.authc.remoteClusterClient.enabled: true
+      # xpack.security.auth.apiKey.enabled: true
+      # xpack.security.auth.basic.enabled: true
+      # xpack.security.auth.remoteClusterClient.enabled: true
 
     volumeClaimTemplates:
     - metadata:
@@ -181,39 +185,6 @@ spec:
             protocol: TCP
             targetPort: 9200
 
-
----
-apiVersion: networking.istio.io/v1beta1
-kind: VirtualService
-metadata:
-  name: elastic-vs
-  namespace: eck
-spec:
-  gateways:
-    - istio-system/general-gateway 
-  hosts:
-    - elastic.stack.fredgentech.com
-  http:
-    - match:
-        - uri:
-            prefix: /
-      route:
-        - destination:
-            host: elasticsearch-es-http 
-            port:
-              number: 9200
-
----
-apiVersion: networking.istio.io/v1alpha3
-kind: DestinationRule
-metadata:
-  name: elastic-destination-rule
-  namespace: eck
-spec:
-  host: "elasticsearch-es-http.eck.svc.cluster.local"
-  trafficPolicy:
-    tls:
-      mode: SIMPLE
 ---
 apiVersion: kibana.k8s.elastic.co/v1
 kind: Kibana
@@ -226,8 +197,17 @@ spec:
   elasticsearchRef:
     name: elasticsearch
     namespace: eck
+  secureSettings:
+  - secretName: kibana-encryption-keys
   config:
-    server.publicBaseUrl: "https://kibana.stack.fredgentech.com"
+    server.publicBaseUrl: "https://kibana.fredgentech.com"
+    xpack.security.audit.enabled: true
+    xpack.fleet.enabled: true
+    xpack.security.audit.appender:
+      type: file
+      fileName: /var/log/kibana/audit.log
+      layout:
+        type: json
   http:
     tls:
       selfSignedCertificate:
@@ -241,6 +221,12 @@ spec:
             targetPort: 5601
   podTemplate:
     spec:
+      nodeName: prod-node-03
+      volumes: 
+      - name: kibana-logs
+        persistentVolumeClaim:
+          claimName: kibana-data-pvc
+        # emptyDir: {}
       serviceAccountName: kibana-sa
       securityContext:
         fsGroup: 1000
@@ -251,133 +237,149 @@ spec:
         env:
         - name: SERVER_BASEPATH
           value: "" 
----
+        volumeMounts: 
+        - name: kibana-logs
+          mountPath: /var/log/kibana
 
-apiVersion: networking.istio.io/v1beta1
-kind: VirtualService
-metadata:
-  name: kibana-vs
-  namespace: eck
-spec:
-  gateways:
-    - istio-system/general-gateway 
-  hosts:
-    - kibana.stack.fredgentech.com
-  http:
-    - match:
-        - uri:
-            prefix: /
-      route:
-        - destination:
-            host: kibana
-            port:
-              number: 5601
----
-apiVersion: v1
-kind: Service
-metadata:
-  labels:
-    common.k8s.elastic.co/type: kibana
-    kibana.k8s.elastic.co/name: kibana
-  name: kibana
-  namespace: eck
-spec:
-  ports:
-    - name: http
-      port: 5601
-      protocol: TCP
-      targetPort: 5601
-  selector:
-    common.k8s.elastic.co/type: kibana
-    kibana.k8s.elastic.co/name: kibana
-  type: ClusterIP
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   labels:
+#     common.k8s.elastic.co/type: kibana
+#     kibana.k8s.elastic.co/name: kibana
+#   name: kibana
+#   namespace: eck
+# spec:
+#   ports:
+#     - name: http
+#       port: 5601
+#       protocol: TCP
+#       targetPort: 5601
+#   selector:
+#     common.k8s.elastic.co/type: kibana
+#     kibana.k8s.elastic.co/name: kibana
+#   type: ClusterIP
 
----
-apiVersion: storage.k8s.io/v1
-kind: StorageClass
-metadata:
-  name: elastic-storage
-provisioner: kubernetes.io/no-provisioner
-volumeBindingMode: WaitForFirstConsumer
----
+# ---
+# apiVersion: storage.k8s.io/v1
+# kind: StorageClass
+# metadata:
+#   name: elastic-storage
+# provisioner: kubernetes.io/no-provisioner
+# volumeBindingMode: WaitForFirstConsumer
+# ---
 
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  annotations:
-    pv.kubernetes.io/bind-completed: "yes"
-    pv.kubernetes.io/bound-by-controller: "yes"
-  labels:
-    common.k8s.elastic.co/type: elasticsearch
-    elasticsearch.k8s.elastic.co/cluster-name: elasticsearch
-    elasticsearch.k8s.elastic.co/statefulset-name: elasticsearch-es-data
-  name: elasticsearch-data-elasticsearch-es-data-0
-  namespace: eck
-spec:
-  accessModes:
-  - ReadWriteOnce
-  resources:
-    requests:
-      storage: 10Gi
-  storageClassName: elastic-storage
-  volumeMode: Filesystem
-  volumeName: data-elasticsearch-es-data-pv
+# apiVersion: v1
+# kind: PersistentVolumeClaim
+# metadata:
+#   annotations:
+#     pv.kubernetes.io/bind-completed: "yes"
+#     pv.kubernetes.io/bound-by-controller: "yes"
+#   labels:
+#     common.k8s.elastic.co/type: elasticsearch
+#     elasticsearch.k8s.elastic.co/cluster-name: elasticsearch
+#     elasticsearch.k8s.elastic.co/statefulset-name: elasticsearch-es-data
+#   name: elasticsearch-data-elasticsearch-es-data-0
+#   namespace: eck
+# spec:
+#   accessModes:
+#   - ReadWriteOnce
+#   resources:
+#     requests:
+#       storage: 10Gi
+#   storageClassName: elastic-storage
+#   volumeMode: Filesystem
+#   volumeName: data-elasticsearch-es-data-pv
 
----
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: data-elasticsearch-es-data-pv
-  labels:
-    elasticsearch.k8s.elastic.co/cluster-name: elasticsearch
-    type: local
-spec:
-  storageClassName: elastic-storage
-  capacity:
-    storage: 10Gi
-  accessModes:
-    - ReadWriteOnce
-  persistentVolumeReclaimPolicy: Retain
-  hostPath:
-    path: "/usr/share/elasticsearch/data/es-data-0"
+# ---
+# apiVersion: v1
+# kind: PersistentVolume
+# metadata:
+#   name: data-elasticsearch-es-data-pv
+#   labels:
+#     elasticsearch.k8s.elastic.co/cluster-name: elasticsearch
+#     type: local
+# spec:
+#   storageClassName: elastic-storage
+#   capacity:
+#     storage: 10Gi
+#   accessModes:
+#     - ReadWriteOnce
+#   persistentVolumeReclaimPolicy: Retain
+#   hostPath:
+#     path: "/usr/share/elasticsearch/data/es-data-0"
 
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  annotations:
-    pv.kubernetes.io/bind-completed: "yes"
-    pv.kubernetes.io/bound-by-controller: "yes"
-  labels:
-    common.k8s.elastic.co/type: elasticsearch
-    elasticsearch.k8s.elastic.co/cluster-name: elasticsearch
-    elasticsearch.k8s.elastic.co/statefulset-name: elasticsearch-es-master
-  name: elasticsearch-data-elasticsearch-es-master-0
-  namespace: eck
-spec:
-  accessModes:
-  - ReadWriteOnce
-  resources:
-    requests:
-      storage: 10Gi
-  storageClassName: elastic-storage # longhorn
-  volumeMode: Filesystem
-  volumeName: data-elasticsearch-es-master-pv
+# ---
+# apiVersion: v1
+# kind: PersistentVolumeClaim
+# metadata:
+#   annotations:
+#     pv.kubernetes.io/bind-completed: "yes"
+#     pv.kubernetes.io/bound-by-controller: "yes"
+#   labels:
+#     common.k8s.elastic.co/type: elasticsearch
+#     elasticsearch.k8s.elastic.co/cluster-name: elasticsearch
+#     elasticsearch.k8s.elastic.co/statefulset-name: elasticsearch-es-master
+#   name: elasticsearch-data-elasticsearch-es-master-0
+#   namespace: eck
+# spec:
+#   accessModes:
+#   - ReadWriteOnce
+#   resources:
+#     requests:
+#       storage: 10Gi
+#   storageClassName: elastic-storage # longhorn
+#   volumeMode: Filesystem
+#   volumeName: data-elasticsearch-es-master-pv
 
----
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: data-elasticsearch-es-master-pv
-  labels:
-    elasticsearch.k8s.elastic.co/cluster-name: elasticsearch
-    type: local
-spec:
-  storageClassName: elastic-storage
-  capacity:
-    storage: 10Gi
-  accessModes:
-    - ReadWriteOnce
-  persistentVolumeReclaimPolicy: Retain
-  hostPath:
-    path: "/usr/share/elasticsearch/data/es-master-0"
+# ---
+# apiVersion: v1
+# kind: PersistentVolume
+# metadata:
+#   name: data-elasticsearch-es-master-pv
+#   labels:
+#     elasticsearch.k8s.elastic.co/cluster-name: elasticsearch
+#     type: local
+# spec:
+#   storageClassName: elastic-storage
+#   capacity:
+#     storage: 10Gi
+#   accessModes:
+#     - ReadWriteOnce
+#   persistentVolumeReclaimPolicy: Retain
+#   hostPath:
+#     path: "/usr/share/elasticsearch/data/es-master-0"
+
+# ---
+# apiVersion: v1
+# kind: PersistentVolume
+# metadata:
+#   name: kibana-kb-pv
+# spec:
+#   storageClassName: elastic-storage
+#   capacity:
+#     storage: 2Gi
+#   accessModes:
+#     - ReadWriteOnce
+#   persistentVolumeReclaimPolicy: Retain
+#   hostPath:
+#     path: "/var/log/kibana/"
+# ---
+# apiVersion: v1
+# kind: PersistentVolumeClaim
+# metadata:
+#   annotations:
+#     pv.kubernetes.io/bind-completed: "yes"
+#     pv.kubernetes.io/bound-by-controller: "yes"
+#   name: kibana-data-pvc
+#   namespace: eck
+# spec:
+#   accessModes:
+#   - ReadWriteOnce
+#   resources:
+#     requests:
+#       storage: 2Gi
+#   storageClassName: elastic-storage 
+#   volumeMode: Filesystem
+#   volumeName: kibana-kb-pv

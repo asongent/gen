@@ -1,0 +1,213 @@
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  labels:
+  name: hub-vs
+  namespace: jupyterhub 
+spec:
+  gateways:
+  - istio-system/public-gateway
+  hosts:
+  - 'hub.fredgentech.com'
+  http:
+  - retries:
+      attempts: 3
+      perTryTimeout: 2s
+    match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: proxy-public
+        port:
+          number: 80
+---
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  labels:
+  name: grafana-server
+  namespace: monitoring
+spec:
+  gateways:
+  - istio-system/public-gateway
+  hosts:
+  - 'grafana.fredgentech.com'
+  http:
+  - retries:
+      attempts: 3
+      perTryTimeout: 2s
+    match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: prometheus-grafana.monitoring.svc.cluster.local
+        port:
+          number: 80
+---
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  labels:
+  name: airflow-vs
+  namespace: airflow
+spec:
+  gateways:
+  - istio-system/public-gateway
+  hosts:
+  - 'airflow.fredgentech.com'
+  http:
+  - retries:
+      attempts: 3
+      perTryTimeout: 2s
+    match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: airflow-api-server
+        port:
+          number: 8080
+
+--- 
+apiVersion: networking.istio.io/v1 #networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: argocd
+  namespace: argocd
+spec:
+  gateways:
+    - istio-system/public-gateway
+  hosts:
+    - argocd.fredgentech.com
+  http:
+    - route:
+      - destination:
+          host: argocd-server
+          port:
+            number: 80
+
+---
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  labels:
+  name: neuvector
+  namespace: neuvector
+spec:
+  gateways:
+  - istio-system/public-gateway
+  hosts:
+  - 'neuvector.fredgentech.com'
+  http:
+  - retries:
+      attempts: 3
+      perTryTimeout: 2s
+    match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: neuvector-service-webui
+        port:
+          number: 8443
+
+--- 
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: sonarqube
+  namespace: sonarqube
+spec:
+  gateways:
+  - istio-system/public-gateway
+  hosts:
+  - 'sonarqube.fredgentech.com'
+  http:
+  - retries:
+      attempts: 3
+      perTryTimeout: 2s
+    match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: sonarqube-sonarqube
+        port:
+          number: 9000
+---
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  labels:
+  name: minio-vs
+  namespace: minio
+spec:
+  gateways:
+  - istio-system/public-gateway
+  hosts:
+  - 'minio.fredgentech.com'
+  http:
+  - retries:
+      attempts: 3
+      perTryTimeout: 2s
+    match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: minio
+        port:
+          number: 9001
+---
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: kibana-vs
+  namespace: eck
+spec:
+  gateways:
+    - istio-system/public-gateway 
+  hosts:
+    - kibana.fredgentech.com
+  http:
+    - match:
+        - uri:
+            prefix: /
+      route:
+        - destination:
+            host: kibana
+            port:
+              number: 5601
+---
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: elastic-vs
+  namespace: eck
+spec:
+  gateways:
+    - istio-system/public-gateway 
+  hosts:
+    - elastic.fredgentech.com
+  http:
+    - match:
+        - uri:
+            prefix: /
+      route:
+        - destination:
+            host: elasticsearch-es-http 
+            port:
+              number: 9200
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: elastic-destination-rule
+  namespace: eck
+spec:
+  host: "elasticsearch-es-http.eck.svc.cluster.local"
+  trafficPolicy:
+    tls:
+      mode: SIMPLE

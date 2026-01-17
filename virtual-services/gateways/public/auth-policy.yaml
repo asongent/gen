@@ -1,0 +1,14 @@
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-cloudflare-only
+  namespace: istio-system
+spec:
+  selector:
+    matchLabels:
+      istio: ingressgateway
+  rules:
+  - when:
+    - key: request.headers[cf-connecting-ip]
+      values: ["*"]
