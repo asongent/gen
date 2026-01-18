@@ -17,6 +17,7 @@ spec:
   {{- if typeIs "string" .Values.hub.db.pvc.storageClassName }}
   storageClassName: {{ .Values.hub.db.pvc.storageClassName | quote }}
   {{- end }}
+  volumeName: hub-db-dir-pv
   accessModes:
     {{- .Values.hub.db.pvc.accessModes | toYaml | nindent 4 }}
   resources:

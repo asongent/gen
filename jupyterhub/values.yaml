@@ -99,7 +99,8 @@ hub:
         - ReadWriteOnce
       storage: 1Gi
       subPath:
-      storageClassName:
+      storageClassName: elastic-storage
+      
     url:
     password:
   labels: {}
