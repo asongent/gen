@@ -5,6 +5,7 @@ sops.yaml
 *-74.2
 gate.yaml
 tls-sec.yaml
+jupyterhub-*
 external-secrets-dep
 jupyterhub-ol
 gitlab-xx

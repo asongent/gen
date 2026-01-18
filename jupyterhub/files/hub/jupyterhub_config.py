@@ -107,28 +107,35 @@ c.JupyterHub.hub_connect_url = (
 )
 
 # implement common labels
-# this duplicates the jupyterhub.commonLabels helper
+# This mimics the jupyterhub.commonLabels helper, but declares managed-by to
+# kubespawner instead of helm.
+#
+# The labels app and release are old labels enabled to be deleted in z2jh 5, but
+# for now retained to avoid a breaking change in z2jh 4 that would force user
+# server restarts. Restarts would be required because NetworkPolicy resources
+# must select old/new pods with labels that then needs to be seen on both
+# old/new pods, and we want these resources to keep functioning for old/new user
+# server pods during an upgrade.
+#
 common_labels = c.KubeSpawner.common_labels = {}
-common_labels["app"] = get_config(
+common_labels["app.kubernetes.io/name"] = common_labels["app"] = get_config(
     "nameOverride",
     default=get_config("Chart.Name", "jupyterhub"),
 )
-common_labels["heritage"] = "jupyterhub"
+release = get_config("Release.Name")
+if release:
+    common_labels["app.kubernetes.io/instance"] = common_labels["release"] = release
 chart_name = get_config("Chart.Name")
 chart_version = get_config("Chart.Version")
 if chart_name and chart_version:
-    common_labels["chart"] = "{}-{}".format(
-        chart_name,
-        chart_version.replace("+", "_"),
+    common_labels["helm.sh/chart"] = common_labels["chart"] = (
+        f"{chart_name}-{chart_version.replace('+', '_')}"
     )
-release = get_config("Release.Name")
-if release:
-    common_labels["release"] = release
+common_labels["app.kubernetes.io/managed-by"] = "kubespawner"
 
 c.KubeSpawner.namespace = os.environ.get("POD_NAMESPACE", "default")
 
 # Max number of consecutive failures before the Hub restarts itself
-# requires jupyterhub 0.9.2
 set_config_if_not_none(
     c.Spawner,
     "consecutive_failure_limit",
@@ -245,11 +252,15 @@ tolerations = scheduling_user_pods_tolerations + singleuser_extra_tolerations
 if tolerations:
     c.KubeSpawner.tolerations = tolerations
 
+volumes = {}
+volume_mounts = {}
+
 # Configure dynamically provisioning pvc
 storage_type = get_config("singleuser.storage.type")
 if storage_type == "dynamic":
     pvc_name_template = get_config("singleuser.storage.dynamic.pvcNameTemplate")
-    c.KubeSpawner.pvc_name_template = pvc_name_template
+    if pvc_name_template:
+        c.KubeSpawner.pvc_name_template = pvc_name_template
     volume_name_template = get_config("singleuser.storage.dynamic.volumeNameTemplate")
     c.KubeSpawner.storage_pvc_ensure = True
     set_config_if_not_none(
@@ -265,31 +276,35 @@ if storage_type == "dynamic":
     )
 
     # Add volumes to singleuser pods
-    c.KubeSpawner.volumes = [
-        {
+    volumes = {
+        volume_name_template: {
             "name": volume_name_template,
-            "persistentVolumeClaim": {"claimName": pvc_name_template},
+            "persistentVolumeClaim": {"claimName": "{pvc_name}"},
         }
-    ]
-    c.KubeSpawner.volume_mounts = [
-        {
+    }
+    volume_mounts = {
+        volume_name_template: {
             "mountPath": get_config("singleuser.storage.homeMountPath"),
             "name": volume_name_template,
+            "subPath": get_config("singleuser.storage.dynamic.subPath"),
         }
-    ]
+    }
 elif storage_type == "static":
     pvc_claim_name = get_config("singleuser.storage.static.pvcName")
-    c.KubeSpawner.volumes = [
-        {"name": "home", "persistentVolumeClaim": {"claimName": pvc_claim_name}}
-    ]
+    volumes = {
+        "home": {
+            "name": "home",
+            "persistentVolumeClaim": {"claimName": pvc_claim_name},
+        }
+    }
 
-    c.KubeSpawner.volume_mounts = [
-        {
+    volume_mounts = {
+        "home": {
             "mountPath": get_config("singleuser.storage.homeMountPath"),
             "name": "home",
             "subPath": get_config("singleuser.storage.static.subPath"),
         }
-    ]
+    }
 
 # Inject singleuser.extraFiles as volumes and volumeMounts with data loaded from
 # the dedicated k8s Secret prepared to hold the extraFiles actual content.
@@ -314,24 +329,37 @@ if extra_files:
         "secretName": get_name("singleuser"),
         "items": items,
     }
-    c.KubeSpawner.volumes.append(volume)
+    volumes[volume["name"]] = volume
 
-    volume_mounts = []
-    for file_key, file_details in extra_files.items():
-        volume_mounts.append(
-            {
-                "mountPath": file_details["mountPath"],
-                "subPath": file_key,
-                "name": "files",
-            }
-        )
-    c.KubeSpawner.volume_mounts.extend(volume_mounts)
+    for idx, (file_key, file_details) in enumerate(extra_files.items()):
+        volume_mount = {
+            "mountPath": file_details["mountPath"],
+            "subPath": file_key,
+            "name": "files",
+        }
+        volume_mounts[f"{idx}-files"] = volume_mount
 
 # Inject extraVolumes / extraVolumeMounts
-c.KubeSpawner.volumes.extend(get_config("singleuser.storage.extraVolumes", []))
-c.KubeSpawner.volume_mounts.extend(
-    get_config("singleuser.storage.extraVolumeMounts", [])
-)
+extra_volumes = get_config("singleuser.storage.extraVolumes", default={})
+if isinstance(extra_volumes, dict):
+    volumes.update(extra_volumes)
+elif isinstance(extra_volumes, list):
+    for volume in extra_volumes:
+        volumes[volume["name"]] = volume
+
+extra_volume_mounts = get_config("singleuser.storage.extraVolumeMounts", default={})
+if isinstance(extra_volume_mounts, dict):
+    volume_mounts.update(extra_volume_mounts)
+elif isinstance(extra_volume_mounts, list):
+    # If extraVolumeMounts is a list, we need to add them to the volume_mounts
+    # dictionary with a unique key.
+    # Since volume mount's name is not guaranteed to be unique, we use the index
+    # as part of the key.
+    for idx, volume_mount in enumerate(extra_volume_mounts):
+        volume_mounts[f"{idx}-{volume_mount['name']}"] = volume_mount
+
+c.KubeSpawner.volumes = volumes
+c.KubeSpawner.volume_mounts = volume_mounts
 
 c.JupyterHub.services = []
 c.JupyterHub.load_roles = []
@@ -469,16 +497,33 @@ c.JupyterHub.cookie_secret = get_secret_value("hub.config.JupyterHub.cookie_secr
 c.CryptKeeper.keys = get_secret_value("hub.config.CryptKeeper.keys").split(";")
 
 # load hub.config values, except potentially seeded secrets already loaded
-for app, cfg in get_config("hub.config", {}).items():
-    if app == "JupyterHub":
+for section, cfg in get_config("hub.config", {}).items():
+    if section == "JupyterHub":
         cfg.pop("proxy_auth_token", None)
         cfg.pop("cookie_secret", None)
         cfg.pop("services", None)
-    elif app == "ConfigurableHTTPProxy":
+    elif section == "ConfigurableHTTPProxy":
         cfg.pop("auth_token", None)
-    elif app == "CryptKeeper":
+    elif section == "CryptKeeper":
         cfg.pop("keys", None)
-    c[app].update(cfg)
+
+    if not section[:1].isupper():
+        # traitlets config sections are Configurable class names
+        # that MUST start with upper-case
+        # if it starts with lowercase, it must be a mistake
+        # (e.g. putting `hub.loadRoles` under `hub.config.loadRoles`),
+        # and will have no effect, so warn or raise here
+        print(
+            f"FATAL: Invalid hub.config section name: {section}."
+            " hub.config sections must be Configurable class names (e.g. JupyterHub)."
+            " Maybe misplaced or misspelled config?",
+            file=sys.stderr,
+        )
+        # make this fatal:
+        sys.exit(1)
+
+    print(f"Loading pass-through config section hub.config.{section}")
+    c[section].update(cfg)
 
 # load /usr/local/etc/jupyterhub/jupyterhub_config.d config files
 config_dir = "/usr/local/etc/jupyterhub/jupyterhub_config.d"

@@ -48,7 +48,6 @@
   - commonLabels      | uses appLabel
   - labels            | uses commonLabels
   - matchLabels       | uses labels
-  - podCullerSelector | uses matchLabels
 
 
   ## Example usage
@@ -112,34 +111,126 @@
 {{- /*
   jupyterhub.commonLabels:
     Foundation for "jupyterhub.labels".
-    Provides labels: app, release, (chart and heritage).
+
+    Provides old labels:
+      app
+      release
+      chart (omitted for matchLabels)
+      heritage (omitted for matchLabels)
+    Provides modern labels (omitted for matchLabels):
+      app.kubernetes.io/name ("app")
+      app.kubernetes.io/instance ("release")
+      helm.sh/chart ("chart")
+      app.kubernetes.io/managed-by ("heritage")
 */}}
 {{- define "jupyterhub.commonLabels" -}}
-app: {{ .appLabel | default (include "jupyterhub.appLabel" .) }}
-release: {{ .Release.Name }}
+{{- if .legacyLabels -}}
+app: {{ .appLabel | default (include "jupyterhub.appLabel" .) | quote }}
+release: {{ .Release.Name | quote }}
 {{- if not .matchLabels }}
 chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
-heritage: {{ .heritageLabel | default .Release.Service }}
+heritage: {{ .Release.Service }}
+{{- end }}
+{{- end }}
+{{- if and .legacyLabels .modernLabels -}}
+{{ printf "\n" }}
+{{- end }}
+{{- if .modernLabels -}}
+app.kubernetes.io/name: {{ .appLabel | default (include "jupyterhub.appLabel" .) | quote }}
+app.kubernetes.io/instance: {{ .Release.Name | quote }}
+{{- if not .matchLabels }}
+helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
 {{- end }}
 {{- end }}
 
 
 {{- /*
   jupyterhub.labels:
-    Provides labels: component, app, release, (chart and heritage).
+    Provides labels conditionally on .legacyLabels, .modernLabels, and .matchLabels,
+    that are supposed to in the scoped passed this helper function.
+
+    The legacy labels are:
+      component
+      app
+      release
+      chart (omitted for matchLabels)
+      heritage (omitted for matchLabels)
+
+    The equivalent modern labels are:
+      app.kubernetes.io/component
+      app.kubernetes.io/name
+      app.kubernetes.io/instance release
+      helm.sh/chart (omitted for matchLabels)
+      app.kubernetes.io/managed-by (omitted for matchLabels)
 */}}
 {{- define "jupyterhub.labels" -}}
+{{- /*
+  .legacyLabels defaults to true
+  .modernLabels defaults to false
+*/ -}}
+{{- $_ := . -}}
+{{- if typeIs "<nil>" .legacyLabels -}}
+{{- $_ = merge (dict "legacyLabels" true) $_ -}}
+{{- end -}}
+{{- if typeIs "<nil>" .modernLabels -}}
+{{- $_ = merge (dict "modernLabels" true) $_ -}}
+{{- end -}}
+
+{{- if $_.legacyLabels -}}
 component: {{ include "jupyterhub.componentLabel" . }}
-{{ include "jupyterhub.commonLabels" . }}
+{{- end }}
+
+{{- if and $_.legacyLabels $_.modernLabels -}}
+{{ printf "\n" }}
+{{- end }}
+
+{{- if $_.modernLabels -}}
+app.kubernetes.io/component: {{ include "jupyterhub.componentLabel" . }}
+{{- end }}
+{{ include "jupyterhub.commonLabels" $_ }}
 {{- end }}
 
 
 {{- /*
   jupyterhub.matchLabels:
-    Used to provide pod selection labels: component, app, release.
+    Provides legacy labels:
+      component
+      app
+      release
 */}}
 {{- define "jupyterhub.matchLabels" -}}
-{{- $_ := merge (dict "matchLabels" true) . -}}
+{{- $_ := merge (dict "matchLabels" true "legacyLabels" true "modernLabels" false) . -}}
+{{ include "jupyterhub.labels" $_ }}
+{{- end }}
+
+
+{{- /*
+  jupyterhub.matchLabelsModern:
+    Provides modern labels:
+      app.kubernetes.io/component
+      app.kubernetes.io/name
+      app.kubernetes.io/instance
+*/}}
+{{- define "jupyterhub.matchLabelsModern" -}}
+{{- $_ := merge (dict "matchLabels" true "legacyLabels" false "modernLabels" true) . -}}
+{{ include "jupyterhub.labels" $_ }}
+{{- end }}
+
+
+{{- /*
+  jupyterhub.matchLabelsLegacyAndModern:
+    Provides legacy and modern labels:
+      component
+      app
+      release
+      app.kubernetes.io/component
+      app.kubernetes.io/name
+      app.kubernetes.io/instance
+*/}}
+{{- define "jupyterhub.matchLabelsLegacyAndModern" -}}
+{{- $_ := merge (dict "matchLabels" true "legacyLabels" true "modernLabels" true) . -}}
 {{ include "jupyterhub.labels" $_ }}
 {{- end }}
 
