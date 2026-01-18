@@ -95,7 +95,23 @@ spec:
         port:
           number: 80
 
-
+---
+apiVersion: networking.istio.io/v1 #networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: argocd
+  namespace: argocd
+spec:
+  gateways:
+    - istio-system/internal-gateway
+  hosts:
+    - argocd.stack.fredgentech.com
+  http:
+    - route:
+      - destination:
+          host: argocd-server
+          port:
+            number: 80
 ##This config is for user management 
 ---
 apiVersion: networking.istio.io/v1
