@@ -48,10 +48,10 @@ hub:
       client_id: hub
       client_secret: MC8Lnezb9JizHMugIRZf20M2XvFAOJat
       oauth_callback_url: https://hub.fredgentech.com/hub/oauth_callback
-      authorize_url: https://keycloak.stack.fredgentech.com/auth/realms/New%20Gen%20Tech/protocol/openid-connect/auth
-      token_url: https://keycloak.stack.fredgentech.com/auth/realms/New%20Gen%20Tech/protocol/openid-connect/token
-      userdata_url: https://keycloak.stack.fredgentech.com/auth/realms/New%20Gen%20Tech/protocol/openid-connect/userinfo
-      login_service: keycloak
+      authorize_url: https://keycloak.stack.fredgentech.com/auth/realms/New%20Generation%20Technologies/protocol/openid-connect/auth
+      token_url: https://keycloak.stack.fredgentech.com/auth/realms/New%20Generation%20Technologies/protocol/openid-connect/token
+      userdata_url: https://keycloak.stack.fredgentech.com/auth/realms/New%20Generation%20Technologies/protocol/openid-connect/userinfo
+      login_service: oidc
       username_claim: preferred_username 
       # userdata_params:
       #   state: state
