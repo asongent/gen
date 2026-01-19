@@ -451,10 +451,10 @@ singleuser:
       storageAccessModes: [ReadWriteOnce]
       subPath:
   image:
-    name: quay.io/jupyterhub/k8s-singleuser-sample
+    name:  docker.io/jmugu/jupyterhub-k8s-singleuser-sample
     tag: "4.3.2"
     pullPolicy:
-    pullSecrets: []
+    pullSecrets: {}
   startTimeout: 300
   cpu:
     limit:

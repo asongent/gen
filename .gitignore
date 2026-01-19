@@ -3,6 +3,7 @@ moni
 *-5.2.0
 sops.yaml
 *-74.2
+claim-fredgent.yaml
 hub-db-*
 gate.yaml
 tls-sec.yaml
