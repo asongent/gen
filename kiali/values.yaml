@@ -221,7 +221,7 @@ cr:
         enabled: true
 
       prometheus:
-        url: http://monitoring-monitoring-kube-prometheus.monitoring.svc.cluster.local:9090
+        url: http://prometheus-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090
 
       grafana:
         enabled: true
