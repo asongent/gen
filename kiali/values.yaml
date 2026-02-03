@@ -225,7 +225,7 @@ cr:
 
       grafana:
         enabled: true
-        in_cluster_url: "http://monitoring-grafana.monitoring.svc.cluster.local:80"
+        in_cluster_url: "http://prometheus-grafana.monitoring.svc.cluster.local:80"
         url: "https://grafana.fredgentech.com"
         auth:
           username: "admin"
