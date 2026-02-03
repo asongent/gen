@@ -1,7 +1,7 @@
 nameOverride: "kiali-operator"
 fullnameOverride: ""
 
-domain: stack.fredgentech.com 
+domain: fredgentech.com 
 
 sso:
   enabled: false
@@ -226,7 +226,7 @@ cr:
       grafana:
         enabled: true
         in_cluster_url: "http://monitoring-grafana.monitoring.svc.cluster.local:80"
-        url: "https://grafana.bigbang.dev"
+        url: "https://grafana.fredgentech.com"
         auth:
           username: "admin"
           password: "prom-operator"
@@ -246,7 +246,7 @@ cr:
           - name: "Istio Wasm Extension Dashboard"
 
       tracing:
-        enabled: true
+        enabled: false
         url: "https://tracing.bigbang.dev"
         in_cluster_url: "http://jaeger-query.jaeger.svc.cluster.local:16686"
         use_grpc: false

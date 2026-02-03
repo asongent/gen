@@ -36,6 +36,7 @@ spec:
       node.roles: ["master", "remote_cluster_client"]
       node.store.allow_mmap: true
       xpack.ml.enabled: false
+      
       ## Below enabled for observability
       # xpack.security.authcbasic.enabled: true
       # xpack.security.enabled: true
@@ -200,6 +201,11 @@ spec:
   secureSettings:
   - secretName: kibana-encryption-keys
   config:
+    xpack.security.loginAssistanceMessage: |
+        **WARNING:**
+        **For Authorized Use Only!**
+        **You are currently attempting to access New Gen Tech system.**
+        **Unauthorized access is prohibited. User's activity may be monitored and recorded.**
     server.publicBaseUrl: "https://kibana.fredgentech.com"
     xpack.security.audit.enabled: true
     xpack.fleet.enabled: true
