@@ -24,15 +24,14 @@ imagePullSecret:
 # imagePullSecrets is configuration to reference the k8s Secret resources the
 # Helm chart's pods can get credentials from to pull their images.
 imagePullSecrets: []
-
 # hub relates to the hub pod, responsible for running JupyterHub, its configured
 # Authenticator class KubeSpawner, and its configured Proxy class
 # ConfigurableHTTPProxy. KubeSpawner creates the user pods, and
 # ConfigurableHTTPProxy speaks with the actual ConfigurableHTTPProxy server in
 # the proxy pod.
 hub:
+  
   revisionHistoryLimit:
-
   config:
     Authenticator:
       enable_auth_state: true
@@ -44,15 +43,7 @@ hub:
       # - peter
       # - paul
 
-    GenericOAuthenticator:
-      client_id: hub
-      client_secret: MC8Lnezb9JizHMugIRZf20M2XvFAOJat
-      oauth_callback_url: https://hub.fredgentech.com/hub/oauth_callback
-      authorize_url: https://keycloak.stack.fredgentech.com/auth/realms/New%20Generation%20Technologies/protocol/openid-connect/auth
-      token_url: https://keycloak.stack.fredgentech.com/auth/realms/New%20Generation%20Technologies/protocol/openid-connect/token
-      userdata_url: https://keycloak.stack.fredgentech.com/auth/realms/New%20Generation%20Technologies/protocol/openid-connect/userinfo
-      login_service: oidc
-      username_claim: preferred_username 
+    GenericOAuthenticator: {}
       # userdata_params:
       #   state: state
       # claim_groups_key: roles
@@ -175,7 +166,7 @@ hub:
     periodSeconds: 2
     failureThreshold: 1000
     timeoutSeconds: 1
-  existingSecret:
+  existingSecret: hub-auth 
   serviceAccount:
     create: true
     name:
