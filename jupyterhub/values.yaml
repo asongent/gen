@@ -45,7 +45,7 @@ hub:
 
     GenericOAuthenticator: 
       client_id: hub
-      client_secret:  hxDFmLggcxP75xLCvJNi98zImJ71s3ii
+      client_secret: hxDFmLggcxP75xLCvJNi98zImJ71s3ii
       login_service: oidc
       authorize_url: https://keycloak.stack.fredgentech.com/auth/realms/New%20Generation%20Technologies/protocol/openid-connect/auth
       oauth_callback_url: https://hub.fredgentech.com/hub/oauth_callback
@@ -174,7 +174,7 @@ hub:
     periodSeconds: 2
     failureThreshold: 1000
     timeoutSeconds: 1
-  existingSecret: #hub-auth 
+  existingSecret: hub-auth 
   serviceAccount:
     create: true
     name:

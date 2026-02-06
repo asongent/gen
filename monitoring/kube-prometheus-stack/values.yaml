@@ -1245,7 +1245,7 @@ grafana:
       allow_assign_grafana_admin: true
       role_attribute_strict: true
       #allow_assign_grafana_admin: true #Adding this grants user admin privileges.  This does not work. You have to manually add user to admin group in your desire Org
-      role_attribute_path: contains(roles[*], 'admin') && 'Admin' || contains(roles[*], 'editor') && 'Editor' || 'Viewer'
+     # role_attribute_path: contains(roles[*], 'admin') && 'Admin' || contains(roles[*], 'editor') && 'Editor' || 'Viewer'
       email_attribute_path: email
       login_attribute_path: username
       name_attribute_path: full_name
