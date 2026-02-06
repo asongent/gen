@@ -21,6 +21,10 @@ spec:
         host: proxy-public
         port:
           number: 80
+    headers:
+      request:
+        set:
+          X-Forwarded-Proto: https
 ---
 apiVersion: networking.istio.io/v1
 kind: VirtualService

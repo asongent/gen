@@ -43,7 +43,15 @@ hub:
       # - peter
       # - paul
 
-    GenericOAuthenticator: {}
+    GenericOAuthenticator: 
+      client_id: hub
+      client_secret:  hxDFmLggcxP75xLCvJNi98zImJ71s3ii
+      login_service: oidc
+      authorize_url: https://keycloak.stack.fredgentech.com/auth/realms/New%20Generation%20Technologies/protocol/openid-connect/auth
+      oauth_callback_url: https://hub.fredgentech.com/hub/oauth_callback
+      token_url: https://keycloak.stack.fredgentech.com/auth/realms/New%20Generation%20Technologies/protocol/openid-connect/token
+      userdata_url: https://keycloak.stack.fredgentech.com/auth/realms/New%20Generation%20Technologies/protocol/openid-connect/userinfo
+      username_claim: preferred_username
       # userdata_params:
       #   state: state
       # claim_groups_key: roles
@@ -166,7 +174,7 @@ hub:
     periodSeconds: 2
     failureThreshold: 1000
     timeoutSeconds: 1
-  existingSecret: hub-auth 
+  existingSecret: #hub-auth 
   serviceAccount:
     create: true
     name:
