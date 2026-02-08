@@ -505,7 +505,7 @@ prometheus:
   # Otherwise, 'prometheus.io' annotations are added to the cert-manager and
   # cert-manager-webhook Deployments.
   # Note that you cannot enable both PodMonitor and ServiceMonitor as they are
-  # mutually exclusive. Enabling both will result in an error.
+  # mutually exclusive. Enabling both will result in an error. Thank you!
   enabled: true
 
   servicemonitor:
