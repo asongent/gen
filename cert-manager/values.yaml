@@ -562,7 +562,7 @@ prometheus:
   # Note that you cannot enable both PodMonitor and ServiceMonitor as they are mutually exclusive. Enabling both will result in an error.
   podmonitor:
     # Create a PodMonitor to add cert-manager to Prometheus.
-    enabled: false
+    enabled: true
 
     # The namespace that the pod monitor should live in, defaults
     # to the cert-manager namespace.
