@@ -442,8 +442,8 @@ jvmCeOpts: ""
 # not setting the monitoring passcode will result in a deployment that will never be ready
 # monitoringPasscode: "define_it"
 # Alternatively, you can define the passcode loading it from an existing secret specifying the right key
-# monitoringPasscodeSecretName: "pass-secret-name"
-# monitoringPasscodeSecretKey: "pass-key"
+monitoringPasscodeSecretName: "monitoring-pass"
+monitoringPasscodeSecretKey: "password"
 
 ## Environment variables to attach to the pods
 ##
@@ -622,7 +622,7 @@ extraConfig:
 #  annotations: {}
 
 # (DEPRECATED) please use setAdminPassword instead
- account:
+account:
 # The values can be set to define the current and the (new) custom admin passwords at the startup (the username will remain "admin")
 #   adminPassword: AdminAdmin_12$
 #   currentAdminPassword: admin
