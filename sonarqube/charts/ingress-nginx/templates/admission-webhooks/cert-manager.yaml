@@ -19,6 +19,9 @@ metadata:
 spec:
   secretName: {{ include "ingress-nginx.fullname" . }}-root-cert
   duration: {{ .Values.controller.admissionWebhooks.certManager.rootCert.duration | default "43800h0m0s" | quote }}
+  {{- if gt (.Values.controller.admissionWebhooks.certManager.rootCert.revisionHistoryLimit | int) 0 }}
+  revisionHistoryLimit: {{ .Values.controller.admissionWebhooks.certManager.rootCert.revisionHistoryLimit }}
+  {{- end }}
   issuerRef:
     name: {{ include "ingress-nginx.fullname" . }}-self-signed-issuer
   commonName: "ca.webhook.ingress-nginx"
@@ -42,11 +45,14 @@ spec:
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: {{ include "ingress-nginx.fullname" . }}-admission
+  name: {{ include "ingress-nginx.admissionWebhooks.fullname" . }}
   namespace: {{ include "ingress-nginx.namespace" . }}
 spec:
-  secretName: {{ include "ingress-nginx.fullname" . }}-admission
+  secretName: {{ include "ingress-nginx.admissionWebhooks.fullname" . }}
   duration: {{ .Values.controller.admissionWebhooks.certManager.admissionCert.duration | default "8760h0m0s" | quote }}
+  {{- if gt (.Values.controller.admissionWebhooks.certManager.admissionCert.revisionHistoryLimit | int) 0 }}
+  revisionHistoryLimit: {{ .Values.controller.admissionWebhooks.certManager.admissionCert.revisionHistoryLimit }}
+  {{- end }}
   issuerRef:
     {{- if .Values.controller.admissionWebhooks.certManager.issuerRef }}
     {{- toYaml .Values.controller.admissionWebhooks.certManager.issuerRef | nindent 4 }}
