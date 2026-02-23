@@ -34,7 +34,7 @@ user-management
 keycloak-cc
 rabb-tem.yaml 
 rabb-tem-op.yaml
-neuvector-ooo
+neuvector-5.4.5
 jf-pv-pvc.yaml
 jfrog-pvc.yaml
 jfrog-pv.*
