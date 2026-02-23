@@ -93,6 +93,8 @@ spec:
           image: {{ include "neuvector.controller.image" . | quote }}
           command: ["/usr/local/bin/upgrader", "create-upgrader-job" ]
           imagePullPolicy: {{ .Values.controller.certupgrader.imagePullPolicy }}
+          resources:
+{{ toYaml .Values.controller.certupgrader.resources | indent 16 }}
           env:
             - name: OVERRIDE_CHECKSUM
               value: {{ dict "image" (include "neuvector.controller.image" .) "internal" .Values.internal "certupgrader" .Values.controller.certupgrader | toJson | sha256sum }}
@@ -140,6 +142,8 @@ spec:
             initialDelaySeconds: 5
             periodSeconds: 5
           env:
+            - name: CTRL_SERVER_PORT
+              value: "{{ .Values.controller.apisvc.ctrlServerPort}}"
             - name: CLUSTER_JOIN_ADDR
               value: neuvector-svc-controller.{{ .Release.Namespace }}
             - name: CLUSTER_ADVERTISED_ADDR
