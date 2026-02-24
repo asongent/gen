@@ -376,7 +376,7 @@ manager:
     hash:
   priorityClassName:
   env:
-    ssl: false
+    ssl: true
     envs: []
   #      - name: CUSTOM_PAGE_HEADER_COLOR
   #        value: "#FFFFFF"
