@@ -451,7 +451,8 @@ manager:
   topologySpreadConstraints: []
   affinity: {}
   podLabels: {}
-  podAnnotations: {}
+  podAnnotations: 
+    sidecar.istio.io/excludeInboundPorts: "8443"
   tolerations: []
   nodeSelector:
     {}
