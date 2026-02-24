@@ -1,0 +1,327 @@
+
+---
+# Source: sonarqube/templates/sonarqube-sts.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: sonarqube
+  labels:
+    app: sonarqube
+    chart: sonarqube-2026.1.0
+    release: sonarqube
+    heritage: Helm
+    app.kubernetes.io/name: sonarqube
+    app.kubernetes.io/instance: sonarqube
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: sonarqube
+    app.kubernetes.io/component: sonarqube-sonarqube
+    app.kubernetes.io/version: "26.1.0.118079-community"
+spec:
+  replicas: 1
+  revisionHistoryLimit: 10
+  serviceName: sonarqube-sonarqube
+  selector:
+    matchLabels:
+      app: sonarqube
+      release: sonarqube
+  template:
+    metadata:
+      annotations:
+        checksum/config: 1ecc74a293f53b5955e755a8ce1c6da5c9003f02841bb3962d131b6a10033118
+        checksum/init-sysctl: 59bc042c9b77ffd266d3d37fbb9a5df720cd08dab918c0937eed63e14ef3af2c
+        checksum/plugins: 3f69ff45a336bcb08ef4a8cb2627beabd068776e7f0f6fe274e78a75db97c9ab
+        checksum/secret: f784a9467179fee30158d8b65cd6a7394aa0a5d93f62549304338b73b5aeadb6
+      labels:
+        app: sonarqube
+        release: sonarqube
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        fsGroup: 0
+      initContainers:
+        - name: init-sysctl
+          image: sonarqube:26.1.0.118079-community
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            privileged: true
+            readOnlyRootFilesystem: true
+            runAsUser: 0
+          command: ["/bin/bash", "-e", "/tmp/scripts/init_sysctl.sh"]
+          volumeMounts:
+            - name: init-sysctl
+              mountPath: /tmp/scripts/
+          env:
+            - name: SONAR_WEB_CONTEXT
+              value: /
+            - name: SONAR_WEB_JAVAOPTS
+              value: ""
+            - name: SONAR_CE_JAVAOPTS
+              value: ""
+      containers:
+        - name: sonarqube
+          image: sonarqube:26.1.0.118079-community
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 9000
+              protocol: TCP
+          resources:
+            limits:
+              cpu: 800m
+              ephemeral-storage: 512000M
+              memory: 6144M
+            requests:
+              cpu: 400m
+              ephemeral-storage: 1536M
+              memory: 2048M
+          env:
+            - name: ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: sonarqube-admin
+            - name: CURRENT_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: currentPassword
+                  name: sonarqube-admin
+            - name: SONAR_HELM_CHART_VERSION
+              value: 2026.1.0
+            - name: SONAR_JDBC_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: sonarqube-database
+                  key: password
+            - name: SONAR_WEB_SYSTEMPASSCODE
+              valueFrom:
+                secretKeyRef:
+                  name: monitoring-pass
+                  key: password
+            - name: ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: sonarqube-admin
+            - name: CURRENT_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: currentPassword
+                  name: sonarqube-admin
+            - name: SONAR_WEB_CONTEXT
+              value: /
+            - name: SONAR_WEB_JAVAOPTS
+              value: ""
+            - name: SONAR_CE_JAVAOPTS
+              value: ""
+          envFrom:
+            - configMapRef:
+                name: sonarqube-sonarqube-jdbc-config
+          livenessProbe:
+            exec:
+              command:
+              - sh
+              - -c
+              - |
+                wget --no-proxy --quiet -O /dev/null --timeout=1 --header="X-Sonar-Passcode: $SONAR_WEB_SYSTEMPASSCODE" "http://localhost:9000/api/system/liveness"
+            failureThreshold: 6
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 1
+          readinessProbe:
+            exec:
+              command:
+              - sh
+              - -c
+              - |
+                #!/bin/bash
+                # A Sonarqube container is considered ready if the status is UP, DB_MIGRATION_NEEDED or DB_MIGRATION_RUNNING
+                # status about migration are added to prevent the node to be kill while SonarQube is upgrading the database.
+                if wget --no-proxy -qO- http://localhost:9000/api/system/status | grep -q -e '"status":"UP"' -e '"status":"DB_MIGRATION_NEEDED"' -e '"status":"DB_MIGRATION_RUNNING"'; then
+                  exit 0
+                fi
+                exit 1
+            failureThreshold: 6
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 1
+          startupProbe:
+            httpGet:
+              scheme: HTTP
+              path: /api/system/status
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 24
+            timeoutSeconds: 1
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            runAsGroup: 0
+            runAsNonRoot: true
+            runAsUser: 1000
+            seccompProfile:
+              type: RuntimeDefault
+          volumeMounts:
+            - mountPath: /opt/sonarqube/data
+              name: sonarqube
+              subPath: data
+            - mountPath: /opt/sonarqube/temp
+              name: sonarqube
+              subPath: temp
+            - mountPath: /opt/sonarqube/logs
+              name: sonarqube
+              subPath: logs
+            - mountPath: /tmp
+              name: tmp-dir
+            - mountPath: /opt/sonarqube/extensions
+              name: sonarqube
+              subPath: extensions
+      serviceAccountName: default
+      volumes:
+        
+        - name: init-sysctl
+          configMap:
+            name: sonarqube-sonarqube-init-sysctl
+            items:
+              - key: init_sysctl.sh
+                path: init_sysctl.sh
+        - name: sonarqube
+          emptyDir:
+            {}
+        - name : tmp-dir
+          emptyDir:
+            {}
+---
+# Source: sonarqube/templates/secret.yaml
+---
+---
+# Source: sonarqube/templates/prometheus-podmonitor.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: sonarqube
+  namespace: sonarqube
+  labels:
+    app: sonarqube
+spec:
+  namespaceSelector:
+    matchNames:
+    - sonarqube
+  selector:
+    matchLabels:
+      app: sonarqube
+  podMetricsEndpoints:
+  - port: http
+    path: /api/monitoring/metrics
+    scheme: http
+    interval: 30s
+    bearerTokenSecret:
+      name: monitoring-pass
+      key: password
+---
+# Source: sonarqube/templates/tests/sonarqube-test.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "sonarqube-ui-test"
+  annotations:
+    "helm.sh/hook": test-success
+    # Disable Istio sidecar injection for this test pod
+    "sidecar.istio.io/inject": "false"
+  labels:
+    app: sonarqube
+    chart: sonarqube-2026.1.0
+    release: sonarqube
+    heritage: Helm
+spec:
+  automountServiceAccountToken: false
+  containers:
+    - name: sonarqube-ui-test
+      image: "sonarqube:26.1.0.118079-community"
+      imagePullPolicy: IfNotPresent
+      command: ['wget']
+      args: [
+        '--retry-connrefused',
+        '--waitretry=1',
+        '--timeout=5',
+        '-t',
+        '12',
+        '-qO-',
+        'sonarqube-sonarqube:9000/api/system/status'
+        ]
+      resources:
+        limits:
+          cpu: 500m
+          ephemeral-storage: 1000M
+          memory: 200M
+        requests:
+          cpu: 500m
+          ephemeral-storage: 100M
+          memory: 200M
+  restartPolicy: Never
+---
+# Source: sonarqube/templates/change-admin-password-hook.yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: sonarqube-sonarqube-change-admin-password-hook
+  labels:
+    app: sonarqube
+    chart: sonarqube-2026.1.0
+    release: sonarqube
+    heritage: Helm
+  annotations:
+    "helm.sh/hook": post-install, post-upgrade
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  template:
+    metadata:
+      name: sonarqube-sonarqube-change-admin-password-hook
+      labels:
+        app: sonarqube
+        chart: sonarqube-2026.1.0
+        release: sonarqube
+        heritage: Helm
+      annotations:
+        # Disable Istio sidecar injection for this hook pod
+        "sidecar.istio.io/inject": "false"
+    spec:
+      restartPolicy: OnFailure
+      serviceAccountName: default
+      containers:
+      - name: sonarqube-sonarqube-change-default-admin-password
+        image: sonarqube:26.1.0.118079-community
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+          runAsGroup: 0
+          runAsNonRoot: true
+          runAsUser: 1000
+          seccompProfile:
+            type: RuntimeDefault
+        command: ["sh", "-c", 'until curl -sSi --connect-timeout 100 sonarqube-sonarqube:9000/api/system/status | grep -w UP; do sleep 10; done; curl -sSi --connect-timeout 100 -u admin:"$CURRENT_ADMIN_PASSWORD" -X POST "sonarqube-sonarqube:9000/api/users/change_password?login=admin" --data-urlencode "previousPassword=$CURRENT_ADMIN_PASSWORD" --data-urlencode "password=$ADMIN_PASSWORD"']
+        env:
+        - name: ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: sonarqube-admin
+              key: password
+        - name: CURRENT_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: sonarqube-admin
+              key: currentPassword
+        resources:
+          limits:
+            cpu: 800m
+            ephemeral-storage: 512000M
+            memory: 6144M
+          requests:
+            cpu: 400m
+            ephemeral-storage: 1536M
+            memory: 2048M

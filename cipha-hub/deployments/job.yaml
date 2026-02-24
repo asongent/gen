@@ -1,0 +1,42 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: neuvector-cve-sync
+  namespaces: cipha-hub
+spec:
+  schedule: "*/5 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: cve-sync
+            image: jmugu/ciphahub:v1
+            env:
+            - name: NEUVECTOR_URL
+              value: "https://neuvector.neuvector-service-webui.svc.cluster.local:8443/api/v1"
+            - name: NEUVECTOR_USER
+              valueFrom:
+                secretKeyRef:
+                  name: neuvector-creds
+                  key: username
+            - name: NEUVECTOR_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: neuvector-creds
+                  key: password
+            - name: ES_URL
+              value: "https://elasticsearch:9200"
+            - name: ES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: elastic-creds
+                  key: username
+            - name: ES_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: elastic-creds
+                  key: password
+            - name: ES_INDEX
+              value: "neuvector-cves"
+          restartPolicy: Never

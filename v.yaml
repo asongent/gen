@@ -1,0 +1,88 @@
+# apiVersion: networking.istio.io/v1
+# kind: Gateway
+# metadata:
+#   name: neuvector-gateway
+#   namespace: istio-system
+# spec:
+#   selector:
+#     istio: ingressgateway
+#   servers:
+#   - port:
+#       number: 443
+#       name: https
+#       protocol: TLS
+#     tls:
+#       mode: PASSTHROUGH
+#     hosts:
+#     - neuv.fredgentech.com
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: neuvector-vs
+  namespace: neuvector
+spec:
+  hosts:
+  - neuvector.stack.fredgentech.com
+  gateways:
+  - istio-system/neuv-gateway
+  tls:
+  - match:
+    - port: 443
+      sniHosts:
+      - neuvector.stack.fredgentech.com
+    route:
+    - destination:
+        host: neuvector-service-webui.neuvector.svc.cluster.local
+        port:
+          number: 8443
+
+---
+# apiVersion: networking.istio.io/v1
+# kind: VirtualService
+# metadata:
+#   name: neuvector-vs
+#   namespace: neuvector
+# spec:
+#   gateways:
+#   - istio-system/internal-gateway
+#   hosts:
+#   - 'neuvector.stack.fredgentech.com'
+#   http:
+#   - retries:
+#       attempts: 3
+#       perTryTimeout: 2s
+#     match:
+#     - uri:
+#         prefix: /
+#     route:
+#     - destination:
+#         host: neuvector-service-webui.neuvector.svc.cluster.local
+#         port:
+#           number: 8443
+---
+apiVersion: networking.istio.io/v1
+kind: Gateway
+metadata:
+  name: neuv-gateway
+  namespace: istio-system
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - hosts:
+    - 'neuvector.stack.fredgentech.com'
+    port:
+      name: http
+      number: 80
+      protocol: HTTP
+    tls:
+      httpsRedirect: true
+  - hosts:
+    - 'neuvector.stack.fredgentech.com'
+    port:
+      name: https
+      number: 443
+      protocol: HTTPS
+    tls:
+      mode: PASSTHROUGH

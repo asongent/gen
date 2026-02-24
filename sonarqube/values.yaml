@@ -453,7 +453,17 @@ monitoringPasscodeSecretKey: "password"
 #     value: /sonarqube
 #   - name: VARIABLE
 #     value: my-value
-
+env: 
+  - name: ADMIN_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: sonarqube-admin
+        key: password
+  - name: CURRENT_ADMIN_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: sonarqube-admin
+        key: currentPassword
 # Set annotations for pods
 annotations: {}
 
