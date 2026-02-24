@@ -60,7 +60,7 @@ global: # required for rancher authentication (https://<Rancher_URL>/)
 # Set a bootstrap password. If leave empty, default admin password used.
 bootstrapPassword: ""
 
-autoGenerateCert: true
+autoGenerateCert: false
 
 defaultValidityPeriod: 365
 
