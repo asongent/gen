@@ -414,7 +414,7 @@ manager:
       #  -----BEGIN PRIVATE KEY-----
       #  -----END PRIVATE KEY-----
   certificate:
-    secret: ""
+    secret: "neuvector-manager-ssl-secret"
     keyFile: tls.key
     pemFile: tls.pem
     #key: |
