@@ -380,6 +380,8 @@ manager:
     envs: 
       - name: MANAGER_SSL 
         value: "on"
+      - name: MANAGER_UI 
+        value: "on"
   #      - name: CUSTOM_PAGE_HEADER_COLOR
   #        value: "#FFFFFF"
   #      - name: CUSTOM_PAGE_FOOTER_COLOR
