@@ -451,7 +451,7 @@ singleuser:
       subPath:
   image:
     name:  docker.io/jmugu/jupyterhub-k8s-singleuser-sample
-    tag: "4.3.4"
+    tag: "4.3.5"
     pullPolicy:
     pullSecrets: []
   startTimeout: 300

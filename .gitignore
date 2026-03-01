@@ -16,6 +16,9 @@ jupyterhub-ol
 gitlab-xx
 sonarqube-new-new
 hpa.yaml
+vev.yaml
+cipha-hub-test
+postgres-test
 tls-secret.yaml
 sonar.yaml
 keycloak-db-*
@@ -27,9 +30,12 @@ gitlab-testing
 argocd-iu-old
 gitlab-ce
 neo4j-helm
+cipha-hub
 # secret-*
 # .sops
 env.*
+v.yaml
+postgres
 user-management
 keycloak-cc
 rabb-tem.yaml 

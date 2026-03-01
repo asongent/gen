@@ -1,0 +1,4 @@
+requests
+urllib3
+boto3
+elasticsearch
