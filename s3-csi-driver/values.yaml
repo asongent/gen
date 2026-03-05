@@ -1,0 +1,131 @@
+# Default values for Mountpoint for Amazon S3 CSI Driver Helm chart.
+# You can customize any values here during installation.
+
+# Set to true if running on OpenShift/ROSA.
+# If not set, auto-detects OpenShift where possible.
+isOpenShift: null
+
+image:
+  # Our regional ECR repositories are labelled `eks/aws-s3-csi-driver`.
+  # See https://docs.aws.amazon.com/eks/latest/userguide/add-ons-images.html for the per-region registry list.
+  # Example: `602401143452.dkr.ecr.us-east-1.amazonaws.com/eks/aws-s3-csi-driver` for us-east-1.
+  repository: public.ecr.aws/mountpoint-s3-csi-driver/aws-mountpoint-s3-csi-driver
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "v2.4.0"
+
+node:
+  kubeletPath: /var/lib/kubelet
+  logLevel: 4
+  seLinuxOptions:
+    user: system_u
+    type: super_t
+    role: system_r
+    level: s0
+  serviceAccount:
+    # Specifies whether a service account should be created
+    create: true
+    name: s3-csi-driver-sa
+    # Specify the CSI Driver SA's role ARN if want to use driver-level IRSA,
+    # see https://github.com/awslabs/mountpoint-s3-csi-driver/blob/main/docs/CONFIGURATION.md#aws-credentials for more details.
+    # annotations:
+    # "eks.amazonaws.com/role-arn": ""
+  nodeSelector: {}
+  resources:
+    requests:
+      cpu: 10m
+      memory: 40Mi
+    limits:
+      memory: 256Mi
+  # Tolerates all taints and overrides defaultTolerations
+  tolerateAllTaints: true
+  defaultTolerations: true
+  tolerations: []
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: eks.amazonaws.com/compute-type
+                operator: NotIn
+                values:
+                  - fargate
+                  - hybrid
+
+sidecars:
+  nodeDriverRegistrar:
+    image:
+      repository: public.ecr.aws/csi-components/csi-node-driver-registrar
+      tag: v2.15.0-eksbuild.4
+      pullPolicy: IfNotPresent
+    env:
+      - name: KUBE_NODE_NAME
+        valueFrom:
+          fieldRef:
+            fieldPath: spec.nodeName
+    volumeMounts:
+      - name: plugin-dir
+        mountPath: /csi
+      - name: registration-dir
+        mountPath: /registration
+    resources: {}
+  livenessProbe:
+    image:
+      repository: public.ecr.aws/csi-components/livenessprobe
+      tag: v2.17.0-eksbuild.4
+      pullPolicy: IfNotPresent
+    volumeMounts:
+      - mountPath: /csi
+        name: plugin-dir
+    resources: {}
+
+controller:
+  # Consider deploying the controller component to special nodes for controller components.
+  # See https://github.com/awslabs/mountpoint-s3-csi-driver/blob/main/docs/INSTALL.md#configuring-nodeSelector-for-the-controller-component for more details.
+  # For example:
+  # nodeSelector:
+  #   kubernetes.io/role: control-plane
+  serviceAccount:
+    # Specifies whether a service account should be created
+    create: true
+    name: s3-csi-driver-controller-sa
+
+mountpointPod:
+  namespace: mount-s3
+  # If creating the namespace yourself, review the namespace definition in this Helm chart to follow the best practices.
+  # For example, this chart enforces that pods in the namespace are bound by the 'restricted' pod security standard.
+  # This allows us to restrict the pods that the driver's node daemon has privileges to create.
+  createNamespace: false
+  priorityClassName: mount-s3-critical
+  preemptingPriorityClassName: mount-s3-preempting-critical
+  headroomPriorityClassName: mount-s3-headroom
+
+nameOverride: ""
+fullnameOverride: ""
+
+imagePullSecrets: []
+
+awsAccessSecret:
+  name: aws-secret
+  keyId: key_id
+  accessKey: access_key
+  sessionToken: session_token
+
+# The default IPv4 address in the credentials URI is in accordance to the references below:
+# Doc: https://docs.aws.amazon.com/eks/latest/userguide/pod-id-agent-setup.html
+# Source code: https://github.com/aws/eks-pod-identity-agent/blob/8bd71a236522993f02427083e485c83f6ae4fe31/configuration/config.go
+eksPodIdentityAgent:
+  containerCredentialsFullURI: "http://169.254.170.23/v1/credentials"
+
+# CSI Driver v2 only: If enabled, the driver will continue supporting S3 volumes that were mounted by v1 (SystemD mounts),
+# including credential refresh, cleanup, and unmounting these legacy volumes.
+# You can set this feature to false for fresh clusters with no v1 volumes,
+# or if you've migrated all workloads using S3 volumes after upgrading to v2.
+# TODO: Remove this in v3 as systemd mount support will be discontinued
+supportLegacySystemDMounts: true
+
+experimental:
+  # Enables support for `s3.csi.aws.com/reserve-headroom-for-mppod` scheduling gate on the Workload Pods.
+  # See https://github.com/awslabs/mountpoint-s3-csi-driver/blob/main/docs/HEADROOM_FOR_MPPOD.md for more details.
+  reserveHeadroomForMountpointPods: false
+  headroomPodImage: public.ecr.aws/eks-distro/kubernetes/pause:3.10
