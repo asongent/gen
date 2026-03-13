@@ -273,7 +273,7 @@ startupProbe:
   timeoutSeconds: 1
   # If an ingress *path* other than the root (/) is defined, it should be reflected here
   # A trailing "/" must be included
-  # deprecated please use sonarWebContext at the value top level
+  # deprecated please use sonarWebContext at the value top level ##
   # sonarWebContext: /
 
 initContainers:
@@ -453,17 +453,17 @@ monitoringPasscodeSecretKey: "password"
 #     value: /sonarqube
 #   - name: VARIABLE
 #     value: my-value
-env: 
-  - name: ADMIN_PASSWORD
-    valueFrom:
-      secretKeyRef:
-        name: sonarqube-admin
-        key: password
-  - name: CURRENT_ADMIN_PASSWORD
-    valueFrom:
-      secretKeyRef:
-        name: sonarqube-admin
-        key: currentPassword
+env: []
+  # - name: ADMIN_PASSWORD
+  #   valueFrom:
+  #     secretKeyRef:
+  #       name: sonarqube-admin
+  #       key: password
+  # - name: CURRENT_ADMIN_PASSWORD
+  #   valueFrom:
+  #     secretKeyRef:
+  #       name: sonarqube-admin
+  #       key: currentPassword
 # Set annotations for pods
 annotations: {}
 
