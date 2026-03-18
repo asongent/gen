@@ -137,8 +137,8 @@ controller:
   ranchersso: # required for rancher authentication
     enabled: false
   pvc:
-    enabled: false
-    existingClaim: false
+    enabled: true
+    existingClaim: neuvector-pvc
     accessModes:
       - ReadWriteMany
     storageClass:
