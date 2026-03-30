@@ -10,7 +10,7 @@ replicas: 2
 image:
   # -- The Keycloak image repository
   #repository: registry1.dso.mil/ironbank/opensource/keycloak/keycloak
-  repository: ghcr.io/asongent/keycloak-bigbang
+  repository: ghcr.io/asongent/keycloak-bigbang-custom #ghcr.io/asongent/keycloak-bigbang
   # Overrides the Keycloak image tag whose default is the chart appVersion
   tag: "26.1.4"
   # Overrides the Keycloak image tag with a specific digest
@@ -126,6 +126,10 @@ args:
 # rather than set here, which will potentially produce duplicates and helm upgrade errors
 # https://www.keycloak.org/server/all-config
 extraEnv: |
+  - name: KC_THEME_CACHE_MAX_AGE
+    value: "0"
+  - name: KC_THEME_CACHE_THEMES
+    value: "false"
   - name: KC_HOSTNAME
     value: keycloak.stack.fredgentech.com
   - name: KC_HOSTNAME_STRICT
