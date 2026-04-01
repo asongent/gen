@@ -1,0 +1,457 @@
+---
+# Source: keycloak/templates/networkpolicy.yaml
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: keycloak
+  namespace: "keycloak"
+  labels:
+    app.kubernetes.io/instance: keycloak
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: keycloak
+    app.kubernetes.io/version: 26.3.3
+    helm.sh/chart: keycloak-25.2.0
+    app.kubernetes.io/component: keycloak
+    app.kubernetes.io/part-of: keycloak
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/instance: keycloak
+      app.kubernetes.io/name: keycloak
+      app.kubernetes.io/component: keycloak
+      app.kubernetes.io/part-of: keycloak
+  policyTypes:
+    - Ingress
+    - Egress
+  egress:
+    - {}
+  ingress:
+    - ports:
+        - port: 8080
+        - port: 8443
+        - port: 9000
+        - port: 7800
+---
+# Source: keycloak/templates/pdb.yaml
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: keycloak
+  namespace: "keycloak"
+  labels:
+    app.kubernetes.io/instance: keycloak
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: keycloak
+    app.kubernetes.io/version: 26.3.3
+    helm.sh/chart: keycloak-25.2.0
+    app.kubernetes.io/component: keycloak
+    app.kubernetes.io/part-of: keycloak
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: keycloak
+      app.kubernetes.io/name: keycloak
+      app.kubernetes.io/component: keycloak
+      app.kubernetes.io/part-of: keycloak
+---
+# Source: keycloak/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: keycloak
+  namespace: "keycloak"
+  labels:
+    app.kubernetes.io/instance: keycloak
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: keycloak
+    app.kubernetes.io/version: 26.3.3
+    helm.sh/chart: keycloak-25.2.0
+    app.kubernetes.io/component: keycloak
+    app.kubernetes.io/part-of: keycloak
+automountServiceAccountToken: true
+---
+# Source: keycloak/templates/configmap-env-vars.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: keycloak-env-vars
+  namespace: "keycloak"
+  labels:
+    app.kubernetes.io/instance: keycloak
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: keycloak
+    app.kubernetes.io/version: 26.3.3
+    helm.sh/chart: keycloak-25.2.0
+    app.kubernetes.io/component: keycloak
+    app.kubernetes.io/part-of: keycloak
+data:
+  BITNAMI_DEBUG: "false"
+  KEYCLOAK_PRODUCTION: "true"
+  KC_LOG_LEVEL: "INFO"
+  KC_LOG_CONSOLE_OUTPUT: "default"
+  # KC_BOOTSTRAP_ADMIN_USERNAME: ""
+  KC_BOOTSTRAP_ADMIN_PASSWORD_FILE: /opt/bitnami/keycloak/secrets/password
+  KC_HTTP_PORT: "8080"
+  KC_HTTP_MANAGEMENT_PORT: "9000"
+  KC_HTTP_ENABLED: "true"
+  KC_PROXY_HEADERS: "xforwarded"
+  KC_METRICS_ENABLED: "true"
+  KC_DB_URL: "jdbc:postgresql://dbms.fredgentech.com:5432/usermanagement?currentSchema=public"
+  KC_DB_SCHEMA: "public"
+  KC_DB_PASSWORD_FILE: /opt/bitnami/keycloak/secrets/db-password
+  KC_DB_USERNAME_FILE: /opt/bitnami/keycloak/secrets/db-username
+  KC_HTTPS_PORT: "8443"
+  KC_HTTPS_KEY_STORE_FILE: "/opt/bitnami/keycloak/certs/keycloak.keystore.jks"
+  KC_HTTPS_TRUST_STORE_FILE: "/opt/bitnami/keycloak/certs/keycloak.truststore.jks"
+  KC_CACHE: "ispn"
+  KC_CACHE_STACK: "jdbc-ping"
+  KC_CACHE_CONFIG_FILE: "cache-ispn.xml"
+  JAVA_OPTS_APPEND: "-Djgroups.dns.query=keycloak-headless.keycloak.svc.cluster.local"
+  KC_HTTP_RELATIVE_PATH: "/auth"
+  KC_SPI_ADMIN_REALM: "master"
+---
+# Source: keycloak/templates/headless-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: keycloak-headless
+  namespace: "keycloak"
+  labels:
+    app.kubernetes.io/instance: keycloak
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: keycloak
+    app.kubernetes.io/version: 26.3.3
+    helm.sh/chart: keycloak-25.2.0
+    app.kubernetes.io/component: keycloak
+    app.kubernetes.io/part-of: keycloak
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+    - name: http
+      port: 8080
+      protocol: TCP
+      targetPort: http
+    - name: https
+      port: 8443
+      protocol: TCP
+      targetPort: https
+  publishNotReadyAddresses: true
+  selector:
+    app.kubernetes.io/instance: keycloak
+    app.kubernetes.io/name: keycloak
+    app.kubernetes.io/component: keycloak
+    app.kubernetes.io/part-of: keycloak
+---
+# Source: keycloak/templates/metrics-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: keycloak-metrics
+  namespace: "keycloak"
+  labels:
+    app.kubernetes.io/instance: keycloak
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: keycloak
+    app.kubernetes.io/version: 26.3.3
+    helm.sh/chart: keycloak-25.2.0
+    app.kubernetes.io/component: metrics
+    app.kubernetes.io/part-of: keycloak
+  annotations:
+    prometheus.io/port: "9000"
+    prometheus.io/scrape: "true"
+spec:
+  type: ClusterIP
+  ports:
+    - name: tcp-metrics
+      port: 9000
+      protocol: TCP
+      targetPort: management
+  selector:
+    app.kubernetes.io/instance: keycloak
+    app.kubernetes.io/name: keycloak
+    app.kubernetes.io/component: keycloak
+    app.kubernetes.io/part-of: keycloak
+---
+# Source: keycloak/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: keycloak
+  namespace: "keycloak"
+  labels:
+    app.kubernetes.io/instance: keycloak
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: keycloak
+    app.kubernetes.io/version: 26.3.3
+    helm.sh/chart: keycloak-25.2.0
+    app.kubernetes.io/component: keycloak
+    app.kubernetes.io/part-of: keycloak
+spec:
+  type: ClusterIP
+  sessionAffinity: None
+  ports:
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: http
+      nodePort: null
+    - name: https
+      port: 443
+      protocol: TCP
+      targetPort: https
+      nodePort: null
+  selector:
+    app.kubernetes.io/instance: keycloak
+    app.kubernetes.io/name: keycloak
+    app.kubernetes.io/component: keycloak
+    app.kubernetes.io/part-of: keycloak
+---
+# Source: keycloak/templates/statefulset.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: keycloak
+  namespace: "keycloak"
+  labels:
+    app.kubernetes.io/instance: keycloak
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: keycloak
+    app.kubernetes.io/version: 26.3.3
+    helm.sh/chart: keycloak-25.2.0
+    app.kubernetes.io/component: keycloak
+    app.kubernetes.io/part-of: keycloak
+spec:
+  replicas: 2
+  revisionHistoryLimit: 10
+  podManagementPolicy: Parallel
+  serviceName: keycloak-headless
+  updateStrategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: keycloak
+      app.kubernetes.io/name: keycloak
+      app.kubernetes.io/component: keycloak
+      app.kubernetes.io/part-of: keycloak
+  template:
+    metadata:
+      annotations:
+        checksum/configmap-env-vars: 09994c3d10b3d9c33753d4fd9a834db50644cede4b68997619a54e0e14f78d18
+      labels:
+        app.kubernetes.io/instance: keycloak
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: keycloak
+        app.kubernetes.io/version: 26.3.3
+        helm.sh/chart: keycloak-25.2.0
+        app.kubernetes.io/component: keycloak
+        app.kubernetes.io/part-of: keycloak
+    spec:
+      serviceAccountName: keycloak
+      
+      automountServiceAccountToken: true
+      affinity:
+        podAffinity:
+          
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/instance: keycloak
+                    app.kubernetes.io/name: keycloak
+                    app.kubernetes.io/component: keycloak
+                topologyKey: kubernetes.io/hostname
+              weight: 1
+        nodeAffinity:
+          
+      securityContext:
+        fsGroup: 1001
+        fsGroupChangePolicy: Always
+        supplementalGroups: []
+        sysctls: []
+      enableServiceLinks: true
+      initContainers:
+        - name: prepare-write-dirs
+          image: docker.io/jmugu/keycloak-custom:26.3.8
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            privileged: false
+            readOnlyRootFilesystem: true
+            runAsGroup: 1001
+            runAsNonRoot: true
+            runAsUser: 1001
+            seLinuxOptions: {}
+            seccompProfile:
+              type: RuntimeDefault
+          resources:
+            limits:
+              cpu: 150m
+              ephemeral-storage: 2Gi
+              memory: 192Mi
+            requests:
+              cpu: 100m
+              ephemeral-storage: 50Mi
+              memory: 128Mi
+          command:
+            - /bin/bash
+          args:
+            - -ec
+            - |
+              . /opt/bitnami/scripts/liblog.sh
+        
+              info "Copying writable dirs to empty dir"
+              # In order to not break the application functionality we need to make some
+              # directories writable, so we need to copy it to an empty dir volume
+              cp -r --preserve=mode,timestamps /opt/bitnami/keycloak/lib/quarkus /emptydir/app-quarkus-dir
+              cp -r --preserve=mode,timestamps /opt/bitnami/keycloak/data /emptydir/app-data-dir
+              cp -r --preserve=mode,timestamps /opt/bitnami/keycloak/providers /emptydir/app-providers-dir
+              cp -r --preserve=mode,timestamps /opt/bitnami/keycloak/themes /emptydir/app-themes-dir
+              info "Copy operation completed"
+          volumeMounts:
+           - name: empty-dir
+             mountPath: /emptydir
+      containers:
+        - name: keycloak
+          image: docker.io/jmugu/keycloak-custom:26.3.8
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            privileged: false
+            readOnlyRootFilesystem: true
+            runAsGroup: 1001
+            runAsNonRoot: true
+            runAsUser: 1001
+            seLinuxOptions: {}
+            seccompProfile:
+              type: RuntimeDefault
+          env:
+            - name: KUBERNETES_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.namespace
+            - name: KC_THEME_CACHE_MAX_AGE
+              value: "0"
+            - name: KC_THEME_CACHE_THEMES
+              value: "false"
+            - name: KC_HOSTNAME
+              value: keycloak.stack.fredgentech.com
+            # - name: KC_PROXY
+            #   value: edge
+            - name: KC_HTTPS_TRUST_STORE_FILE
+              value: /opt/bitnami/keycloak/jks-certs/keycloak.truststore.jks
+            - name: KC_HTTPS_KEY_STORE_FILE
+              value: /opt/bitnami/keycloak/jks-certs/keycloak.keystore.jks
+            - name: KC_HTTPS_ENABLED
+              value: "false"
+            - name: KC_HTTPS_KEY_STORE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: key-store
+                  name: keycloak-trust-store-secret
+            - name: KC_HTTPS_TRUST_STORE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: trust-store
+                  name: keycloak-trust-store-secret
+            - name: KC_BOOTSTRAP_ADMIN_USERNAME
+              valueFrom: 
+                secretKeyRef:
+                  key: username
+                  name: admin-user
+          envFrom:
+            - configMapRef:
+                name: keycloak-env-vars
+          resources:
+            limits:
+              cpu: 750m
+              ephemeral-storage: 2Gi
+              memory: 768Mi
+            requests:
+              cpu: 500m
+              ephemeral-storage: 50Mi
+              memory: 512Mi
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+            - name: https
+              containerPort: 8443
+              protocol: TCP
+            - name: management
+              containerPort: 9000
+              protocol: TCP
+            - name: discovery
+              containerPort: 7800
+          livenessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 120
+            periodSeconds: 1
+            successThreshold: 1
+            timeoutSeconds: 5
+            tcpSocket:
+              port: http
+          volumeMounts:
+            - name: jks-certs
+              mountPath: /opt/bitnami/keycloak/jks-certs/keycloak.keystore.jks
+              subPath: keycloak.keystore.jks
+            - name: jks-certs
+              mountPath: /opt/bitnami/keycloak/jks-certs/keycloak.truststore.jks
+              subPath: keycloak.truststore.jks
+            - name: empty-dir
+              mountPath: /tmp
+              subPath: tmp-dir
+            - name: empty-dir
+              mountPath: /bitnami/keycloak
+              subPath: app-volume-dir
+            - name: empty-dir
+              mountPath: /opt/bitnami/keycloak/conf
+              subPath: app-conf-dir
+            - name: empty-dir
+              mountPath: /opt/bitnami/keycloak/lib/quarkus
+              subPath: app-quarkus-dir
+            - name: empty-dir
+              mountPath: /opt/bitnami/keycloak/data
+              subPath: app-data-dir
+            - name: empty-dir
+              mountPath: /opt/bitnami/keycloak/providers
+              subPath: app-providers-dir
+            - name: empty-dir
+              mountPath: /opt/bitnami/keycloak/themes
+              subPath: app-themes-dir
+            - name: keycloak-secrets
+              mountPath: /opt/bitnami/keycloak/secrets
+            - name: certificates
+              mountPath: /opt/bitnami/keycloak/certs
+              readOnly: true
+      volumes:
+        - name: jks-certs
+          secret:
+            secretName: keycloak-jks-secret
+        - name: empty-dir
+          emptyDir: {}
+        - name: keycloak-secrets
+          projected:
+            sources:
+              - secret:
+                  name: admin-user
+              - secret:
+                  name: postgres-db
+                  items:
+                    - key: password
+                      path: db-password
+                    - key: username
+                      path: db-username
+        - name: certificates
+          secret:
+            secretName: keycloak-tls-secret
+            defaultMode: 420

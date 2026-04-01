@@ -3,6 +3,10 @@ kind: Application
 metadata:
   name: sonarqube
   namespace: argocd
+  annotations:
+    argocd.argoproj.io/hook: Sync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+
 spec:
   destination:
     namespace: sonarqube
