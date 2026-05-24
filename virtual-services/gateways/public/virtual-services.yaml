@@ -141,9 +141,9 @@ spec:
         prefix: /
     route:
     - destination:
-        host: minio
+        host: minio-console
         port:
-          number: 9001
+          number: 9090
 ---
 apiVersion: networking.istio.io/v1
 kind: VirtualService
