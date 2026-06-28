@@ -1,0 +1,71 @@
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: argocd-repo-server
+  labels:
+    app.kubernetes.io/component: repo-server
+    app.kubernetes.io/name: argocd-repo-server
+    app.kubernetes.io/part-of: argocd
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      'app.kubernetes.io/name': argocd-repo-server
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: argocd-repo-server  
+    spec:
+      imagePullSecrets:
+      - name: private-registry
+      # 1. Define an emptyDir volume which will hold the custom binaries
+      volumes:
+        - name: custom-tools
+          emptyDir: {}
+        ## Added this
+        - name: sops-age
+          secret:
+            secretName: sops-age
+      # 2. Use an init container to download/copy custom binaries into the emptyDir
+      initContainers:
+        - name: install-ksops
+          # image: viaductoss/ksops:v4.0.1
+          image: ghcr.io/asongent/ksops:v4.0.1
+          command: ["/bin/sh", "-c"]
+          args:
+            
+            # - echo "Installing KSOPS...";
+            #   export PKG_NAME=ksops;
+            #   mv ${PKG_NAME}.so /.config/kustomize/plugin/viaduct.ai/v1/ksops;
+          - echo "Installing KSOPS..."; cp ksops /custom-tools/; cp /custom-tools/ksops
+            cp $GOPATH/bin/kustomize /custom-tools/; echo "Done."
+          volumeMounts:
+            - mountPath: /custom-tools
+              name: custom-tools
+      # 3. Volume mount the custom-tools directory to the repo-server
+      containers:  
+        - name: argocd-repo-server
+          volumeMounts:
+            - mountPath: /custom-tools
+              name: custom-tools
+              # Verify this matches a XDG_CONFIG_HOME=/.config env variable
+            # - mountPath: /.config/kustomize/plugin/viaduct.ai/v1/ksops/ksops.so #Default
+
+            - mountPath: /.config/kustomize/plugin/viaduct.ai/v1/ksops/ksops
+              name: custom-tools
+              subPath: ksops
+              # subPath: ksopsso #default
+            ##Added mountPath
+            - mountPath: /.config/sops/age/keys.so
+              name: sops-age
+              subPath: keys.so
+              
+          # 4. Set the XDG_CONFIG_HOME env variable to allow kustomize to detect the plugin
+          env:
+            - name: XDG_CONFIG_HOME
+              value: /.config
+            ## addefd this line for sops enc
+            - name: SOPS_AGE_KEY_FILE
+              value: /.config/sops/age/keys.so
