@@ -1433,7 +1433,8 @@ grafana:
       folderAnnotation: grafana_folder  #added
       provider:
         allowUiUpdates: false
-        enableNewTablePanelSyntax: true
+        #enableNewTablePanelSyntax: true
+        foldersFromFilesStructure: true 
     datasources:
       enabled: true
       defaultDatasourceEnabled: true
