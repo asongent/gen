@@ -1430,8 +1430,10 @@ grafana:
           enabled: false
         etcd:
           enabled: false
+      folderAnnotation: grafana_folder 
       provider:
         allowUiUpdates: false
+        enableNewTablePanelSyntax: true
     datasources:
       enabled: true
       defaultDatasourceEnabled: true
@@ -1492,6 +1494,16 @@ grafana:
 
   ## Configure additional grafana datasources (passed through tpl)
   ## ref: https://grafana.com/docs/grafana/latest/administration/provisioning/#datasources
+  
+  # additionalDataSource:
+  # - name: External-Prometheus
+  #     type: prometheus
+  #     access: proxy
+  #     url: http://external-prometheus-service.namespace.svc.cluster.local:9090
+  #     isDefault: false
+  #     jsonData:
+  #       timeInterval: 15s
+
   additionalDataSources: []
   # - name: prometheus-sample
   #   access: proxy
