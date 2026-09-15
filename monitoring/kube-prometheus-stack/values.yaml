@@ -1430,8 +1430,10 @@ grafana:
           enabled: false
         etcd:
           enabled: false
+      folderAnnotation: grafana_folder  #added
       provider:
         allowUiUpdates: false
+        enableNewTablePanelSyntax: true
     datasources:
       enabled: true
       defaultDatasourceEnabled: true
