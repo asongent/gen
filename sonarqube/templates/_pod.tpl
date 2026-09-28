@@ -47,8 +47,18 @@ spec:
     - name: ca-certs
       image: {{ default (include "sonarqube.image" $) .Values.caCerts.image }}
       imagePullPolicy: {{ .Values.image.pullPolicy  }}
-      command: ["sh"]
-      args: ["-c", "cp -f \"${JAVA_HOME}/lib/security/cacerts\" /tmp/certs/cacerts; if [ \"$(ls /tmp/secrets/ca-certs)\" ]; then for f in /tmp/secrets/ca-certs/*; do keytool -importcert -file \"${f}\" -alias \"$(basename \"${f}\")\" -keystore /tmp/certs/cacerts -storepass changeit -trustcacerts -noprompt; done; fi;"]
+      command: ["sh", "-c"]
+      args:
+        - |
+          cp -f "${JAVA_HOME}/lib/security/cacerts" /tmp/certs/cacerts
+          chmod u+w /tmp/certs/cacerts
+          if [ "$(ls /tmp/secrets/ca-certs)" ]; then
+            for f in /tmp/secrets/ca-certs/*; do
+              keytool -importcert -file "${f}" -alias "$(basename "${f}")" \
+                -keystore /tmp/certs/cacerts -storepass changeit -trustcacerts -noprompt
+            done
+            for f in /tmp/secrets/ca-certs/*; do cat "$f"; echo; done > /tmp/certs/ca-bundle.pem
+          fi
       {{- with (include "sonarqube.initContainerSecurityContext" .) }}
       securityContext: {{- . | nindent 8 }}
       {{- end }}
@@ -201,6 +211,12 @@ spec:
         - name: plugins-netrc-file
           mountPath: /root
         {{- end }}
+        {{- if .Values.caCerts.enabled }}
+        - mountPath: /tmp/certs
+          name: sonarqube
+          subPath: certs
+          readOnly: true
+        {{- end }}
       env:
         {{- with (include "sonarqube.install-plugins-proxy.env" .) }}
         {{- . | nindent 8 }}
@@ -229,8 +245,10 @@ spec:
           mountPath: /root
         {{- end }}
       {{- if .Values.caCerts.enabled }}
-        - mountPath: /tmp/secrets/ca-certs
-          name: ca-certs
+        - mountPath: /tmp/certs
+          name: sonarqube
+          subPath: certs
+          readOnly: true
       {{- end }}
       env:
         {{- (include "sonarqube.combined_env" . | fromJsonArray) | toYaml | trim | nindent 8 }}
@@ -279,6 +297,16 @@ spec:
               name: {{ include "sonarqube.fullname" . }}-monitoring-passcode
               key: SONAR_WEB_SYSTEMPASSCODE
             {{- end }}
+        {{- if .Values.mcp.enabled }}
+        - name: SONAR_MCP_ENABLED
+          value: "true"
+        - name: SONAR_MCP_SERVERURL
+          value: {{ printf "%s://%s:%d" (ternary "https" "http" .Values.mcp.tls.enabled) (include "sonarqube.mcp.fullname" .) (.Values.mcp.port | int) | quote }}
+        {{- if .Values.mcp.healthCheckInterval }}
+        - name: SONAR_MCP_HEALTHCHECKINTERVAL
+          value: {{ .Values.mcp.healthCheckInterval | quote }}
+        {{- end }}
+        {{- end }}
         {{- (include "sonarqube.combined_env" . | fromJsonArray) | toYaml | trim | nindent 8 }}
       envFrom:
         {{- if or .Values.jdbcOverwrite.enabled .Values.jdbcOverwrite.enable }}

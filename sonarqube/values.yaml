@@ -7,7 +7,7 @@
 deploymentType: "StatefulSet"
 
 # There should not be more than 1 SonarQube instance connected to the same database. Please set this value to 1 or 0 (in case you need to scale down programmatically).
-replicaCount: 1      
+replicaCount: 1
 
 # How many revisions to retain (Deployment ReplicaSets or StatefulSets)
 revisionHistoryLimit: 10
@@ -53,8 +53,8 @@ OpenShift:
 
 # Set the chart to use the latest released SonarQube Community Build
 community:
-  enabled: true 
-  buildNumber: "26.1.0.118079"
+  enabled: false
+  buildNumber: "26.7.0.124771"
 
 # The following settings are used when deploying to Azure Marketplace
 # global:
@@ -234,7 +234,7 @@ readinessProbe:
         #!/bin/bash
         # A Sonarqube container is considered ready if the status is UP, DB_MIGRATION_NEEDED or DB_MIGRATION_RUNNING
         # status about migration are added to prevent the node to be kill while SonarQube is upgrading the database.
-        if wget --no-proxy -qO- http://localhost:{{ .Values.service.internalPort }}{{ .Values.readinessProbe.sonarWebContext | default (include "sonarqube.webcontext" .) }}api/system/status | grep -q -e '"status":"UP"' -e '"status":"DB_MIGRATION_NEEDED"' -e '"status":"DB_MIGRATION_RUNNING"'; then
+        if curl --noproxy "*" -s http://localhost:{{ .Values.service.internalPort }}{{ .Values.readinessProbe.sonarWebContext | default (include "sonarqube.webcontext" .) }}api/system/status | grep -q -e '"status":"UP"' -e '"status":"DB_MIGRATION_NEEDED"' -e '"status":"DB_MIGRATION_RUNNING"'; then
           exit 0
         fi
         exit 1
@@ -254,7 +254,7 @@ livenessProbe:
       - sh
       - -c
       - |
-        wget --no-proxy --quiet -O /dev/null --timeout={{ .Values.livenessProbe.timeoutSeconds }} --header="X-Sonar-Passcode: $SONAR_WEB_SYSTEMPASSCODE" "http://localhost:{{ .Values.service.internalPort }}{{ .Values.livenessProbe.sonarWebContext | default (include "sonarqube.webcontext" .) }}api/system/liveness"
+        curl --noproxy "*" -fsS -o /dev/null --max-time {{ .Values.livenessProbe.timeoutSeconds }} -H "X-Sonar-Passcode: $SONAR_WEB_SYSTEMPASSCODE" "http://localhost:{{ .Values.service.internalPort }}{{ .Values.livenessProbe.sonarWebContext | default (include "sonarqube.webcontext" .) }}api/system/liveness"
   initialDelaySeconds: 60
   periodSeconds: 30
   failureThreshold: 6
@@ -273,7 +273,7 @@ startupProbe:
   timeoutSeconds: 1
   # If an ingress *path* other than the root (/) is defined, it should be reflected here
   # A trailing "/" must be included
-  # deprecated please use sonarWebContext at the value top level ##
+  # deprecated please use sonarWebContext at the value top level
   # sonarWebContext: /
 
 initContainers:
@@ -393,7 +393,7 @@ prometheusMonitoring:
   #
   podMonitor:
     # Create PodMonitor Resource for Prometheus scraping
-    enabled: true #false is default 
+    enabled: false
     # (DEPRECATED) Specify a custom namespace where the PodMonitor will be created.
     # This value should not be set, as the PodMonitor's namespace has to match the Release Namespace.
     # namespace: "default"
@@ -447,23 +447,18 @@ monitoringPasscodeSecretKey: "password"
 
 ## Environment variables to attach to the pods
 ##
+env:
+  - name: SONAR_SEARCH_JAVAOPTS
+    value: "-Xms1024m -Xmx1024m"
+  - name: SONAR_WEB_JAVAOPTS
+    value: "-Xms1024m -Xmx1024m"
 # env:
 #   # If you use a different ingress path from /, you have to add it here as the value of SONAR_WEB_CONTEXT
 #   - name: SONAR_WEB_CONTEXT
 #     value: /sonarqube
 #   - name: VARIABLE
 #     value: my-value
-env: []
-  # - name: ADMIN_PASSWORD
-  #   valueFrom:
-  #     secretKeyRef:
-  #       name: sonarqube-admin
-  #       key: password
-  # - name: CURRENT_ADMIN_PASSWORD
-  #   valueFrom:
-  #     secretKeyRef:
-  #       name: sonarqube-admin
-  #       key: currentPassword
+
 # Set annotations for pods
 annotations: {}
 
@@ -473,11 +468,11 @@ annotations: {}
 ## Adjust these values to your needs, you can find more details on the main README of the chart.
 resources:
   limits:
-    cpu: 800m
+    cpu: "2"
     memory: 6144M
     ephemeral-storage: 512000M
   requests:
-    cpu: 400m
+    cpu: "1"
     memory: 2048M
     ephemeral-storage: 1536M
 
@@ -550,7 +545,7 @@ jdbcOverwrite:
   jdbcUsername: "databaseadmin"
   # Use this if you don't mind the DB password getting stored in plain text within the values file
   # (DEPRECATED) Please use `jdbcOverwrite.jdbcSecretName` along with `jdbcOverwrite.jdbcSecretPasswordKey` instead
-  jdbcPassword: ""
+  # jdbcPassword: "e"
   ## Alternatively, use a pre-existing k8s secret containing the DB password
   jdbcSecretName: "sonarqube-database"
   ## and the secretValueKey of the password found within that secret
@@ -612,13 +607,13 @@ extraConfig:
   secrets: []
   configmaps: []
 
-setAdminPassword:
+# setAdminPassword:
 # The values can be set to define the current and the (new) custom admin passwords at the startup (the username will remain "admin")
 #  newPassword: AdminAdmin_12$
 #  currentPassword: admin
 # The above values can be also provided by a secret that contains "password" and "currentPassword" as keys. You can generate such a secret in your cluster
 # using "kubectl create secret generic admin-password-secret-name --from-literal=password=admin --from-literal=currentPassword=admin"
-  passwordSecretName: "sonarqube-admin"
+#  passwordSecretName: "sonarqube-admin"
 # Reuse default initcontainers.securityContext that match restricted pod security standard
 #  securityContext: {}
 #  resources:
@@ -632,13 +627,13 @@ setAdminPassword:
 #  annotations: {}
 
 # (DEPRECATED) please use setAdminPassword instead
-#account:
+# account:
 # The values can be set to define the current and the (new) custom admin passwords at the startup (the username will remain "admin")
 #   adminPassword: AdminAdmin_12$
 #   currentAdminPassword: admin
 # The above values can be also provided by a secret that contains "password" and "currentPassword" as keys. You can generate such a secret in your cluster
 # using "kubectl create secret generic admin-password-secret-name --from-literal=password=admin --from-literal=currentPassword=admin"
-#  adminPasswordSecretName: "sonarqube-admin"
+#   adminPasswordSecretName: ""
 # Reuse default initcontainers.securityContext that match restricted pod security standard
 #   securityContext: {}
 #   resources:
@@ -657,3 +652,85 @@ setAdminPassword:
 
 # (DEPRECATED) This value is not used in the templates.
 terminationGracePeriodSeconds: 60
+
+# MCP (Model Context Protocol) server sidecar deployment.
+# When enabled, a separate MCP server is deployed alongside SonarQube and
+# SonarQube is automatically configured to connect to it via SONAR_MCP_ENABLED
+# and SONAR_MCP_SERVERURL environment variables.
+mcp:
+  enabled: false
+
+  image:
+    repository: sonarsource/sonarqube-mcp
+    tag: "1.22.0.3040"
+    pullPolicy: IfNotPresent
+    # pullSecrets:
+    #   - name: my-repo-secret
+
+  port: 8080
+
+  # healthCheckInterval sets SONAR_MCP_HEALTHCHECKINTERVAL on the SonarQube side (in seconds).
+  # healthCheckInterval: "30"
+
+  persistence:
+    enabled: true
+    ## Set annotations on pvc
+    annotations: {}
+    ## Specify an existing volume claim instead of creating a new one.
+    ## When using this option storageClass, accessMode and size are ignored.
+    # existingClaim: ""
+    ## If defined, storageClassName: <storageClass>
+    ## If set to "-", storageClassName: "", which disables dynamic provisioning
+    storageClass:
+    accessMode: ReadWriteOnce
+    size: 1Gi
+
+  # Set security context for the MCP container.
+  containerSecurityContext:
+    allowPrivilegeEscalation: false
+    runAsNonRoot: true
+    runAsUser: 1000
+    runAsGroup: 0
+    seccompProfile:
+      type: RuntimeDefault
+    capabilities:
+      drop: ["ALL"]
+
+  livenessProbe:
+    initialDelaySeconds: 60
+    periodSeconds: 30
+    failureThreshold: 6
+    timeoutSeconds: 1
+
+  # TLS configuration for encrypted communication between SonarQube and MCP.
+  # When enabled, the MCP server uses HTTPS transport and SonarQube connects via https://.
+  # Requires a PKCS12 or JKS keystore stored in a Kubernetes Secret.
+  tls:
+    enabled: false
+    # Secret containing the keystore file.
+    keystoreSecretName: ""
+    keystoreSecretKey: "keystore.p12"
+    # Secret containing the keystore password.
+    passwordSecretName: ""
+    passwordSecretKey: "password"
+    # Keystore type: PKCS12 or JKS.
+    keystoreType: "PKCS12"
+
+  # Additional environment variables for the MCP container.
+ 
+    
+  env: []
+  # - name: MY_VAR
+  #   value: my-value
+
+  resources: {}
+  # limits:
+  #   cpu: 200m
+  #   memory: 256Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+  # Set annotations for the MCP pod.
+  annotations: {}
+

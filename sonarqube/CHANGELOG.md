@@ -1,6 +1,39 @@
 # SonarQube Chart Changelog
 All changes to this chart will be documented in this file.
 
+## [2026.4.1]
+* Upgrade Chart's version to 2026.4.1
+* Upgrade SonarQube Server to 2026.4.1
+
+## [2026.4.0]
+* Upgrade Chart's version to 2026.4.0
+* Upgrade SonarQube Server to 2026.4.0
+* Upgrade SonarQube Community build to 26.7.0.124771
+* Add CA certificate support with multi-cert bundling to `install-plugins` init container for plugin downloads from servers using self-signed or private CA certificates
+* Fix multi-cert CA bundle handling in `install-oracle-jdbc-driver` init container
+* Fix `ca-certs` init container failing with "keytool: Permission denied" on base images whose JVM keystore is read-only, by making the keystore working copy writable
+* Fix NetworkPolicy blocking IPv6 egress by allowing `::/0`
+
+## [2026.3.1]
+* Upgrade Chart's version to 2026.3.1
+* Upgrade SonarQube Server to 2026.3.1
+
+## [2026.3.0]
+* Upgrade Chart's version to 2026.3.0
+* Upgrade SonarQube Server to 2026.3.0
+* Upgrade SonarQube Community build to 26.5.0.122743
+* Add MCP (Model Context Protocol) server support via `mcp.enabled`
+* Fix MCP init container and SONARQUBE_URL to respect `sonarWebContext` when non-root
+* Update MCP image to `sonarsource/sonarqube-mcp:1.22.0.3040`
+
+## [2026.2.0]
+* Upgrade Chart's version to 2026.2.0
+* Upgrade SonarQube Server to 2026.2.0
+* Update ingress-nginx subchart to 4.14.3
+* Upgrade SonarQube Community build to 26.3.0.120487
+* Replace wget with curl in health probes
+* Use -fS flag in curl to show errors in liveness probes
+
 ## [2026.1.0]
 * Upgrade SonarQube Server to 2026.1.0
 * Upgrade Chart's version to 2026.1.0

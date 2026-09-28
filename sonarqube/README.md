@@ -14,15 +14,17 @@ Please note that this chart only supports SonarQube Server Developer and Enterpr
 
 ## Default Versions
 
-SonarQube Server Version: `2026.1.0`
+SonarQube Server Version: `2026.4.1`
 
-SonarQube Community Build: `26.1.0.118079`. If you want the use a more recent SonarQube Community Build, please set the `community.buildNumber` with the desired version.
+SonarQube Community Build: `26.7.0.124771`. If you want the use a more recent SonarQube Community Build, please set the `community.buildNumber` with the desired version.
 
 ## Kubernetes and Openshift Compatibility
 
 Supported Kubernetes Versions: From `1.32` to `1.35`
 
 Supported Openshift Versions: From `4.17` to `4.20`
+
+**Note:** The Kubernetes version range above applies to non-OpenShift Kubernetes clusters. For OpenShift, the supported range is defined by the OpenShift versions listed here and is validated as a platform, including its embedded Kubernetes version.
 
 ## Installing SonarQube Server
 
@@ -335,9 +337,159 @@ helm upgrade --install -n sonarqube sonarqube sonarqube/sonarqube \
 
 If you want to make your application publicly visible with Routes, you can set `OpenShift.route.enabled` to true. Please check the [configuration details](#openshift-1) to customize the Route base on your needs.
 
-## License
+### Defunct (zombie) processes from probes
 
-SonarQube Community Build is released under the [GNU Lesser General Public License, Version 3.0⁠,](http://www.gnu.org/licenses/lgpl.txt) and packaged with [SSALv1](https://www.sonarsource.com/license/ssal/) analyzers. SonarQube Server Developer and Enterprise are licensed under [SonarQube Server Terms and Conditions](https://www.sonarsource.com/legal/sonarqube/terms-and-conditions/).
+The default `readinessProbe` and `livenessProbe` are `exec` probes that fork short-lived processes inside the container on every invocation (the `readinessProbe` runs `curl` piped into `grep`, the `livenessProbe` runs `curl`). On some OpenShift / kubelet versions, when a probe exceeds its `timeoutSeconds` (default `1`) the kubelet kills the probe's parent shell before its child processes finish. Those children are then reparented to PID 1 (the SonarQube JVM, which does not reap them) and remain as defunct (`<defunct>` / zombie) processes. Because the probe runs throughout the pod's lifecycle, these can slowly accumulate and, in extreme cases, approach the pod's thread/process limit.
+
+If you observe a growing number of defunct processes on the application pods, increase the probe timeout to give the command enough time to complete before the kubelet kills it, for example:
+
+```yaml
+readinessProbe:
+  timeoutSeconds: 10
+livenessProbe:
+  timeoutSeconds: 10
+```
+
+A value comfortably above `1` second prevents the probe command from being killed mid-execution and stops the accumulation of defunct processes.
+
+### Use custom `cacerts`
+
+In environments with air-gapped setup, especially with internal tooling (repos) and self-signed certificates it is required to provide an adequate `cacerts` which overrides the default one:
+
+1. Create a yaml file `cacerts.yaml` with a secret that contains one or more keys to represent the certificates that you want including
+
+   ```yaml
+   apiVersion: v1
+   kind: Secret
+   metadata:
+     name: my-cacerts
+   stringData:
+     cert-1.crt: |
+       xxxxxxxxxxxxxxxxxxxxxxx
+   ```
+
+2. Upload your `cacerts.yaml` to a secret in the cluster you are installing SonarQube to.
+
+   ```shell
+   kubectl apply -f cacerts.yaml
+   ```
+
+3. Set the following values of the chart:
+
+   ```yaml
+   caCerts:
+     enabled: true
+     secret: my-cacerts
+   ```
+
+### Elasticsearch Settings
+
+Since SonarQube comes bundled with an Elasticsearch instance, some [bootstrap checks](https://www.elastic.co/guide/en/elasticsearch/reference/master/bootstrap-checks.html) of the host settings are done at start.
+
+This chart offers the option to use an initContainer in privileged mode to automatically set certain kernel settings on the kube worker. While this can ensure proper functionality of Elasticsearch, modifying the underlying kernel settings on the Kubernetes node can impact other users. It may be best to work with your cluster administrator to either provide specific nodes with the proper kernel settings, or ensure they are set cluster wide.
+
+To enable auto-configuration of the kube worker node, set `elasticsearch.configureNode` to `true`. This is the default behavior, so you do not need to explicitly set this.
+
+This will run `sysctl -w vm.max_map_count=262144` on the worker where the sonarqube pod(s) get scheduled. This needs to be set to `262144` but normally defaults to `65530`. Other kernel settings are recommended by the [docker image](https://hub.docker.com/_/sonarqube/#requirements), but the defaults work fine in most cases.
+
+To disable worker node configuration, set `elasticsearch.configureNode` to `false`. Note that if node configuration is not enabled, then you will likely need to also disable the Elasticsearch bootstrap checks. These can be explicitly disabled by setting `elasticsearch.bootstrapChecks` to `false`.
+
+### MCP (Model Context Protocol) Server
+
+When `mcp.enabled` is set to `true`, the chart deploys a separate MCP server pod alongside SonarQube and automatically wires the two together.
+
+**What gets deployed:**
+- A `Deployment` running the MCP container
+- A `ClusterIP` Service exposing port `8080` within the cluster
+- A `PersistentVolumeClaim` for MCP's `/data` directory (when `mcp.persistence.enabled=true`)
+
+**How the integration works:**
+
+The MCP pod waits for SonarQube to report `"status":"UP"` before starting (via an init container). Once running, SonarQube is configured to call MCP at `http://<release>-sonarqube-mcp:8080` via the `SONAR_MCP_SERVERURL` and `SONAR_MCP_ENABLED` environment variables, which the chart injects automatically.
+
+**Minimal configuration example:**
+
+```yaml
+mcp:
+  enabled: true
+  image:
+    repository: sonarsource/sonarqube-mcp
+    tag: "1.22.0.3040"
+```
+
+**Accessing the MCP server locally:**
+
+```bash
+kubectl port-forward svc/<release>-sonarqube-mcp 8080:8080 -n <namespace>
+```
+
+**Persistence:**
+
+MCP uses `/data` to store its files. `mcp.persistence.enabled` defaults to `true`. For local testing only (e.g. Kind/minikube), you can disable it — but data will be lost on pod restarts:
+
+```yaml
+mcp:
+  enabled: true
+  persistence:
+    enabled: false
+```
+
+**TLS (encrypted communication):**
+
+When `mcp.tls.enabled` is set to `true`, the MCP server starts in HTTPS mode using the keystore from `mcp.tls.keystoreSecretName`. SonarQube connects to it over `https://`.
+
+If the keystore uses a self-signed certificate, SonarQube's JVM will reject the connection unless the CA certificate is trusted. Use the `caCerts` feature to import it into SonarQube's JVM truststore:
+
+1. Create a Secret containing the CA certificate in PEM format:
+
+   ```bash
+   kubectl create secret generic mcp-ca-cert \
+     --from-file=mcp-ca.crt=/path/to/ca.pem \
+     -n <namespace>
+   ```
+
+2. Reference it in your values:
+
+   ```yaml
+   mcp:
+     tls:
+       enabled: true
+       keystoreSecretName: mcp-keystore-secret
+       keystoreSecretKey: keystore.p12
+       passwordSecretName: mcp-keystore-password
+       passwordSecretKey: password
+       keystoreType: PKCS12
+
+   caCerts:
+     enabled: true
+     secret: mcp-ca-cert
+   ```
+
+### Extra Config
+
+For environments where another tool, such as terraform or ansible, is used to provision infrastructure or passwords then setting databases addresses and credentials via helm becomes less than ideal. Ditto for environments where this config may be visible.
+
+In such environments, configuration may be read, via environment variables, from Secrets and ConfigMaps.
+
+1. Create a `ConfigMap` (or `Secret`) containing key/value pairs, as expected by SonarQube.
+
+   ```yaml
+   apiVersion: v1
+   kind: ConfigMap
+   metadata:
+     name: external-sonarqube-opts
+   data:
+     SONARQUBE_JDBC_USERNAME: foo
+     SONARQUBE_JDBC_URL: jdbc:postgresql://db.example.com:5432/sonar
+   ```
+
+2. Set the following in your `values.yaml` (using the key `extraConfig.secrets` to reference `Secret`s)
+
+   ```yaml
+   extraConfig:
+     configmaps:
+       - external-sonarqube-opts
+   ```
 
 ## Configuration
 
@@ -361,7 +513,7 @@ The following table lists the configurable parameters of the SonarQube chart and
 | `annotations`           | SonarQube Pod annotations                                                                                             | `{}`               |
 | `edition`               | SonarQube Edition to use (`developer` or `enterprise`).                                                               | `None`             |
 | `community.enabled`     | Install SonarQube Community Build. When set to `true`, `edition` must not be set.                                     | `false`            |
-| `community.buildNumber` | The SonarQube Community Build number to install                                                                       | `26.1.0.118079`   |
+| `community.buildNumber` | The SonarQube Community Build number to install                                                                       | `26.7.0.124771`    |
 | `sonarWebContext`       | SonarQube web context, also serve as default value for `ingress.path`, `account.sonarWebContext` and probes path.     | ``                 |
 | `httpProxySecret`       | Should contain `http_proxy`, `https_proxy` and `no_proxy` keys, will supersede every other proxy variables            | ``                 |
 | `httpProxy`             | HTTP proxy for downloading JMX agent and install plugins, will supersede initContainer specific http proxy variables  | ``                 |
@@ -641,6 +793,38 @@ and set `persistence.hostPath.path` and `persistence.hostPath.type`.
 | `extraConfig.secrets`    | A list of `Secret`s (which must contain key/value pairs)    | `[]`    |
 | `extraConfig.configmaps` | A list of `ConfigMap`s (which must contain key/value pairs) | `[]`    |
 
+### MCP (Model Context Protocol)
+
+| Parameter                              | Description                                                                                              | Default                                                                |
+| -------------------------------------- | -------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| `mcp.enabled`                          | Deploy the SonarQube MCP server alongside SonarQube                                                     | `false`                                                                |
+| `mcp.image.repository`                 | MCP container image repository                                                                           | `sonarsource/sonarqube-mcp`                                            |
+| `mcp.image.tag`                        | MCP container image tag                                                                                  | `"1.22.0.3040"`                                                        |
+| `mcp.image.pullPolicy`                 | MCP image pull policy                                                                                    | `IfNotPresent`                                                         |
+| `mcp.image.pullSecrets`                | MCP image pull secrets                                                                                   | `[]`                                                                   |
+| `mcp.port`                             | Port the MCP server listens on                                                                           | `8080`                                                                 |
+| `mcp.healthCheckInterval`              | How often SonarQube checks MCP health (seconds). Sets `SONAR_MCP_HEALTHCHECKINTERVAL` on SonarQube.     | `""`                                                                   |
+| `mcp.persistence.enabled`              | Enable persistent storage for MCP data (`/data`)                                                         | `true`                                                                 |
+| `mcp.persistence.annotations`          | Annotations for the MCP PVC                                                                              | `{}`                                                                   |
+| `mcp.persistence.existingClaim`        | Use an existing PVC instead of creating one                                                              | `""`                                                                   |
+| `mcp.persistence.storageClass`         | Storage class for the MCP PVC                                                                            | `""`                                                                   |
+| `mcp.persistence.accessMode`           | Access mode for the MCP PVC                                                                              | `ReadWriteOnce`                                                        |
+| `mcp.persistence.size`                 | Size of the MCP PVC                                                                                      | `1Gi`                                                                  |
+| `mcp.livenessProbe.initialDelaySeconds` | Initial delay before the liveness probe starts                                                          | `60`                                                                   |
+| `mcp.livenessProbe.periodSeconds`      | How often the liveness probe runs                                                                        | `30`                                                                   |
+| `mcp.livenessProbe.failureThreshold`   | Number of failures before the pod is restarted                                                           | `6`                                                                    |
+| `mcp.livenessProbe.timeoutSeconds`     | Timeout for the liveness probe                                                                           | `1`                                                                    |
+| `mcp.tls.enabled`                      | Enable TLS (HTTPS) between SonarQube and the MCP server                                                 | `false`                                                                |
+| `mcp.tls.keystoreSecretName`           | Name of the Secret containing the keystore file                                                          | `""`                                                                   |
+| `mcp.tls.keystoreSecretKey`            | Key inside the Secret that holds the keystore file                                                       | `keystore.p12`                                                         |
+| `mcp.tls.passwordSecretName`           | Name of the Secret containing the keystore password                                                      | `""`                                                                   |
+| `mcp.tls.passwordSecretKey`            | Key inside the password Secret                                                                           | `password`                                                             |
+| `mcp.tls.keystoreType`                 | Keystore format (`PKCS12` or `JKS`)                                                                     | `PKCS12`                                                               |
+| `mcp.containerSecurityContext`         | Security context for the MCP container                                                                   | [Restricted podSecurityStandard](#kubernetes---pod-security-standards) |
+| `mcp.env`                              | Additional environment variables for the MCP container                                                   | `[]`                                                                   |
+| `mcp.resources`                        | CPU/memory resource requests and limits for the MCP container                                            | `{}`                                                                   |
+| `mcp.annotations`                      | Annotations for the MCP pod                                                                              | `{}`                                                                   |
+
 ### SetAdminPassword
 
 | Parameter                                    | Description                                                                                            | Default                                                                |
@@ -675,70 +859,6 @@ and set `persistence.hostPath.path` and `persistence.hostPath.type`.
 
 For overriding variables see: [Customizing the chart](https://helm.sh/docs/intro/using_helm/#customizing-the-chart-before-installing)
 
-### Use custom `cacerts`
+## License
 
-In environments with air-gapped setup, especially with internal tooling (repos) and self-signed certificates it is required to provide an adequate `cacerts` which overrides the default one:
-
-1. Create a yaml file `cacerts.yaml` with a secret that contains one or more keys to represent the certificates that you want including
-
-   ```yaml
-   apiVersion: v1
-   kind: Secret
-   metadata:
-     name: my-cacerts
-   stringData:
-     cert-1.crt: |
-       xxxxxxxxxxxxxxxxxxxxxxx
-   ```
-
-2. Upload your `cacerts.yaml` to a secret in the cluster you are installing SonarQube to.
-
-   ```shell
-   kubectl apply -f cacerts.yaml
-   ```
-
-3. Set the following values of the chart:
-
-   ```yaml
-   caCerts:
-     enabled: true
-     secret: my-cacerts
-   ```
-
-### Elasticsearch Settings
-
-Since SonarQube comes bundled with an Elasticsearch instance, some [bootstrap checks](https://www.elastic.co/guide/en/elasticsearch/reference/master/bootstrap-checks.html) of the host settings are done at start.
-
-This chart offers the option to use an initContainer in privileged mode to automatically set certain kernel settings on the kube worker. While this can ensure proper functionality of Elasticsearch, modifying the underlying kernel settings on the Kubernetes node can impact other users. It may be best to work with your cluster administrator to either provide specific nodes with the proper kernel settings, or ensure they are set cluster wide.
-
-To enable auto-configuration of the kube worker node, set `elasticsearch.configureNode` to `true`. This is the default behavior, so you do not need to explicitly set this.
-
-This will run `sysctl -w vm.max_map_count=262144` on the worker where the sonarqube pod(s) get scheduled. This needs to be set to `262144` but normally defaults to `65530`. Other kernel settings are recommended by the [docker image](https://hub.docker.com/_/sonarqube/#requirements), but the defaults work fine in most cases.
-
-To disable worker node configuration, set `elasticsearch.configureNode` to `false`. Note that if node configuration is not enabled, then you will likely need to also disable the Elasticsearch bootstrap checks. These can be explicitly disabled by setting `elasticsearch.bootstrapChecks` to `false`.
-
-### Extra Config
-
-For environments where another tool, such as terraform or ansible, is used to provision infrastructure or passwords then setting databases addresses and credentials via helm becomes less than ideal. Ditto for environments where this config may be visible.
-
-In such environments, configuration may be read, via environment variables, from Secrets and ConfigMaps.
-
-1. Create a `ConfigMap` (or `Secret`) containing key/value pairs, as expected by SonarQube.
-
-   ```yaml
-   apiVersion: v1
-   kind: ConfigMap
-   metadata:
-     name: external-sonarqube-opts
-   data:
-     SONARQUBE_JDBC_USERNAME: foo
-     SONARQUBE_JDBC_URL: jdbc:postgresql://db.example.com:5432/sonar
-   ```
-
-2. Set the following in your `values.yaml` (using the key `extraConfig.secrets` to reference `Secret`s)
-
-   ```yaml
-   extraConfig:
-     configmaps:
-       - external-sonarqube-opts
-   ```
+SonarQube Community Build is released under the [GNU Lesser General Public License, Version 3.0⁠,](http://www.gnu.org/licenses/lgpl.txt) and packaged with [SSALv1](https://www.sonarsource.com/license/ssal/) analyzers. SonarQube Server Developer and Enterprise are licensed under [SonarQube Server Terms and Conditions](https://www.sonarsource.com/legal/sonarqube/terms-and-conditions/).
