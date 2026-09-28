@@ -53,7 +53,7 @@ OpenShift:
 
 # Set the chart to use the latest released SonarQube Community Build
 community:
-  enabled: false
+  enabled: true
   buildNumber: "26.7.0.124771"
 
 # The following settings are used when deploying to Azure Marketplace
