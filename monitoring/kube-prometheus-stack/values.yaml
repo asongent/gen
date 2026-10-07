@@ -1224,6 +1224,13 @@ alertmanager:
 ##
 grafana:
   envFromSecret: grafana-oauth
+  env:
+    SECURITY_POSTGRES_PASSWORD:
+      valueFrom:
+        secretKeyRef:
+          name: grafana-security-postgres
+          key: password
+          
   grafana.ini:
     # Required if enabling SSO
     server:
@@ -1503,8 +1510,21 @@ grafana:
   #     isDefault: false
   #     jsonData:
   #       timeInterval: 15s
+  
+  # additionalDataSources: []
+  additionalDataSources:
+  - name: Security PostgreSQL
+    type: postgres
+    uid: security-postgres
+    access: proxy
+    url: dbms.fredgentech.com
+    user: grafanareader
+    jsonData:
+      database: security
+      sslmode: disable
 
-  additionalDataSources: []
+    secureJsonData:
+      password: ${SECURITY_POSTGRES_PASSWORD}
   # - name: prometheus-sample
   #   access: proxy
   #   basicAuth: true
