@@ -1224,7 +1224,7 @@ alertmanager:
 ##
 grafana:
   envFromSecret:  grafana-oauth
-  extraEnv:
+  env:
     - name: SECURITY_POSTGRES_PASSWORD
       valueFrom:
         secretKeyRef:
