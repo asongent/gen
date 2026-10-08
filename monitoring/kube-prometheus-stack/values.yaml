@@ -1223,7 +1223,7 @@ alertmanager:
 ## Using default values from https://github.com/grafana/helm-charts/blob/main/charts/grafana/values.yaml
 ##
 grafana:
-  envFromSecret: grafana-oauth
+  envFromSecret:  grafana-oauth
   extraEnv:
     - name: SECURITY_POSTGRES_PASSWORD
       valueFrom:
@@ -1524,7 +1524,7 @@ grafana:
       sslmode: disable
 
     secureJsonData:
-      password: ${SECURITY_POSTGRES_PASSWORD}
+      password: $__env{SECURITY_POSTGRES_PASSWORD}
   # - name: prometheus-sample
   #   access: proxy
   #   basicAuth: true
