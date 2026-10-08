@@ -1224,8 +1224,8 @@ alertmanager:
 ##
 grafana:
   envFromSecret: grafana-oauth
-  env:
-    SECURITY_POSTGRES_PASSWORD:
+  extraEnv:
+    - name: SECURITY_POSTGRES_PASSWORD
       valueFrom:
         secretKeyRef:
           name: grafana-security-postgres
