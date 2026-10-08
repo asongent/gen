@@ -1224,12 +1224,18 @@ alertmanager:
 ##
 grafana:
   envFromSecret:  grafana-oauth
-  extraEnv:
-    - name: SECURITY_POSTGRES_PASSWORD
-      valueFrom:
-        secretKeyRef:
-          name: grafana-security-postgres
-          key: password
+  envValueFrom:
+   SECURITY_POSTGRES_PASSWORD:
+      secretKeyRef:
+        name: grafana-security-postgres
+        key: password
+        
+  # extraEnv:
+  #   - name: SECURITY_POSTGRES_PASSWORD
+  #     valueFrom:
+  #       secretKeyRef:
+  #         name: grafana-security-postgres
+  #         key: password
           
   grafana.ini:
     # Required if enabling SSO
@@ -1524,7 +1530,7 @@ grafana:
       sslmode: disable
 
     secureJsonData:
-      password: $__env{SECURITY_POSTGRES_PASSWORD}
+      password: $${SECURITY_POSTGRES_PASSWORD}
   # - name: prometheus-sample
   #   access: proxy
   #   basicAuth: true
