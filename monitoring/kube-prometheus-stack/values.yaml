@@ -1530,7 +1530,7 @@ grafana:
       sslmode: disable
 
     secureJsonData:
-      password:  $${SECURITY_POSTGRES_PASSWORD} 
+      password:  ${SECURITY_POSTGRES_PASSWORD} 
   # $__env{SECURITY_POSTGRES_PASSWORD} #  
   # - name: prometheus-sample
   #   access: proxy
