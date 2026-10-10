@@ -1523,14 +1523,15 @@ grafana:
     type: postgres
     uid: security-postgres
     access: proxy
-    url: dbms.fredgentech.com
+    url: dbms.fredgentech.com:5432
     user: grafanareader
     jsonData:
       database: security
       sslmode: disable
 
     secureJsonData:
-      password: $${SECURITY_POSTGRES_PASSWORD}
+      password:  $${SECURITY_POSTGRES_PASSWORD} 
+  # $__env{SECURITY_POSTGRES_PASSWORD} #  
   # - name: prometheus-sample
   #   access: proxy
   #   basicAuth: true
