@@ -12,21 +12,35 @@ cloudflare:
   secret: "tunnel-credentials"
   # If defined, no secret is created for the credentials, and instead, the secret referenced is used
   secretName: null
-  # If true, turn on WARP routing for TCP
   enableWarp: false
   # Define ingress rules for the tunnel. See
   # https://developers.cloudflare.com/cloudflare-one/connections/connect-apps/configuration/configuration-file/ingress
   ingress: 
-  - hostname: "*.fredgentech.com"
-    service:  http://ingressgateway.istio-system.svc.cluster.local:80
-    # The first rule proxies traffic to the httpbin sample service named web-server at port 80
-    # - hostname: tunnel.example.com
-    #  service: http://web-service:80
-    # This rule sends traffic to the built-in hello-world HTTP server. This can help debug connectivity
-    # issues. If hello.example.com resolves and tunnel.example.com does not, then the problem is
-    # in the connection from cloudflared to your local service, not from the internet to cloudflared.
-    # - hostname: hello.example.com
-    #   service: hello_world
+  # - hostname: "florex.fredgentech.com"
+  #   service: "http://nginx-ingress-controller.nginx-ingress.svc.cluster.local:"
+    - hostname: "*.fredgentech.com"
+      service:  http://ingressgateway.istio-system.svc.cluster.local:80
+
+  # - hostname: grafana.stack.fredgentech.com
+  #   service:  http://ingressgateway.istio-system.svc.cluster.local:80
+
+  # - hostname: airflow.stack.fredgentech.com
+  #   service:  http://ingressgateway.istio-system.svc.cluster.local:80
+  # - hostname: spark.stack.fredgentech.com
+  #   service:  http://ingressgateway.istio-system.svc.cluster.local:80
+  # - hostname: jupyterhub.stack.fredgentech.com
+  #   service:  http://ingressgateway.istio-system.svc.cluster.local:80
+  # - hostname: storage.stack.fredgentech.com
+  #   service:  http://ingressgateway.istio-system.svc.cluster.local:80
+  # - hostname: elastic.stack.fredgentech.com
+  #   service:  http://ingressgateway.istio-system.svc.cluster.local:80
+  # - hostname: argocd.stack.fredgentech.com
+  #   service:  http://ingressgateway.istio-system.svc.cluster.local:80
+  # - hostname: keyckloak.stack.fredgentech.com
+  #   service:  http://ingressgateway.istio-system.svc.cluster.local:80
+  # - hostname: semaphore.stack.fredgentech.com
+  #   service:  http://ingressgateway.istio-system.svc.cluster.local:80
+ 
 
 image:
   repository: cloudflare/cloudflared
