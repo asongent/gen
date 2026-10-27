@@ -9,9 +9,9 @@ cloudflare:
   # The ID of the above tunnel.
   tunnelId: "a9989206-3c79-4ebd-bfb0-0d7ebdb54810"
   # The secret for the tunnel.
-  secret: "tunnel-credentials"
+  secret: ""
   # If defined, no secret is created for the credentials, and instead, the secret referenced is used
-  secretName: null
+  secretName: tunnel-credentials
   enableWarp: false
   # Define ingress rules for the tunnel. See
   # https://developers.cloudflare.com/cloudflare-one/connections/connect-apps/configuration/configuration-file/ingress
