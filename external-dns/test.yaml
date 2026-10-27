@@ -1,0 +1,51 @@
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    external-dns.alpha.kubernetes.io/cloudflare-proxied: 'true'
+    external-dns.alpha.kubernetes.io/hostname: 'server.fredgentech.com'
+    external-dns.alpha.kubernetes.io/target: a9989206-3c79-4ebd-bfb0-0d7ebdb54810.cfargotunnel.com
+  name: dns-test
+  namespace: istio-system
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: 'server.fredgentech.com'
+      http:
+        paths:
+          - backend:
+              service:
+                name: ingressgateway
+                port:
+                  number: 80
+            path: /
+            pathType: Prefix
+# ---
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#   annotations:
+#     kubectl.kubernetes.io/last-applied-configuration: |
+#       {"apiVersion":"networking.k8s.io/v1","kind":"Ingress","metadata":{"annotations":{},"name":"semaphore-ing","namespace":"automation"},"spec":{"ingressClassName":"nginx","rules":[{"host":"automation.pauseandlearn.net","http":{"paths":[{"backend":{"service":{"name":"semaphore-ansible-semaphore","port":{"name":"http"}}},"path":"/","pathType":"Prefix"}]}}],"tls":[{"hosts":["automation.pauseandlearn.net"],"secretName":"pauseandlearn-tls"}]}}
+#   name: semaphore-ing
+#   namespace: automation
+# spec:
+#   ingressClassName: nginx
+#   rules:
+#   - host: automation.pauseandlearn.net
+#     http:
+#       paths:
+#       - backend:
+#           service:
+#             name: semaphore-ansible-semaphore
+#             port:
+#               name: http
+#         path: /
+#         pathType: Prefix
+#   tls:
+#   - hosts:
+#     - automation.pauseandlearn.net
+#     secretName: pauseandlearn-tls
+#
+#

@@ -62,7 +62,9 @@ sso-argocd-cm.yaml
 sonarqube-dep-2024-04-01
 elasticsearch-kibana
 cloudflare-tunnel-old
-external-dns-new 
+external-dns-old
+external-dns-old/test.yaml
+external-dns-new
 istio-base-old
 istiod-old
 ingressgateway-old
