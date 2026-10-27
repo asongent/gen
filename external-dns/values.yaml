@@ -244,7 +244,7 @@ sources:
   - ingress
 
 # -- (REQUIRED) How DNS records are synchronized between sources and providers; must be set explicitly to one of `create-only`, `sync`, or `upsert-only`.
-policy: sync # @schema enum:[create-only, sync, upsert-only]; type:string; required:true
+policy: upsert-only #sync # @schema enum:[create-only, sync, upsert-only]; type:string; required:true
 
 # -- Specify the registry for storing ownership and labels.
 # Valid values are `txt`, `aws-sd`, `crd`, `dynamodb` & `noop`.
