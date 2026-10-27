@@ -291,13 +291,13 @@ spec:
               type: RuntimeDefault
           resources:
             limits:
-              cpu: 150m
+              cpu: 500m
               ephemeral-storage: 2Gi
-              memory: 192Mi
+              memory: "2048Mi"
             requests:
-              cpu: 100m
+              cpu: 500m
               ephemeral-storage: 50Mi
-              memory: 128Mi
+              memory: 1024Mi
           command:
             - /bin/bash
           args:
