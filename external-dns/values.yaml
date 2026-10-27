@@ -278,7 +278,7 @@ managedRecordTypes: []  # @schema type: [array, null]; item: string; uniqueItems
 
 provider:  # @schema type: [object, string]
   # -- _ExternalDNS_ provider name; for the available providers and how to configure them see [README](https://github.com/kubernetes-sigs/external-dns/blob/master/charts/external-dns/README.md#providers).
-  name: aws
+  name: cloudflare
   webhook:
     image:
       # -- (string) Image repository for the `webhook` container.
