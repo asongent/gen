@@ -5,18 +5,20 @@ cloudflare:
   # Your Cloudflare account number.
   account: ""
   # The name of the tunnel this instance will serve
-  tunnelName: "homelab"
+  tunnelName: "private-dc"
   # The ID of the above tunnel.
   tunnelId: "a9989206-3c79-4ebd-bfb0-0d7ebdb54810"
   # The secret for the tunnel.
-  secret: ""
+  secret: "tunnel-credentials"
   # If defined, no secret is created for the credentials, and instead, the secret referenced is used
-  secretName: "tunnel-credentials"
+  secretName: null
   # If true, turn on WARP routing for TCP
   enableWarp: false
   # Define ingress rules for the tunnel. See
   # https://developers.cloudflare.com/cloudflare-one/connections/connect-apps/configuration/configuration-file/ingress
-  # ingress: []
+  ingress: 
+  - hostname: "*.fredgentech.com"
+    service:  http://ingressgateway.istio-system.svc.cluster.local:80
     # The first rule proxies traffic to the httpbin sample service named web-server at port 80
     # - hostname: tunnel.example.com
     #  service: http://web-service:80
@@ -25,41 +27,12 @@ cloudflare:
     # in the connection from cloudflared to your local service, not from the internet to cloudflared.
     # - hostname: hello.example.com
     #   service: hello_world
-  ingress:
-  # - hostname: "florex.fredgentech.com"
-  #   service: "http://nginx-ingress-controller.nginx-ingress.svc.cluster.local:"
-  - hostname: "*.fredgentech.com"
-    service:  http://ingressgateway.istio-system.svc.cluster.local:80
-
-  # - hostname: grafana.stack.fredgentech.com
-  #   service:  http://ingressgateway.istio-system.svc.cluster.local:80
-
-  # - hostname: airflow.stack.fredgentech.com
-  #   service:  http://ingressgateway.istio-system.svc.cluster.local:80
-  # - hostname: spark.stack.fredgentech.com
-  #   service:  http://ingressgateway.istio-system.svc.cluster.local:80
-  # - hostname: jupyterhub.stack.fredgentech.com
-  #   service:  http://ingressgateway.istio-system.svc.cluster.local:80
-  # - hostname: storage.stack.fredgentech.com
-  #   service:  http://ingressgateway.istio-system.svc.cluster.local:80
-  # - hostname: elastic.stack.fredgentech.com
-  #   service:  http://ingressgateway.istio-system.svc.cluster.local:80
-  # - hostname: argocd.stack.fredgentech.com
-  #   service:  http://ingressgateway.istio-system.svc.cluster.local:80
-  # - hostname: keyckloak.stack.fredgentech.com
-  #   service:  http://ingressgateway.istio-system.svc.cluster.local:80
-  # - hostname: semaphore.stack.fredgentech.com
-  #   service:  http://ingressgateway.istio-system.svc.cluster.local:80
-    originRequest:
-        noTLSVerify: true
-  # - service: http_status:404
-   
 
 image:
   repository: cloudflare/cloudflared
   pullPolicy: IfNotPresent
   # If supplied, this overrides "appVersion"
-  tag: ""
+  tag: "2026.10.4"
 
 replicaCount: 2
 
@@ -91,23 +64,13 @@ securityContext:
     - ALL
   readOnlyRootFilesystem: true
 
-resources:
+resources: 
   limits:
-    cpu: "100m"
-    memory: "128Mi"
+    cpu: 100m
+    memory: 128Mi
   requests:
-    cpu: "100m"
-    memory: "128Mi"
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
+    cpu: 100m
+    memory: 128Mi
 
 nodeSelector: {}
 

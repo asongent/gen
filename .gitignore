@@ -61,3 +61,4 @@ semaphore-config.yaml
 sso-argocd-cm.yaml
 sonarqube-dep-2024-04-01
 elasticsearch-kibana
+cloudflare-tunnel-old
