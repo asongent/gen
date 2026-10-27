@@ -9,7 +9,7 @@ metadata:
   name: dns-test
   namespace: istio-system
 spec:
-  ingressClassName: nginx
+  # ingressClassName: nginx
   rules:
     - host: 'server.fredgentech.com'
       http:
@@ -47,5 +47,3 @@ spec:
 #   - hosts:
 #     - automation.pauseandlearn.net
 #     secretName: pauseandlearn-tls
-#
-#

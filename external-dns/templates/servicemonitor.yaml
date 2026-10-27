@@ -4,7 +4,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: {{ include "external-dns.fullname" . }}
-  namespace: {{ default (include "external-dns.namespace" .) .Values.serviceMonitor.namespace }}
+  namespace: {{ default .Release.Namespace .Values.serviceMonitor.namespace }}
   {{- with .Values.serviceMonitor.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
@@ -18,7 +18,7 @@ spec:
   jobLabel: app.kubernetes.io/instance
   namespaceSelector:
     matchNames:
-      - {{ include "external-dns.namespace" . }}
+      - {{ .Release.Namespace }}
   selector:
     matchLabels:
       {{- include "external-dns.selectorLabels" . | nindent 6 }}

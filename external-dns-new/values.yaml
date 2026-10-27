@@ -240,11 +240,11 @@ sourceNamespace:  # @schema type:[string, null]; default: null
 
 # -- _Kubernetes_ resources to monitor for DNS entries.
 sources:
-  - service
+  # - service
   - ingress
 
 # -- (REQUIRED) How DNS records are synchronized between sources and providers; must be set explicitly to one of `create-only`, `sync`, or `upsert-only`.
-policy: sync # @schema enum:[create-only, sync, upsert-only]; type:string; required:true
+policy: upsert-only #sync # @schema enum:[create-only, sync, upsert-only]; type:string; required:true
 
 # -- Specify the registry for storing ownership and labels.
 # Valid values are `txt`, `aws-sd`, `crd`, `dynamodb` & `noop`.
@@ -336,10 +336,10 @@ provider:  # @schema type: [object, string]
 
 # -- Extra arguments to provide to _ExternalDNS_.
 # An array or map can be used, with maps allowing for value overrides; maps also support slice values to use the same arg multiple times.
-# extraArgs: {}  # @schema type: [array, null, object]; item: string; uniqueItems: true
-extraArgs:
-    - --source=ingress
-    - --cloudflare-proxied
+extraArgs: {}  # @schema type: [array, null, object]; item: string; uniqueItems: true
+# extraArgs:
+#     - --source=ingress
+#     - --cloudflare-proxied
     # - --ignore-ingress-ttl
 secretConfiguration:
   # -- If `true`, create a `Secret` to store sensitive provider configuration (**DEPRECATED**).
