@@ -192,6 +192,12 @@ spec:
           - name: PILOT_TRACE_SAMPLING
             value: "{{ .Values.traceSampling }}"
 {{- end }}
+{{- if .Values.taint.enabled }}
+          - name: PILOT_ENABLE_NODE_UNTAINT_CONTROLLERS
+            value: "true"
+          - name: PILOT_NODE_UNTAINT_CONTROLLERS_TAINT_NAME
+            value: "{{ .Values.taint.name }}"
+{{- end }}
 # If externalIstiod is set via Values.Global, then enable the pilot env variable. However, if it's set via Values.pilot.env, then
 # don't set it here to avoid duplication.
 # TODO (nshankar13): Move from Helm chart to code: https://github.com/istio/istio/issues/52449
@@ -203,15 +209,14 @@ spec:
           - name: PILOT_CA_CERT_CONFIGMAP
             value: "{{ .Values.global.trustBundleName }}"
 {{- end }}
+{{- if .Values.crlConfigMapName }}
+          - name: PILOT_CRL_CONFIGMAP
+            value: "{{ .Values.crlConfigMapName }}"
+{{- end }}
           - name: PILOT_ENABLE_ANALYSIS
             value: "{{ .Values.global.istiod.enableAnalysis }}"
           - name: CLUSTER_ID
             value: "{{ $.Values.global.multiCluster.clusterName | default `Kubernetes` }}"
-          - name: GOMEMLIMIT
-            valueFrom:
-              resourceFieldRef:
-                resource: limits.memory
-                divisor: "1"
           - name: GOMAXPROCS
             valueFrom:
               resourceFieldRef:
@@ -221,9 +226,9 @@ spec:
             value: "{{ coalesce .Values.global.platform .Values.platform }}"
           resources:
 {{- if .Values.resources }}
-{{ toYaml .Values.resources | trim | indent 12 }}
+{{ include "istiod.resources" .Values.resources | trim | indent 12 }}
 {{- else }}
-{{ toYaml .Values.global.defaultResources | trim | indent 12 }}
+{{ include "istiod.resources" .Values.global.defaultResources | trim | indent 12 }}
 {{- end }}
           securityContext:
             allowPrivilegeEscalation: false
