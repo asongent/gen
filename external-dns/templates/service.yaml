@@ -1,10 +1,9 @@
-{{- if .Values.service.enabled -}}
 {{- $providerName := include "external-dns.providerName" . }}
 apiVersion: v1
 kind: Service
 metadata:
   name: {{ include "external-dns.fullname" . }}
-  namespace: {{ include "external-dns.namespace" . }}
+  namespace: {{ .Release.Namespace }}
   labels:
     {{- include "external-dns.labels" . | nindent 4 }}
   {{- with .Values.service.annotations }}
@@ -35,4 +34,3 @@ spec:
       protocol: TCP
     {{- end }}
     {{- end }}
-{{- end }}
